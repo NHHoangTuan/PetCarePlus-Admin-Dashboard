@@ -1,6 +1,6 @@
 // src/components/Login.js
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { authAPI } from "../services/api";
 
 const Login = ({ onLogin }) => {
@@ -84,6 +84,15 @@ const Login = ({ onLogin }) => {
             >
               {loading ? "Signing in..." : "Sign in"}
             </button>
+          </div>
+
+          <div className="text-center">
+            <Link
+              to="/create-admin"
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              Don't have an admin account? Create one
+            </Link>
           </div>
         </form>
       </div>

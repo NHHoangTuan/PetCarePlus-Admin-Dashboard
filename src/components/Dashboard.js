@@ -131,6 +131,18 @@ const Dashboard = () => {
               </span>
             </div>
           </Link>
+
+          <Link
+            to="/services"
+            className="block p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex items-center">
+              <Users className="w-5 h-5 text-gray-400 mr-3" />
+              <span className="text-sm font-medium text-gray-900">
+                Manage Services
+              </span>
+            </div>
+          </Link>
         </div>
       </div>
     </div>

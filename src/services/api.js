@@ -139,11 +139,49 @@ export const userAPI = {
   deleteUser: (id) => api.delete(`/users/${id}`),
 };
 
+// Service API
+export const serviceAPI = {
+  // Get all services with pagination
+  getServices: (params = {}) => {
+    const queryParams = new URLSearchParams({
+      page: params.page || 0,
+      size: params.size || 10,
+      sort: params.sort || "name,asc",
+      ...params.filters,
+    });
+    return api.get(`/admin/services?${queryParams}`);
+  },
+
+  // Advanced search
+  searchServices: (params = {}) => {
+    const queryParams = new URLSearchParams({
+      page: params.page || 0,
+      size: params.size || 10,
+      sort: params.sort || "name,asc",
+      ...params.filters,
+    });
+    return api.get(`/admin/services/search/advanced?${queryParams}`);
+  },
+
+  // Get service by ID
+  getServiceById: (id) => api.get(`/admin/services/${id}`),
+
+  // Create new service
+  createService: (data) => api.post("/admin/services", data),
+
+  // Update service
+  updateService: (id, data) => api.patch(`/admin/services/${id}`, data),
+
+  // Delete service
+  deleteService: (id) => api.delete(`/admin/services/${id}`),
+};
+
 // Auth API
 export const authAPI = {
   login: (credentials) => api.post("/auth/login", credentials),
   logout: () => api.post("/auth/logout"),
   refresh: (refreshToken) => api.post("/auth/refresh", { refreshToken }),
+  createAdmin: (adminData) => api.post("/dev/create-admin", adminData),
 };
 
 export default api;

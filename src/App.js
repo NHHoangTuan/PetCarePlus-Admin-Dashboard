@@ -10,6 +10,8 @@ import "./App.css";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import UserManagement from "./components/UserManagement";
+import ServiceManagement from "./components/ServiceManagement";
+import CreateAdmin from "./components/CreateAdmin.js";
 import Layout from "./components/Layout";
 
 function App() {
@@ -46,6 +48,7 @@ function App() {
               )
             }
           />
+          <Route path="/create-admin" element={<CreateAdmin />} />
           <Route
             path="/"
             element={
@@ -58,6 +61,7 @@ function App() {
           >
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<UserManagement />} />
+            <Route path="services" element={<ServiceManagement />} />
             <Route index element={<Navigate to="/dashboard" />} />
           </Route>
         </Routes>
