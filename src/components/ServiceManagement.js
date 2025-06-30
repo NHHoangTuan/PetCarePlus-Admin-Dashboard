@@ -1,5 +1,5 @@
 // src/components/ServiceManagement.js
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Search,
   Plus,
@@ -8,9 +8,6 @@ import {
   Eye,
   X,
   Package,
-  DollarSign,
-  FileText,
-  Image,
   AlertCircle,
   Upload,
   Loader,
@@ -22,9 +19,8 @@ import {
   compressAndUpload,
   uploadToCloudinary,
   validateImageFile,
-  compressWithQuality,
 } from "../utils/cloudinaryUpload";
-import { formatDate, formatDate2 } from "../utils/dateUtils";
+import { formatDate2 } from "../utils/dateUtils";
 import { useDebounce } from "../hooks/useDebounce";
 
 // Service Detail/Edit Modal Component
@@ -639,27 +635,7 @@ const ServiceManagement = () => {
 
   const debouncedQuery = useDebounce(filters.query, 500);
 
-  useEffect(() => {
-    //loadServices();
-    searchServices();
-  }, [pagination.page, pagination.size, debouncedQuery, sortBy, sortOrder]);
-
-  // useEffect(() => {
-  //   if (debouncedQuery) {
-  //     searchServices();
-  //   } else {
-  //     loadServices();
-  //   }
-  // }, [
-  //   debouncedQuery,
-  //   pagination.page,
-  //   pagination.size,
-  //   sortBy,
-  //   sortOrder,
-  //   filters,
-  // ]);
-
-  const searchServices = async () => {
+  const searchServices = useCallback(async () => {
     setLoading(true);
     try {
       const params = {
@@ -684,35 +660,47 @@ const ServiceManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.size, debouncedQuery, sortBy, sortOrder]);
 
-  const loadServices = async () => {
-    setLoading(true);
-    try {
-      const params = {
-        page: pagination.page,
-        size: pagination.size,
-        sortBy: sortBy,
-        sort: sortOrder,
-        filters: {
-          name: filters.search,
-        },
-      };
+  useEffect(() => {
+    //loadServices();
+    searchServices();
+  }, [
+    pagination.page,
+    pagination.size,
+    debouncedQuery,
+    sortBy,
+    sortOrder,
+    searchServices,
+  ]);
 
-      const response = await serviceAPI.getServices(params);
+  // const loadServices = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const params = {
+  //       page: pagination.page,
+  //       size: pagination.size,
+  //       sortBy: sortBy,
+  //       sort: sortOrder,
+  //       filters: {
+  //         name: filters.search,
+  //       },
+  //     };
 
-      setServices(response.data.content);
-      setPagination((prev) => ({
-        ...prev,
-        totalPages: response.data.totalPages,
-        totalElements: response.data.totalElements,
-      }));
-    } catch (error) {
-      console.error("Error loading services:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     const response = await serviceAPI.getServices(params);
+
+  //     setServices(response.data.content);
+  //     setPagination((prev) => ({
+  //       ...prev,
+  //       totalPages: response.data.totalPages,
+  //       totalElements: response.data.totalElements,
+  //     }));
+  //   } catch (error) {
+  //     console.error("Error loading services:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleSearch = (e) => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));

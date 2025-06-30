@@ -1,24 +1,18 @@
 // src/components/BookingManagement.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Search,
   Eye,
-  Edit,
   Trash2,
   X,
   Calendar,
-  DollarSign,
   User,
-  MapPin,
   Clock,
   CheckCircle,
-  XCircle,
-  AlertCircle,
-  Filter,
   Download,
 } from "lucide-react";
 import { bookingAPI } from "../services/api";
-import { formatDate, formatDate2 } from "../utils/dateUtils";
+import { formatDate2 } from "../utils/dateUtils";
 import { useDebounce } from "../hooks/useDebounce";
 
 // Booking Detail Modal Component
@@ -406,6 +400,7 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
 
 const BookingManagement = () => {
   const [bookings, setBookings] = useState([]);
+  const [allBookings, setAllBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -421,8 +416,8 @@ const BookingManagement = () => {
     query: "",
     status: "",
     paymentStatus: "",
-    dateFrom: "",
-    dateTo: "",
+    userId: "",
+    providerId: "",
   });
 
   const [sortBy, setSortBy] = useState("createdAt");
@@ -430,21 +425,57 @@ const BookingManagement = () => {
 
   const debouncedQuery = useDebounce(filters.query, 500);
 
-  useEffect(() => {
-    loadBookings();
-  }, [
-    pagination.page,
-    pagination.size,
-    debouncedQuery, // Use debounced query
-    filters.status,
-    filters.paymentStatus,
-    filters.dateFrom,
-    filters.dateTo,
-    sortBy,
-    sortOrder,
-  ]);
+  const uniqueUsers = React.useMemo(() => {
+    const userMap = new Map();
+    allBookings.forEach((booking) => {
+      if (booking.user && !userMap.has(booking.user.id)) {
+        userMap.set(booking.user.id, booking.user);
+      }
+    });
+    return Array.from(userMap.values()).sort((a, b) =>
+      `${a.name} ${a.lastName}`.localeCompare(`${b.name} ${b.lastName}`)
+    );
+  }, [allBookings]);
 
-  const loadBookings = async () => {
+  const uniqueProviders = React.useMemo(() => {
+    const providerMap = new Map();
+    allBookings.forEach((booking) => {
+      if (
+        booking.providerService &&
+        !providerMap.has(booking.providerService.providerId)
+      ) {
+        providerMap.set(booking.providerService.providerId, {
+          id: booking.providerService.providerId,
+          name: booking.providerService.providerName,
+        });
+      }
+    });
+    return Array.from(providerMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+  }, [allBookings]);
+
+  useEffect(() => {
+    loadAllBookingsForFilters();
+  }, []);
+
+  const loadAllBookingsForFilters = async () => {
+    try {
+      // Load all bookings to get unique users/providers
+      const response = await bookingAPI.getBookings({
+        page: 1,
+        size: 1000, // Get more records for filtering
+        sortBy: "createdAt",
+        sort: "desc",
+      });
+
+      setAllBookings(response.data.content);
+    } catch (error) {
+      console.error("Error loading bookings for filters:", error);
+    }
+  };
+
+  const loadBookings = useCallback(async () => {
     setLoading(true);
     try {
       const params = {
@@ -456,8 +487,8 @@ const BookingManagement = () => {
           query: debouncedQuery, // Use debounced query
           status: filters.status,
           paymentStatus: filters.paymentStatus,
-          dateFrom: filters.dateFrom,
-          dateTo: filters.dateTo,
+          userId: filters.userId,
+          providerId: filters.providerId,
         },
       };
 
@@ -475,7 +506,33 @@ const BookingManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    pagination.page,
+    pagination.size,
+    debouncedQuery, // Use debounced query
+    filters.status,
+    filters.paymentStatus,
+    filters.userId,
+    filters.providerId,
+    sortBy,
+    sortOrder,
+  ]);
+
+  useEffect(() => {
+    loadBookings();
+  }, [
+    allBookings,
+    pagination.page,
+    pagination.size,
+    debouncedQuery, // Use debounced query
+    filters.status,
+    filters.paymentStatus,
+    filters.userId,
+    filters.providerId,
+    sortBy,
+    sortOrder,
+    loadBookings,
+  ]);
 
   const handleSearch = (e) => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));
@@ -626,21 +683,33 @@ const BookingManagement = () => {
             <option value="REFUNDED">Refunded</option>
           </select>
 
-          {/* Date From */}
-          <input
-            type="date"
-            value={filters.dateFrom}
-            onChange={(e) => handleFilterChange("dateFrom", e.target.value)}
+          {/* User Filter - Dropdown */}
+          <select
+            value={filters.userId}
+            onChange={(e) => handleFilterChange("userId", e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+          >
+            <option value="">All Users</option>
+            {uniqueUsers.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.name} {user.lastName} ({user.email})
+              </option>
+            ))}
+          </select>
 
-          {/* Date To */}
-          <input
-            type="date"
-            value={filters.dateTo}
-            onChange={(e) => handleFilterChange("dateTo", e.target.value)}
+          {/* Provider Filter - Input or Dropdown */}
+          <select
+            value={filters.providerId}
+            onChange={(e) => handleFilterChange("providerId", e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+          >
+            <option value="">All Providers</option>
+            {uniqueProviders.map((provider) => (
+              <option key={provider.id} value={provider.id}>
+                {provider.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 

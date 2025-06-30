@@ -1,18 +1,8 @@
 // src/components/UserManagement.js
-import React, { useState, useEffect } from "react";
-import {
-  Search,
-  Filter,
-  Edit,
-  Trash2,
-  Ban,
-  CheckCircle,
-  Eye,
-  X,
-  UserCheck,
-} from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Search, Ban, CheckCircle, Eye, X, UserCheck } from "lucide-react";
 import { userAPI } from "../services/api";
-import { formatDate, formatDate2 } from "../utils/dateUtils";
+import { formatDate2 } from "../utils/dateUtils";
 import { useDebounce } from "../hooks/useDebounce";
 
 // User Detail Modal Component
@@ -238,19 +228,7 @@ const UserManagement = () => {
 
   const debouncedQuery = useDebounce(filters.query, 500);
 
-  useEffect(() => {
-    loadUsers();
-  }, [
-    pagination.page,
-    pagination.size,
-    filters.status,
-    filters.roles,
-    debouncedQuery,
-    sortBy,
-    sortOrder,
-  ]);
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
       const params = {
@@ -286,7 +264,27 @@ const UserManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    pagination.page,
+    pagination.size,
+    filters,
+    debouncedQuery,
+    sortBy,
+    sortOrder,
+  ]);
+
+  useEffect(() => {
+    loadUsers();
+  }, [
+    pagination.page,
+    pagination.size,
+    filters.status,
+    filters.roles,
+    debouncedQuery,
+    sortBy,
+    sortOrder,
+    loadUsers,
+  ]);
 
   const handleSearch = (e) => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));
