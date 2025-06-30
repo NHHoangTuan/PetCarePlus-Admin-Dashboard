@@ -14,6 +14,12 @@ import {
 import { bookingAPI } from "../services/api";
 import { formatDate2 } from "../utils/dateUtils";
 import { useDebounce } from "../hooks/useDebounce";
+import {
+  formatCurrency,
+  formatPrice,
+  formatNumber,
+  formatCompactNumber,
+} from "../utils/formatUtils";
 
 // Booking Detail Modal Component
 const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
@@ -242,12 +248,16 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
                     Provider: {booking.providerService.providerName}
                   </div>
                   <div className="text-sm text-gray-500">
-                    Base Price: ${booking.providerService.basePrice?.toFixed(2)}
+                    Base Price:{" "}
+                    {formatCurrency(booking.providerService.basePrice, "VND")}
                   </div>
                   {booking.providerService.customPrice && (
                     <div className="text-sm text-green-600 font-medium">
-                      Custom Price: $
-                      {booking.providerService.customPrice?.toFixed(2)}
+                      Custom Price:{" "}
+                      {formatCurrency(
+                        booking.providerService.customPrice,
+                        "VND"
+                      )}
                     </div>
                   )}
                 </div>
@@ -310,7 +320,7 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
                           {petService.serviceName}
                         </div>
                         <div className="text-sm font-medium text-green-600">
-                          ${petService.price?.toFixed(2)}
+                          {formatCurrency(petService.price, "VND")}
                         </div>
                       </div>
                     </div>
@@ -328,7 +338,7 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total Amount:</span>
                   <span className="text-green-600">
-                    ${booking.totalPrice?.toFixed(2)}
+                    {formatCurrency(booking.totalPrice, "VND")}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -827,7 +837,7 @@ const BookingManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-semibold text-gray-900">
-                        ${booking.totalPrice?.toFixed(2)}
+                        {formatCurrency(booking.totalPrice)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

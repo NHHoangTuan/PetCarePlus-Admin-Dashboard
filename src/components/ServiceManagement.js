@@ -22,6 +22,7 @@ import {
 } from "../utils/cloudinaryUpload";
 import { formatDate2 } from "../utils/dateUtils";
 import { useDebounce } from "../hooks/useDebounce";
+import { formatCurrency } from "../utils/formatUtils";
 
 // Service Detail/Edit Modal Component
 const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
@@ -464,7 +465,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                 htmlFor="basePrice"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Base Price ($)
+                Base Price (VND)
               </label>
               <input
                 type="number"
@@ -545,7 +546,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                   Base Price
                 </label>
                 <p className="text-sm text-gray-900 font-semibold">
-                  ${service?.basePrice?.toFixed(2)}
+                  {formatCurrency(service?.basePrice, "VND")}
                 </p>
               </div>
             </div>
@@ -900,7 +901,7 @@ const ServiceManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-semibold text-gray-900">
-                        ${service.basePrice?.toFixed(2)}
+                        {formatCurrency(service?.basePrice, "VND")}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
