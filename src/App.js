@@ -12,6 +12,7 @@ import Dashboard from "./components/Dashboard";
 import UserManagement from "./components/UserManagement";
 import ServiceManagement from "./components/ServiceManagement";
 import CreateAdmin from "./components/CreateAdmin.js";
+import BookingManagement from "./components/BookingManagement";
 import Layout from "./components/Layout";
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<UserManagement />} />
             <Route path="services" element={<ServiceManagement />} />
+            <Route path="bookings" element={<BookingManagement />} />
             <Route index element={<Navigate to="/dashboard" />} />
           </Route>
         </Routes>

@@ -1,7 +1,13 @@
 // src/components/Layout.js
 import React from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { Users, LayoutDashboard, LogOut, Package } from "lucide-react";
+import {
+  Users,
+  LayoutDashboard,
+  LogOut,
+  Package,
+  ReceiptText,
+} from "lucide-react";
 
 const Layout = ({ onLogout }) => {
   const location = useLocation();
@@ -18,6 +24,7 @@ const Layout = ({ onLogout }) => {
     { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { path: "/users", label: "User Management", icon: Users },
     { path: "/services", label: "Service Management", icon: Package },
+    { path: "/bookings", label: "Booking Management", icon: ReceiptText }, // Added Booking Management
   ];
 
   return (
