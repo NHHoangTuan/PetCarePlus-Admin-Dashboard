@@ -161,7 +161,6 @@ export const serviceAPI = {
       sortBy: params.sortBy || "createdAt",
       ...params.filters,
     });
-    console.log("Search service query params:", queryParams.toString());
     return api.get(`/admin/services/search/advanced?${queryParams}`);
   },
 

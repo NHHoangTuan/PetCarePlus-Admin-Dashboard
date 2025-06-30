@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { userAPI } from "../services/api";
 import { formatDate, formatDate2 } from "../utils/dateUtils";
+import { useDebounce } from "../hooks/useDebounce";
 
 // User Detail Modal Component
 const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
@@ -84,6 +85,12 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
         <div className="space-y-6">
           {/* Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                ID
+              </label>
+              <p className="text-sm text-gray-900">{user.id}</p>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Full Name
@@ -229,9 +236,19 @@ const UserManagement = () => {
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("asc");
 
+  const debouncedQuery = useDebounce(filters.query, 500);
+
   useEffect(() => {
     loadUsers();
-  }, [pagination.page, pagination.size, filters, sortBy, sortOrder]);
+  }, [
+    pagination.page,
+    pagination.size,
+    filters.status,
+    filters.roles,
+    debouncedQuery,
+    sortBy,
+    sortOrder,
+  ]);
 
   const loadUsers = async () => {
     setLoading(true);
@@ -243,6 +260,7 @@ const UserManagement = () => {
         sort: sortOrder,
         filters: {
           ...filters,
+          query: debouncedQuery,
         },
       };
 
@@ -274,6 +292,9 @@ const UserManagement = () => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
+
+  const isSearching =
+    filters.query !== debouncedQuery && filters.query.length > 0;
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -371,6 +392,12 @@ const UserManagement = () => {
               onChange={handleSearch}
               className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
+
+            {isSearching && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              </div>
+            )}
           </div>
 
           {/* Role Filter */}

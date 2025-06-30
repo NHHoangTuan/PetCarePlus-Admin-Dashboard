@@ -97,6 +97,13 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
           </button>
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            ID
+          </label>
+          <p className="text-sm text-gray-900">{booking.id}</p>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Column - Booking Info */}
           <div className="space-y-6">
@@ -290,10 +297,10 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
           {/* Right Column - Pets & Pricing */}
           <div className="space-y-6">
             {/* Pet Services */}
-            <div>
+            <div class="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-3">Pet Services</h3>
               <div className="space-y-3">
-                {booking.petServices?.map((petService, index) => (
+                {booking.petList?.map((petService, index) => (
                   <div key={index} className="border rounded-lg p-3">
                     <div className="flex items-start space-x-3">
                       {petService.petImageUrl && (

@@ -530,6 +530,12 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
         ) : (
           // View Mode
           <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                ID
+              </label>
+              <p className="text-sm text-gray-900">{service.id}</p>
+            </div>
             {/* Service Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
