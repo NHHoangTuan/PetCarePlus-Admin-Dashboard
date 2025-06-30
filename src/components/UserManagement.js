@@ -1,17 +1,9 @@
 // src/components/UserManagement.js
-import React, { useState, useEffect } from "react";
-import {
-  Search,
-  Filter,
-  Edit,
-  Trash2,
-  Ban,
-  CheckCircle,
-  Eye,
-  X,
-  UserCheck,
-} from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Search, Ban, CheckCircle, Eye, X, UserCheck } from "lucide-react";
 import { userAPI } from "../services/api";
+import { formatDate2 } from "../utils/dateUtils";
+import { useDebounce } from "../hooks/useDebounce";
 
 // User Detail Modal Component
 const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
@@ -48,22 +40,22 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
         return "bg-red-100 text-red-800";
       case "SERVICE_PROVIDER":
         return "bg-blue-100 text-blue-800";
-      case "CUSTOMER":
+      case "USER":
         return "bg-green-100 text-green-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  // const formatDate = (dateString) => {
+  //   return new Date(dateString).toLocaleDateString("en-US", {
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //   });
+  // };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -83,6 +75,12 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
         <div className="space-y-6">
           {/* Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                ID
+              </label>
+              <p className="text-sm text-gray-900">{user.id}</p>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Full Name
@@ -170,7 +168,7 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                   Created At
                 </label>
                 <p className="text-sm text-gray-900">
-                  {formatDate(user.createdAt)}
+                  {formatDate2(user.createdAt)}
                 </p>
               </div>
               <div>
@@ -178,7 +176,7 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                   Last Updated
                 </label>
                 <p className="text-sm text-gray-900">
-                  {formatDate(user.updatedAt)}
+                  {formatDate2(user.updatedAt)}
                 </p>
               </div>
             </div>
@@ -223,16 +221,14 @@ const UserManagement = () => {
   const [filters, setFilters] = useState({
     query: "",
     roles: "",
-    isBlocked: "",
+    status: "",
   });
   const [sortBy, setSortBy] = useState("createdAt");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortOrder, setSortOrder] = useState("asc");
 
-  useEffect(() => {
-    loadUsers();
-  }, [pagination.page, pagination.size, filters, sortBy, sortOrder]);
+  const debouncedQuery = useDebounce(filters.query, 500);
 
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
       const params = {
@@ -242,13 +238,22 @@ const UserManagement = () => {
         sort: sortOrder,
         filters: {
           ...filters,
-          isBlocked: filters.isBlocked || false,
+          query: debouncedQuery,
         },
       };
 
       const response = await userAPI.getUsers(params);
-      console.log("User list response:", response.data);
-      setUsers(response.data.items);
+
+      // Filter users based on status on frontend
+      let filteredUsers = response.data.items;
+      if (filters.status) {
+        filteredUsers = response.data.items.filter((user) => {
+          const userStatus = getUserStatus(user);
+          return userStatus === filters.status;
+        });
+      }
+
+      setUsers(filteredUsers);
       setPagination((prev) => ({
         ...prev,
         totalPages: response.data.pages,
@@ -259,12 +264,35 @@ const UserManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    pagination.page,
+    pagination.size,
+    filters,
+    debouncedQuery,
+    sortBy,
+    sortOrder,
+  ]);
+
+  useEffect(() => {
+    loadUsers();
+  }, [
+    pagination.page,
+    pagination.size,
+    filters.status,
+    filters.roles,
+    debouncedQuery,
+    sortBy,
+    sortOrder,
+    loadUsers,
+  ]);
 
   const handleSearch = (e) => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
+
+  const isSearching =
+    filters.query !== debouncedQuery && filters.query.length > 0;
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -308,17 +336,27 @@ const UserManagement = () => {
     }
   };
 
+  const getUserStatus = (user) => {
+    if (user.blockedAt) {
+      return "blocked";
+    } else if (user.emailVerifiedAt) {
+      return "active";
+    } else {
+      return "waiting";
+    }
+  };
+
   const handleRoleUpdate = () => {
     loadUsers(); // Reload users after role update
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  // const formatDate = (dateString) => {
+  //   return new Date(dateString).toLocaleDateString("en-US", {
+  //     year: "numeric",
+  //     month: "short",
+  //     day: "numeric",
+  //   });
+  // };
 
   const getRoleBadgeColor = (role) => {
     switch (role) {
@@ -326,7 +364,7 @@ const UserManagement = () => {
         return "bg-red-100 text-red-800";
       case "SERVICE_PROVIDER":
         return "bg-blue-100 text-blue-800";
-      case "CUSTOMER":
+      case "USER":
         return "bg-green-100 text-green-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -352,6 +390,12 @@ const UserManagement = () => {
               onChange={handleSearch}
               className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
+
+            {isSearching && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              </div>
+            )}
           </div>
 
           {/* Role Filter */}
@@ -363,18 +407,19 @@ const UserManagement = () => {
             <option value="">All Roles</option>
             <option value="ADMIN">Admin</option>
             <option value="SERVICE_PROVIDER">Service Provider</option>
-            <option value="CUSTOMER">Customer</option>
+            <option value="USER">User</option>
           </select>
 
           {/* Status Filter */}
           <select
-            value={filters.isBlocked}
-            onChange={(e) => handleFilterChange("isBlocked", e.target.value)}
+            value={filters.status}
+            onChange={(e) => handleFilterChange("status", e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">All Status</option>
-            <option value="false">Active</option>
-            <option value="true">Blocked</option>
+            <option value="active">Active</option>
+            <option value="blocked">Blocked</option>
+            <option value="waiting">Waiting</option>
           </select>
         </div>
       </div>
@@ -491,7 +536,7 @@ const UserManagement = () => {
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(user.createdAt)}
+                      {formatDate2(user.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">

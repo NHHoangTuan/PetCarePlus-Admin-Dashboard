@@ -116,7 +116,7 @@ export const userAPI = {
       page: params.page || 1,
       size: params.size || 10,
       sortBy: params.sortBy || "createdAt",
-      sort: params.sort || "desc",
+      sort: params.sort || "asc",
       ...params.filters,
     });
     return api.get(`/users?${queryParams}`);
@@ -144,20 +144,21 @@ export const serviceAPI = {
   // Get all services with pagination
   getServices: (params = {}) => {
     const queryParams = new URLSearchParams({
-      page: params.page || 0,
+      page: params.page || 1,
       size: params.size || 10,
-      sort: params.sort || "name,asc",
+      sort: params.sort || "asc",
+      sortBy: params.sortBy || "createdAt",
       ...params.filters,
     });
     return api.get(`/admin/services?${queryParams}`);
   },
-
   // Advanced search
   searchServices: (params = {}) => {
     const queryParams = new URLSearchParams({
-      page: params.page || 0,
+      page: params.page || 1,
       size: params.size || 10,
-      sort: params.sort || "name,asc",
+      sort: params.sort || "asc",
+      sortBy: params.sortBy || "createdAt",
       ...params.filters,
     });
     return api.get(`/admin/services/search/advanced?${queryParams}`);
@@ -174,6 +175,23 @@ export const serviceAPI = {
 
   // Delete service
   deleteService: (id) => api.delete(`/admin/services/${id}`),
+};
+
+export const bookingAPI = {
+  // Get all bookings with pagination and filtering
+  getBookings: (params = {}) => {
+    const queryParams = new URLSearchParams({
+      page: params.page || 1,
+      size: params.size || 10,
+      sort: params.sort || "desc",
+      sortBy: params.sortBy || "createdAt",
+      ...params.filters,
+    });
+    return api.get(`/admin/bookings?${queryParams}`);
+  },
+
+  // Get booking by ID
+  getBookingById: (id) => api.get(`/admin/bookings/${id}`),
 };
 
 // Auth API

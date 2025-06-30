@@ -1,5 +1,5 @@
 // src/components/ServiceManagement.js
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Search,
   Plus,
@@ -8,9 +8,6 @@ import {
   Eye,
   X,
   Package,
-  DollarSign,
-  FileText,
-  Image,
   AlertCircle,
   Upload,
   Loader,
@@ -22,8 +19,10 @@ import {
   compressAndUpload,
   uploadToCloudinary,
   validateImageFile,
-  compressWithQuality,
 } from "../utils/cloudinaryUpload";
+import { formatDate2 } from "../utils/dateUtils";
+import { useDebounce } from "../hooks/useDebounce";
+import { formatCurrency } from "../utils/formatUtils";
 
 // Service Detail/Edit Modal Component
 const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
@@ -112,6 +111,16 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
       }));
     }
   };
+
+  // const formatDate = (dateString) => {
+  //   return new Date(dateString).toLocaleDateString("en-US", {
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //   });
+  // };
 
   const handleFileSelect = async (e) => {
     const file = e.target.files[0];
@@ -456,7 +465,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                 htmlFor="basePrice"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Base Price ($)
+                Base Price (VND)
               </label>
               <input
                 type="number"
@@ -518,6 +527,12 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
         ) : (
           // View Mode
           <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                ID
+              </label>
+              <p className="text-sm text-gray-900">{service.id}</p>
+            </div>
             {/* Service Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -531,7 +546,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                   Base Price
                 </label>
                 <p className="text-sm text-gray-900 font-semibold">
-                  ${service?.basePrice?.toFixed(2)}
+                  {formatCurrency(service?.basePrice, "VND")}
                 </p>
               </div>
             </div>
@@ -551,10 +566,39 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                 <img
                   src={service.iconUrl}
                   alt="Service icon"
-                  className="w-16 h-16 object-cover rounded border"
+                  className="w-32 h-32 object-cover rounded border "
                 />
               </div>
             )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Created At
+              </label>
+              <p className="text-sm text-gray-900">
+                {formatDate2(service?.createdAt)}
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Updated At
+              </label>
+              <p className="text-sm text-gray-900">
+                {formatDate2(service?.updatedAt)}
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Deleted At
+              </label>
+              <p className="text-sm text-gray-900">
+                {service?.deletedAt === null
+                  ? "Not Delete"
+                  : formatDate2(service?.deletedAt)}
+              </p>
+            </div>
 
             {/* Footer */}
             <div className="flex justify-end gap-3 pt-4 border-t">
@@ -585,25 +629,26 @@ const ServiceManagement = () => {
     totalElements: 0,
   });
   const [filters, setFilters] = useState({
-    search: "",
+    query: "",
   });
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState("asc");
 
-  useEffect(() => {
-    loadServices();
-  }, [pagination.page, pagination.size, filters]);
+  const debouncedQuery = useDebounce(filters.query, 500);
 
-  const loadServices = async () => {
+  const searchServices = useCallback(async () => {
     setLoading(true);
     try {
       const params = {
         page: pagination.page,
         size: pagination.size,
+        sortBy: sortBy,
+        sort: sortOrder,
         filters: {
-          name: filters.search,
+          query: debouncedQuery, // Use debounced query
         },
       };
-
-      const response = await serviceAPI.getServices(params);
+      const response = await serviceAPI.searchServices(params);
       setServices(response.data.content);
       setPagination((prev) => ({
         ...prev,
@@ -611,19 +656,72 @@ const ServiceManagement = () => {
         totalElements: response.data.totalElements,
       }));
     } catch (error) {
-      console.error("Error loading services:", error);
+      console.error("Error searching services:", error);
+      alert("Failed to search services");
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.size, debouncedQuery, sortBy, sortOrder]);
+
+  useEffect(() => {
+    //loadServices();
+    searchServices();
+  }, [
+    pagination.page,
+    pagination.size,
+    debouncedQuery,
+    sortBy,
+    sortOrder,
+    searchServices,
+  ]);
+
+  // const loadServices = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const params = {
+  //       page: pagination.page,
+  //       size: pagination.size,
+  //       sortBy: sortBy,
+  //       sort: sortOrder,
+  //       filters: {
+  //         name: filters.search,
+  //       },
+  //     };
+
+  //     const response = await serviceAPI.getServices(params);
+
+  //     setServices(response.data.content);
+  //     setPagination((prev) => ({
+  //       ...prev,
+  //       totalPages: response.data.totalPages,
+  //       totalElements: response.data.totalElements,
+  //     }));
+  //   } catch (error) {
+  //     console.error("Error loading services:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleSearch = (e) => {
-    setFilters((prev) => ({ ...prev, search: e.target.value }));
+    setFilters((prev) => ({ ...prev, query: e.target.value }));
     setPagination((prev) => ({ ...prev, page: 0 }));
   };
 
+  const isSearching =
+    filters.query !== debouncedQuery && filters.query.length > 0;
+
   const handlePageChange = (newPage) => {
     setPagination((prev) => ({ ...prev, page: newPage }));
+  };
+
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
   };
 
   const handleViewService = async (serviceId) => {
@@ -664,7 +762,8 @@ const ServiceManagement = () => {
     ) {
       try {
         await serviceAPI.deleteService(serviceId);
-        loadServices();
+        //loadServices();
+        searchServices();
       } catch (error) {
         console.error("Error deleting service:", error);
         alert("Failed to delete service");
@@ -673,13 +772,24 @@ const ServiceManagement = () => {
   };
 
   const handleModalSave = () => {
-    loadServices();
+    //loadServices();
+    searchServices();
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedService(null);
   };
+
+  // const formatDate = (dateString) => {
+  //   return new Date(dateString).toLocaleDateString("en-US", {
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //   });
+  // };
 
   return (
     <div>
@@ -707,6 +817,11 @@ const ServiceManagement = () => {
               onChange={handleSearch}
               className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
+            {isSearching && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -725,6 +840,19 @@ const ServiceManagement = () => {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Base Price
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <div
+                    className="flex items-center cursor-pointer hover:bg-gray-100 rounded px-2 py-1"
+                    onClick={() => handleSort("createdAt")}
+                  >
+                    Created At
+                    {sortBy === "createdAt" && (
+                      <span className="ml-1">
+                        {sortOrder === "asc" ? "↑" : "↓"}
+                      </span>
+                    )}
+                  </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -773,7 +901,12 @@ const ServiceManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-semibold text-gray-900">
-                        ${service.basePrice?.toFixed(2)}
+                        {formatCurrency(service?.basePrice, "VND")}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {formatDate2(service.createdAt)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
