@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { notificationAPI } from "../services/api";
 import { formatDate } from "../utils/dateUtils";
+import { useToast } from "../context/ToastContext";
 
 const ResponseDisplay = ({ apiResponse, apiError, onCopy, onClear }) => {
   if (!apiResponse && !apiError) return null;
@@ -522,6 +523,9 @@ const NotificationTestingTool = () => {
   const [apiError, setApiError] = useState(null);
   const [apiLoading, setApiLoading] = useState(false);
 
+  // Add toast hook
+  const { showSuccess, showError, showInfo, showWarning } = useToast();
+
   // Load all notifications on component mount
   useEffect(() => {
     if (activeTab === "list") {
@@ -543,18 +547,46 @@ const NotificationTestingTool = () => {
         status: response.status,
         data: response.data,
       });
+
+      // Show success toast
+      showSuccess(
+        `Successfully loaded ${response.data.items?.length || 0} notifications`,
+        3000
+      );
     } catch (error) {
       setApiError({
         method: "GET",
         endpoint: "/notifications",
         error: error.response?.data || error.message,
       });
+
+      // Show error toast
+      showError(
+        `Failed to load notifications: ${
+          error.response?.data?.message || error.message
+        }`,
+        5000
+      );
     } finally {
       setApiLoading(false);
     }
   };
 
   const handleCreateNotification = async () => {
+    // Validate required fields
+    if (!createForm.userIdReceive.trim()) {
+      showWarning("Please enter User ID Receive", 3000);
+      return;
+    }
+    if (!createForm.title.trim()) {
+      showWarning("Please enter notification title", 3000);
+      return;
+    }
+    if (!createForm.message.trim()) {
+      showWarning("Please enter notification message", 3000);
+      return;
+    }
+
     setApiLoading(true);
     setApiError(null);
     try {
@@ -566,8 +598,29 @@ const NotificationTestingTool = () => {
         data: response.data,
         requestBody: createForm,
       });
+
+      // Show success toast with details
+      showSuccess(
+        `Notification "${createForm.title}" sent successfully!`,
+        4000
+      );
+      // Show info toast for next step
+      showInfo("Refreshing notifications list...", 2000);
+
       // Refresh notifications list
-      handleGetAllNotifications();
+      setTimeout(() => {
+        handleGetAllNotifications();
+      }, 1000);
+
+      // Clear form after successful creation
+      setCreateForm({
+        userIdReceive: "",
+        type: "BOOKING",
+        imageUrl: "",
+        message: "",
+        title: "",
+        relatedId: "",
+      });
     } catch (error) {
       setApiError({
         method: "POST",
@@ -575,13 +628,19 @@ const NotificationTestingTool = () => {
         error: error.response?.data || error.message,
         requestBody: createForm,
       });
+      // Show detailed error toast
+      const errorMessage = error.response?.data?.message || error.message;
+      showError(`Failed to send notification: ${errorMessage}`, 6000);
     } finally {
       setApiLoading(false);
     }
   };
 
   const handleGetSingleNotification = async () => {
-    if (!singleNotificationId.trim()) return;
+    if (!singleNotificationId.trim()) {
+      showWarning("Please enter a notification ID", 3000);
+      return;
+    }
 
     setApiLoading(true);
     setApiError(null);
@@ -596,12 +655,30 @@ const NotificationTestingTool = () => {
         status: response.status,
         data: response.data,
       });
+
+      // Show success toast
+      showSuccess(`Found notification: "${response.data.title}"`, 3000);
     } catch (error) {
       setApiError({
         method: "GET",
         endpoint: `/notifications/${singleNotificationId}`,
         error: error.response?.data || error.message,
       });
+
+      // Show error toast
+      if (error.response?.status === 404) {
+        showError(
+          `Notification with ID "${singleNotificationId}" not found`,
+          4000
+        );
+      } else {
+        showError(
+          `Failed to get notification: ${
+            error.response?.data?.message || error.message
+          }`,
+          5000
+        );
+      }
     } finally {
       setApiLoading(false);
     }
@@ -620,14 +697,41 @@ const NotificationTestingTool = () => {
         status: response.status,
         data: response.data,
       });
+
+      // Show success toast
+      showSuccess(`✅ Notification marked as read successfully!`, 3000);
+
+      // Show info toast for refresh
+      showInfo("Refreshing notifications list...", 2000);
+
       // Refresh notifications list
-      handleGetAllNotifications();
+      setTimeout(() => {
+        handleGetAllNotifications();
+      }, 1000);
+
+      // Clear the input
+      setReadNotificationId("");
     } catch (error) {
       setApiError({
         method: "PUT",
         endpoint: `/notifications/read/${readNotificationId}`,
         error: error.response?.data || error.message,
       });
+
+      // Show error toast
+      if (error.response?.status === 404) {
+        showError(
+          `Notification with ID "${readNotificationId}" not found`,
+          4000
+        );
+      } else {
+        showError(
+          `Failed to mark as read: ${
+            error.response?.data?.message || error.message
+          }`,
+          5000
+        );
+      }
     } finally {
       setApiLoading(false);
     }
@@ -640,7 +744,7 @@ const NotificationTestingTool = () => {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(JSON.stringify(text, null, 2));
-    alert("Copied to clipboard!");
+    showSuccess("📋 Response copied to clipboard!", 2000);
   };
 
   const generateSampleData = () => {

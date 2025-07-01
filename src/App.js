@@ -15,6 +15,7 @@ import CreateAdmin from "./components/CreateAdmin.js";
 import BookingManagement from "./components/BookingManagement";
 import NotificationTestingTool from "./components/NotificationTestingTool.js";
 import Layout from "./components/Layout";
+import { ToastProvider } from "./context/ToastContext.js";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -37,43 +38,45 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route
-            path="/login"
-            element={
-              !isAuthenticated ? (
-                <Login onLogin={handleLogin} />
-              ) : (
-                <Navigate to="/dashboard" />
-              )
-            }
-          />
-          <Route path="/create-admin" element={<CreateAdmin />} />
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <Layout onLogout={handleLogout} />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          >
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="services" element={<ServiceManagement />} />
-            <Route path="bookings" element={<BookingManagement />} />
+    <ToastProvider>
+      <Router>
+        <div className="App">
+          <Routes>
             <Route
-              path="/notification-testing"
-              element={<NotificationTestingTool />}
+              path="/login"
+              element={
+                !isAuthenticated ? (
+                  <Login onLogin={handleLogin} />
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
+              }
             />
-            <Route index element={<Navigate to="/dashboard" />} />
-          </Route>
-        </Routes>
-      </div>
-    </Router>
+            <Route path="/create-admin" element={<CreateAdmin />} />
+            <Route
+              path="/"
+              element={
+                isAuthenticated ? (
+                  <Layout onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            >
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="services" element={<ServiceManagement />} />
+              <Route path="bookings" element={<BookingManagement />} />
+              <Route
+                path="/notification-testing"
+                element={<NotificationTestingTool />}
+              />
+              <Route index element={<Navigate to="/dashboard" />} />
+            </Route>
+          </Routes>
+        </div>
+      </Router>
+    </ToastProvider>
   );
 }
 
