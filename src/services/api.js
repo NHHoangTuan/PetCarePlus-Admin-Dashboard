@@ -194,6 +194,24 @@ export const bookingAPI = {
   getBookingById: (id) => api.get(`/admin/bookings/${id}`),
 };
 
+// Notification API
+export const notificationAPI = {
+  // Get all notifications
+  getAllNotifications: () => api.get("/admin/notifications"),
+
+  // Get single notification
+  getNotification: (id) => api.get(`/admin/notifications/${id}`),
+
+  // Create new notification
+  createNotification: (data) => api.post("/notifications", data),
+
+  // Mark notification as read
+  markAsRead: (id) => api.put(`/notifications/read/${id}`),
+
+  // Delete notification (if needed)
+  deleteNotification: (id) => api.delete(`/notifications/${id}`),
+};
+
 // Auth API
 export const authAPI = {
   login: (credentials) => api.post("/auth/login", credentials),
