@@ -13,6 +13,7 @@ import UserManagement from "./components/UserManagement";
 import ServiceManagement from "./components/ServiceManagement";
 import CreateAdmin from "./components/CreateAdmin.js";
 import BookingManagement from "./components/BookingManagement";
+import NotificationTestingTool from "./components/NotificationTestingTool.js";
 import Layout from "./components/Layout";
 
 function App() {
@@ -64,6 +65,10 @@ function App() {
             <Route path="users" element={<UserManagement />} />
             <Route path="services" element={<ServiceManagement />} />
             <Route path="bookings" element={<BookingManagement />} />
+            <Route
+              path="/notification-testing"
+              element={<NotificationTestingTool />}
+            />
             <Route index element={<Navigate to="/dashboard" />} />
           </Route>
         </Routes>

@@ -7,6 +7,7 @@ import {
   LogOut,
   Package,
   ReceiptText,
+  Lock,
 } from "lucide-react";
 
 const Layout = ({ onLogout }) => {
@@ -25,6 +26,7 @@ const Layout = ({ onLogout }) => {
     { path: "/users", label: "User Management", icon: Users },
     { path: "/services", label: "Service Management", icon: Package },
     { path: "/bookings", label: "Booking Management", icon: ReceiptText }, // Added Booking Management
+    { path: "/notification-testing", label: "API Testing Tool", icon: Lock }, // Added Notification Testing Tool
   ];
 
   return (
