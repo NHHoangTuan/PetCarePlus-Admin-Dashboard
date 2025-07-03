@@ -14,6 +14,7 @@ import ServiceManagement from "./components/ServiceManagement";
 import CreateAdmin from "./components/CreateAdmin.js";
 import BookingManagement from "./components/BookingManagement";
 import NotificationTestingTool from "./components/NotificationTestingTool.js";
+import WithdrawalManagement from "./components/WithdrawalManagement.js";
 import Layout from "./components/Layout";
 import { ToastProvider } from "./context/ToastContext.js";
 
@@ -71,6 +72,7 @@ function App() {
                 path="/notification-testing"
                 element={<NotificationTestingTool />}
               />
+              <Route path="withdrawals" element={<WithdrawalManagement />} />
               <Route index element={<Navigate to="/dashboard" />} />
             </Route>
           </Routes>

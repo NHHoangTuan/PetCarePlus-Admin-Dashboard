@@ -4,11 +4,13 @@ import { Search, Ban, CheckCircle, Eye, X, UserCheck } from "lucide-react";
 import { userAPI } from "../services/api";
 import { formatDate2 } from "../utils/dateUtils";
 import { useDebounce } from "../hooks/useDebounce";
+import { useToast } from "../context/ToastContext";
 
 // User Detail Modal Component
 const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
   const [selectedRole, setSelectedRole] = useState(user?.role || "");
   const [isUpdatingRole, setIsUpdatingRole] = useState(false);
+  const { showSuccess, showError, showInfo, showWarning } = useToast();
 
   useEffect(() => {
     if (user) {
@@ -26,7 +28,12 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
       onClose();
     } catch (error) {
       console.error("Error updating user role:", error);
-      alert("Failed to update user role");
+      showError(
+        `Failed to updating user role: ${
+          error.response?.data?.message || error.message
+        }`,
+        3000
+      );
     } finally {
       setIsUpdatingRole(false);
     }
@@ -225,6 +232,7 @@ const UserManagement = () => {
   });
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("asc");
+  const { showSuccess, showError, showInfo, showWarning } = useToast();
 
   const debouncedQuery = useDebounce(filters.query, 500);
 
@@ -332,7 +340,12 @@ const UserManagement = () => {
       setIsDetailModalOpen(true);
     } catch (error) {
       console.error("Error loading user details:", error);
-      alert("Failed to load user details");
+      showError(
+        `Failed to load user details: ${
+          error.response?.data?.message || error.message
+        }`,
+        3000
+      );
     }
   };
 

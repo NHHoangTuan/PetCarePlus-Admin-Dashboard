@@ -21,11 +21,14 @@ import {
   formatCompactNumber,
 } from "../utils/formatUtils";
 
+import { useToast } from "../context/ToastContext";
+
 // Booking Detail Modal Component
 const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [showCancelForm, setShowCancelForm] = useState(false);
+  const { showSuccess, showError, showInfo, showWarning } = useToast();
 
   useEffect(() => {
     if (booking) {
@@ -51,7 +54,12 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
       onClose();
     } catch (error) {
       console.error("Error updating booking status:", error);
-      alert("Failed to update booking status");
+      showError(
+        `Failed to update booking status: ${
+          error.response?.data?.message || error.message
+        }`,
+        3000
+      );
     } finally {
       setUpdatingStatus(false);
     }
@@ -433,6 +441,8 @@ const BookingManagement = () => {
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("desc");
 
+  const { showSuccess, showError, showInfo, showWarning } = useToast();
+
   const debouncedQuery = useDebounce(filters.query, 500);
 
   const uniqueUsers = React.useMemo(() => {
@@ -577,7 +587,12 @@ const BookingManagement = () => {
       setIsDetailModalOpen(true);
     } catch (error) {
       console.error("Error loading booking details:", error);
-      alert("Failed to load booking details");
+      showError(
+        `Failed to load booking details: ${
+          error.response?.data?.message || error.message
+        }`,
+        3000
+      );
     }
   };
 
@@ -592,7 +607,12 @@ const BookingManagement = () => {
         loadBookings();
       } catch (error) {
         console.error("Error deleting booking:", error);
-        alert("Failed to delete booking");
+        showError(
+          `Failed to delete booking: ${
+            error.response?.data?.message || error.message
+          }`,
+          3000
+        );
       }
     }
   };
