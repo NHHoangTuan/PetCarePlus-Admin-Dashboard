@@ -23,6 +23,7 @@ import {
 import { formatDate2 } from "../utils/dateUtils";
 import { useDebounce } from "../hooks/useDebounce";
 import { formatCurrency } from "../utils/formatUtils";
+import { useToast } from "../context/ToastContext";
 
 // Service Detail/Edit Modal Component
 const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
@@ -40,6 +41,8 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
   const [compressionEnabled, setCompressionEnabled] = useState(true);
   const [compressionQuality, setCompressionQuality] = useState("icon"); // low, medium, high, icon
   const fileInputRef = useRef(null);
+  // Add toast hook
+  const { showSuccess, showError, showInfo, showWarning } = useToast();
 
   useEffect(() => {
     if (service) {
@@ -634,6 +637,8 @@ const ServiceManagement = () => {
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("asc");
 
+  const { showSuccess, showError, showInfo, showWarning } = useToast();
+
   const debouncedQuery = useDebounce(filters.query, 500);
 
   const searchServices = useCallback(async () => {
@@ -657,7 +662,12 @@ const ServiceManagement = () => {
       }));
     } catch (error) {
       console.error("Error searching services:", error);
-      alert("Failed to search services");
+      showError(
+        `Failed to load services: ${
+          error.response?.data?.message || error.message
+        }`,
+        5000
+      );
     } finally {
       setLoading(false);
     }
@@ -732,7 +742,12 @@ const ServiceManagement = () => {
       setIsModalOpen(true);
     } catch (error) {
       console.error("Error loading service details:", error);
-      alert("Failed to load service details");
+      showError(
+        `Failed to load service details: ${
+          error.response?.data?.message || error.message
+        }`,
+        3000
+      );
     }
   };
 
@@ -744,7 +759,12 @@ const ServiceManagement = () => {
       setIsModalOpen(true);
     } catch (error) {
       console.error("Error loading service details:", error);
-      alert("Failed to load service details");
+      showError(
+        `Failed to load service details: ${
+          error.response?.data?.message || error.message
+        }`,
+        3000
+      );
     }
   };
 
@@ -766,7 +786,12 @@ const ServiceManagement = () => {
         searchServices();
       } catch (error) {
         console.error("Error deleting service:", error);
-        alert("Failed to delete service");
+        showError(
+          `Failed to delete service: ${
+            error.response?.data?.message || error.message
+          }`,
+          3000
+        );
       }
     }
   };
