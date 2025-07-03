@@ -213,6 +213,45 @@ export const notificationAPI = {
   deleteNotification: (id) => api.delete(`/notifications/${id}`),
 };
 
+// Add withdrawal API
+export const withdrawalAPI = {
+  // Get all withdrawals with pagination
+  getWithdrawals: (params = {}) => {
+    const queryParams = new URLSearchParams({
+      page: params.page || 1,
+      size: params.size || 10,
+      sortBy: params.sortBy || "createdAt",
+      sort: params.sort || "desc",
+      ...params.filters,
+    });
+    return api.get(`/admin/withdrawals?${queryParams}`);
+  },
+
+  // Approve withdrawal
+  approveWithdrawal: (withdrawalId, adminNote = "Approved by admin") => {
+    return api.post(`/admin/withdrawals/${withdrawalId}/approve`, {
+      adminNote,
+    });
+  },
+
+  // Complete withdrawal
+  completeWithdrawal: (
+    withdrawalId,
+    transactionNote = "Bank transfer completed"
+  ) => {
+    return api.post(`/admin/withdrawals/${withdrawalId}/complete`, {
+      transactionNote,
+    });
+  },
+
+  // Reject withdrawal
+  rejectWithdrawal: (withdrawalId, rejectionReason) => {
+    return api.post(`/admin/withdrawals/${withdrawalId}/reject`, {
+      rejectionReason,
+    });
+  },
+};
+
 // Auth API
 export const authAPI = {
   login: (credentials) => api.post("/auth/login", credentials),

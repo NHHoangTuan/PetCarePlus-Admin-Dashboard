@@ -8,6 +8,7 @@ import {
   Package,
   ReceiptText,
   Lock,
+  DollarSign,
 } from "lucide-react";
 
 const Layout = ({ onLogout }) => {
@@ -23,10 +24,11 @@ const Layout = ({ onLogout }) => {
 
   const menuItems = [
     { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { path: "/users", label: "User Management", icon: Users },
-    { path: "/services", label: "Service Management", icon: Package },
-    { path: "/bookings", label: "Booking Management", icon: ReceiptText }, // Added Booking Management
-    { path: "/notification-testing", label: "API Testing Tool", icon: Lock }, // Added Notification Testing Tool
+    { path: "/users", label: "User", icon: Users },
+    { path: "/services", label: "Service", icon: Package },
+    { path: "/bookings", label: "Booking", icon: ReceiptText }, // Added Booking Management
+    { path: "/notification-testing", label: "Notification Tool", icon: Lock }, // Added Notification Testing Tool
+    { path: "/withdrawals", label: "Withdrawal", icon: DollarSign }, // Added Withdrawal Management
   ];
 
   return (
