@@ -252,6 +252,41 @@ export const withdrawalAPI = {
   },
 };
 
+// Add terms API
+export const termsAPI = {
+  // Get all terms with language filter
+  getAllTerms: (language = null) => {
+    const params = language ? `?language=${language}` : "";
+    return api.get(`/admin/terms${params}`);
+  },
+
+  // Get terms by type
+  getTermsByType: (type, language = null) => {
+    const params = language ? `?language=${language}` : "";
+    return api.get(`/admin/terms/${type}${params}`);
+  },
+
+  // Get all terms in all languages (admin only)
+  getAllTermsAllLanguages: () => {
+    return api.get("/admin/terms/all-languages");
+  },
+
+  // Create new terms (admin only)
+  createTerms: (data) => {
+    return api.post("/admin/terms", data);
+  },
+
+  // Update terms (admin only)
+  updateTerms: (id, data) => {
+    return api.patch(`/admin/terms/${id}`, data);
+  },
+
+  // Delete terms (admin only)
+  deleteTerms: (id) => {
+    return api.delete(`/admin/terms/${id}`);
+  },
+};
+
 // Auth API
 export const authAPI = {
   login: (credentials) => api.post("/auth/login", credentials),
