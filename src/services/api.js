@@ -3,7 +3,57 @@ import axios from "axios";
 
 //const API_BASE_URL = "http://localhost:8080";
 //const API_BASE_URL = "https://petcareplus-backend-dev.up.railway.app";
-const API_BASE_URL = "https://petcareplus-sqp6.onrender.com";
+//const API_BASE_URL = "https://petcareplus-sqp6.onrender.com";
+
+export const SERVERS = {
+  local: {
+    id: "local",
+    name: "Local Development",
+    url: "http://localhost:8080",
+    description: "Local development server",
+  },
+  railway: {
+    id: "railway",
+    name: "Railway (Dev)",
+    url: "https://petcareplus-backend-dev.up.railway.app",
+    description: "Railway dev server",
+  },
+  render: {
+    id: "render",
+    name: "Render (Dev Backup)",
+    url: "https://petcareplus-sqp6.onrender.com",
+    description: "Render backup dev server",
+  },
+};
+
+// Get current server from localStorage or default to railway
+export const getCurrentServer = () => {
+  const saved = localStorage.getItem("selectedServer");
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      return SERVERS[parsed.id] || SERVERS.railway;
+    } catch {
+      return SERVERS.railway;
+    }
+  }
+  return SERVERS.railway;
+};
+
+// Set current server
+export const setCurrentServer = (server) => {
+  localStorage.setItem("selectedServer", JSON.stringify(server));
+  // Recreate axios instance with new base URL
+  updateApiBaseURL(server.url);
+};
+
+// Get current API base URL
+export const getCurrentApiBaseURL = () => {
+  return getCurrentServer().url;
+};
+
+// Create axios instance with dynamic base URL
+let API_BASE_URL = getCurrentApiBaseURL();
 
 // Create axios instance
 const api = axios.create({
@@ -12,6 +62,12 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+// Function to update base URL
+const updateApiBaseURL = (newBaseURL) => {
+  API_BASE_URL = newBaseURL;
+  api.defaults.baseURL = newBaseURL;
+};
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -74,9 +130,12 @@ api.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-          refreshToken: refreshToken,
-        });
+        const response = await axios.post(
+          `${getCurrentApiBaseURL()}/auth/refresh`,
+          {
+            refreshToken: refreshToken,
+          }
+        );
 
         const { token, refreshToken: newRefreshToken } = response.data;
 
@@ -109,6 +168,18 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Health check API
+export const healthAPI = {
+  checkHealth: (serverUrl) => {
+    return axios.get(`${serverUrl}/health`, {
+      timeout: 5000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  },
+};
 
 // User API
 export const userAPI = {
@@ -253,6 +324,41 @@ export const withdrawalAPI = {
   },
 };
 
+// Add terms API
+export const termsAPI = {
+  // Get all terms with language filter
+  getAllTerms: (language = null) => {
+    const params = language ? `?language=${language}` : "";
+    return api.get(`/admin/terms${params}`);
+  },
+
+  // Get terms by type
+  getTermsByType: (type, language = null) => {
+    const params = language ? `?language=${language}` : "";
+    return api.get(`/admin/terms/${type}${params}`);
+  },
+
+  // Get all terms in all languages (admin only)
+  getAllTermsAllLanguages: () => {
+    return api.get("/admin/terms/all-languages");
+  },
+
+  // Create new terms (admin only)
+  createTerms: (data) => {
+    return api.post("/admin/terms", data);
+  },
+
+  // Update terms (admin only)
+  updateTerms: (id, data) => {
+    return api.patch(`/admin/terms/${id}`, data);
+  },
+
+  // Delete terms (admin only)
+  deleteTerms: (id) => {
+    return api.delete(`/admin/terms/${id}`);
+  },
+};
+
 // Auth API
 export const authAPI = {
   login: (credentials) => api.post("/auth/login", credentials),
@@ -261,4 +367,4 @@ export const authAPI = {
   createAdmin: (adminData) => api.post("/dev/create-admin", adminData),
 };
 
-export default api;
+export { api };

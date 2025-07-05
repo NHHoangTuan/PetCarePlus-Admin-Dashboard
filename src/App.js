@@ -16,6 +16,7 @@ import BookingManagement from "./components/BookingManagement";
 import NotificationTestingTool from "./components/NotificationTestingTool.js";
 import WithdrawalManagement from "./components/WithdrawalManagement.js";
 import Layout from "./components/Layout";
+import TermsManagement from "./components/TermsManagement.js";
 import { ToastProvider } from "./context/ToastContext.js";
 
 function App() {
@@ -69,10 +70,11 @@ function App() {
               <Route path="services" element={<ServiceManagement />} />
               <Route path="bookings" element={<BookingManagement />} />
               <Route
-                path="/notification-testing"
+                path="notification-testing"
                 element={<NotificationTestingTool />}
               />
               <Route path="withdrawals" element={<WithdrawalManagement />} />
+              <Route path="terms" element={<TermsManagement />} />
               <Route index element={<Navigate to="/dashboard" />} />
             </Route>
           </Routes>

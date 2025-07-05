@@ -9,6 +9,7 @@ import {
   ReceiptText,
   Lock,
   DollarSign,
+  FileText,
 } from "lucide-react";
 
 const Layout = ({ onLogout }) => {
@@ -29,6 +30,7 @@ const Layout = ({ onLogout }) => {
     { path: "/bookings", label: "Booking", icon: ReceiptText }, // Added Booking Management
     { path: "/notification-testing", label: "Notification Tool", icon: Lock }, // Added Notification Testing Tool
     { path: "/withdrawals", label: "Withdrawal", icon: DollarSign }, // Added Withdrawal Management
+    { path: "/terms", label: "Terms & Conditions", icon: FileText }, // Added Terms Management
   ];
 
   return (
