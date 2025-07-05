@@ -1,13 +1,29 @@
 // src/components/Login.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { authAPI } from "../services/api";
+import ServerSelection from "./ServerSelection";
+import { getCurrentServer, setCurrentServer, SERVERS } from "../services/api";
 
 const Login = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [currentServer, setCurrentServerState] = useState(null);
+
+  useEffect(() => {
+    // Load current server on mount
+    const server = getCurrentServer();
+    setCurrentServerState(server);
+  }, []);
+
+  const handleServerSelect = (server) => {
+    setCurrentServer(server);
+    setCurrentServerState(server);
+    // Optionally show a toast notification
+    console.log(`Switched to server: ${server.name}`);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -95,6 +111,14 @@ const Login = ({ onLogin }) => {
             </Link>
           </div>
         </form>
+
+        <div className="flex items-center gap-4">
+          <ServerSelection
+            onServerSelect={handleServerSelect}
+            currentServer={currentServer}
+          />
+          {/* Other header items */}
+        </div>
       </div>
     </div>
   );
