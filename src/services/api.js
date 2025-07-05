@@ -2,7 +2,8 @@
 import axios from "axios";
 
 //const API_BASE_URL = "http://localhost:8080";
-const API_BASE_URL = "https://petcareplus-backend-dev.up.railway.app";
+//const API_BASE_URL = "https://petcareplus-backend-dev.up.railway.app";
+const API_BASE_URL = "https://petcareplus-sqp6.onrender.com";
 
 // Create axios instance
 const api = axios.create({
