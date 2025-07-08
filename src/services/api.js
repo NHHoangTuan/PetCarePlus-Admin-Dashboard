@@ -19,10 +19,16 @@ export const SERVERS = {
     description: "Railway dev server",
   },
   render: {
-    id: "render",
-    name: "Render (Dev Backup)",
-    url: "https://petcareplus-sqp6.onrender.com",
-    description: "Render backup dev server",
+    id: "azure",
+    name: "Azure (Dev Backup)",
+    url: "https://petcareapi.nhhtuan.id.vn",
+    description: "Azure backup dev server",
+  },
+  heroku: {
+    id: "heroku",
+    name: "Heroku (Dev Backup)",
+    url: "https://pet-care-plus-f159a7ab1dca.herokuapp.com",
+    description: "Heroku backup dev server",
   },
 };
 
