@@ -365,6 +365,44 @@ export const termsAPI = {
   },
 };
 
+// Pet API
+export const petAPI = {
+  // Get all pets with pagination and filtering
+  getPets: (params = {}) => {
+    const queryParams = new URLSearchParams({
+      page: params.page || 1,
+      size: params.size || 10,
+      sort: params.sort || "desc",
+      sortBy: params.sortBy || "createdAt",
+      ...params.filters,
+    });
+    return api.get(`/admin/pets?${queryParams}`);
+  },
+
+  // Get pet by ID
+  getPetById: (id) => api.get(`/admin/pets/${id}`),
+
+  // Create new pet
+  createPet: (data) => api.post("/admin/pets/add", data),
+
+  // Update pet
+  updatePet: (id, data) => api.patch(`/admin/pets/${id}`, data),
+
+  // Delete pet
+  deletePet: (id) => api.delete(`/admin/pets/${id}`),
+
+  getPetsByUserId: (userId, params = {}) => {
+    const queryParams = new URLSearchParams({
+      page: params.page || 1,
+      size: params.size || 10,
+      sort: params.sort || "desc",
+      sortBy: params.sortBy || "createdAt",
+      ...params.filters,
+    });
+    return api.get(`/admin/pets/user/${userId}?${queryParams}`);
+  },
+};
+
 // Auth API
 export const authAPI = {
   login: (credentials) => api.post("/auth/login", credentials),

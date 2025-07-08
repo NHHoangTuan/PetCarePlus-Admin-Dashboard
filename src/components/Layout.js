@@ -10,6 +10,7 @@ import {
   Lock,
   DollarSign,
   FileText,
+  PawPrint,
 } from "lucide-react";
 
 const Layout = ({ onLogout }) => {
@@ -31,8 +32,8 @@ const Layout = ({ onLogout }) => {
     { path: "/notification-testing", label: "Notification Tool", icon: Lock }, // Added Notification Testing Tool
     { path: "/withdrawals", label: "Withdrawal", icon: DollarSign }, // Added Withdrawal Management
     { path: "/terms", label: "Terms & Conditions", icon: FileText }, // Added Terms Management
+    { path: "/pets", label: "Pet Management", icon: PawPrint }, // Added Pet Management
   ];
-
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Sidebar */}

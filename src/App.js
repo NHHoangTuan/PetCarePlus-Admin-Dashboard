@@ -17,6 +17,7 @@ import NotificationTestingTool from "./components/NotificationTestingTool.js";
 import WithdrawalManagement from "./components/WithdrawalManagement.js";
 import Layout from "./components/Layout";
 import TermsManagement from "./components/TermsManagement.js";
+import PetManagement from "./components/PetManagement.js";
 import { ToastProvider } from "./context/ToastContext.js";
 
 function App() {
@@ -75,6 +76,7 @@ function App() {
               />
               <Route path="withdrawals" element={<WithdrawalManagement />} />
               <Route path="terms" element={<TermsManagement />} />
+              <Route path="pets" element={<PetManagement />} />
               <Route index element={<Navigate to="/dashboard" />} />
             </Route>
           </Routes>
