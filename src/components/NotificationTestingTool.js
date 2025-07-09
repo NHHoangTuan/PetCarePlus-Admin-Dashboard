@@ -17,6 +17,12 @@ import {
   MessageSquare,
   Calendar,
   Image as ImageIcon,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Filter,
+  Search,
 } from "lucide-react";
 import { notificationAPI } from "../services/api";
 import { formatDate } from "../utils/dateUtils";
@@ -504,6 +510,20 @@ const NotificationTestingTool = () => {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [activeTab, setActiveTab] = useState("list"); // list, create, single, read
 
+  const [pagination, setPagination] = useState({
+    page: 1,
+    size: 10,
+    totalPages: 0,
+    totalElements: 0,
+  });
+
+  // Add filters state
+  const [filters, setFilters] = useState({
+    type: "",
+    isRead: "",
+    search: "",
+  });
+
   // Create notification form data
   const [createForm, setCreateForm] = useState({
     userIdReceive: "",
@@ -531,16 +551,36 @@ const NotificationTestingTool = () => {
     if (activeTab === "list") {
       handleGetAllNotifications();
     }
-  }, [activeTab]);
+  }, [activeTab, pagination.page, pagination.size]);
 
   // API Handlers
-  const handleGetAllNotifications = async () => {
+  const handleGetAllNotifications = async (resetPage = false) => {
+    if (resetPage) {
+      setPagination((prev) => ({ ...prev, page: 1 }));
+    }
+
     setApiLoading(true);
     setApiError(null);
     try {
-      const response = await notificationAPI.getAllNotifications();
+      const params = {
+        page: resetPage ? 1 : pagination.page,
+        size: pagination.size,
+        ...(filters.type && { type: filters.type }),
+        ...(filters.isRead !== "" && { isRead: filters.isRead === "true" }),
+        ...(filters.search && { search: filters.search }),
+      };
+      const response = await notificationAPI.getAllNotifications(params);
       //console.log("API Response:", response);
-      setNotifications(response.data);
+      const responseData = response.data;
+      setNotifications(responseData.items || []);
+
+      setPagination((prev) => ({
+        ...prev,
+        page: responseData.page || 1,
+        totalPages: responseData.pages || 1,
+        totalElements: responseData.total || 0,
+      }));
+
       setApiResponse({
         method: "GET",
         endpoint: "/notifications",
@@ -737,6 +777,37 @@ const NotificationTestingTool = () => {
     }
   };
 
+  const handlePageChange = (newPage) => {
+    setPagination((prev) => ({ ...prev, page: newPage }));
+  };
+
+  const handlePageSizeChange = (newSize) => {
+    setPagination((prev) => ({ ...prev, size: newSize, page: 1 }));
+  };
+
+  // Filter handlers
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    // Reset to page 1 when filters change
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
+
+  const applyFilters = () => {
+    handleGetAllNotifications(true);
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      type: "",
+      isRead: "",
+      search: "",
+    });
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    setTimeout(() => {
+      handleGetAllNotifications(true);
+    }, 100);
+  };
+
   // Helper functions
   const handleInputChange = (field, value) => {
     setCreateForm((prev) => ({ ...prev, [field]: value }));
@@ -897,7 +968,7 @@ const NotificationTestingTool = () => {
           {/* Main Content */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-sm p-6">
-              {/* Get All Notifications Tab */}
+              {/* Get All Notifications Tab with Pagination */}
               {activeTab === "list" && (
                 <div>
                   <div className="flex items-center justify-between mb-6">
@@ -905,7 +976,7 @@ const NotificationTestingTool = () => {
                       All Notifications
                     </h3>
                     <button
-                      onClick={handleGetAllNotifications}
+                      onClick={() => handleGetAllNotifications()}
                       disabled={apiLoading}
                       className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
                     >
@@ -918,14 +989,143 @@ const NotificationTestingTool = () => {
                     </button>
                   </div>
 
+                  {/* Filters Section */}
+                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Filter className="w-4 h-4 text-gray-600" />
+                      <h4 className="font-medium text-gray-900">Filters</h4>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      {/* Search Filter */}
+                      {/* <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Search
+                        </label>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                          <input
+                            type="text"
+                            value={filters.search}
+                            onChange={(e) =>
+                              handleFilterChange("search", e.target.value)
+                            }
+                            placeholder="Search notifications..."
+                            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                      </div> */}
+
+                      {/* Type Filter */}
+                      {/* <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Type
+                        </label>
+                        <select
+                          value={filters.type}
+                          onChange={(e) =>
+                            handleFilterChange("type", e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                          <option value="">All Types</option>
+                          <option value="BOOKING">BOOKING</option>
+                          <option value="PAYMENT">PAYMENT</option>
+                          <option value="REVIEW">REVIEW</option>
+                          <option value="CHAT">CHAT</option>
+                          <option value="SYSTEM">SYSTEM</option>
+                        </select>
+                      </div> */}
+
+                      {/* Read Status Filter */}
+                      {/* <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Read Status
+                        </label>
+                        <select
+                          value={filters.isRead}
+                          onChange={(e) =>
+                            handleFilterChange("isRead", e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                          <option value="">All Status</option>
+                          <option value="true">Read</option>
+                          <option value="false">Unread</option>
+                        </select>
+                      </div> */}
+
+                      {/* Page Size */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Page Size
+                        </label>
+                        <select
+                          value={pagination.size}
+                          onChange={(e) =>
+                            handlePageSizeChange(parseInt(e.target.value))
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                          <option value="5">5 per page</option>
+                          <option value="10">10 per page</option>
+                          <option value="20">20 per page</option>
+                          <option value="50">50 per page</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        onClick={applyFilters}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                      >
+                        <Filter className="w-4 h-4" />
+                        Apply Filters
+                      </button>
+                      <button
+                        onClick={clearFilters}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                      >
+                        Clear Filters
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Pagination Info */}
+                  {pagination.totalElements > 0 && (
+                    <div className="flex items-center justify-between mb-4 text-sm text-gray-600">
+                      <div>
+                        Showing {(pagination.page - 1) * pagination.size + 1} to{" "}
+                        {Math.min(
+                          pagination.page * pagination.size,
+                          pagination.totalElements
+                        )}{" "}
+                        of {pagination.totalElements} notifications
+                      </div>
+                      <div>
+                        Page {pagination.page} of {pagination.totalPages}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Notifications List */}
-                  {notifications.length > 0 && (
+                  {apiLoading ? (
+                    <div className="flex justify-center items-center py-8">
+                      <RefreshCw className="w-8 h-8 animate-spin text-blue-600 mr-3" />
+                      <span className="text-gray-600">
+                        Loading notifications...
+                      </span>
+                    </div>
+                  ) : notifications.length > 0 ? (
                     <div className="space-y-3 mb-6">
                       {notifications.map((notification) => (
                         <div
                           key={notification.id}
-                          className={`border rounded-lg p-4 ${
-                            notification.isRead ? "bg-gray-50" : "bg-blue-50"
+                          className={`border rounded-lg p-4 transition-all hover:shadow-md ${
+                            notification.isRead
+                              ? "bg-gray-50"
+                              : "bg-blue-50 border-blue-200"
                           }`}
                         >
                           <div className="flex items-start gap-3">
@@ -934,45 +1134,156 @@ const NotificationTestingTool = () => {
                                 src={notification.imageUrl}
                                 alt="Notification"
                                 className="w-12 h-12 object-cover rounded"
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                }}
                               />
                             )}
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="font-medium">
+                                <span className="font-medium text-gray-900">
                                   {notification.title}
                                 </span>
                                 <span
-                                  className={`px-2 py-1 rounded text-xs font-medium ${getNotificationTypeColor(
-                                    notification.type
-                                  )}`}
+                                  className={`px-2 py-1 rounded text-xs font-medium ${
+                                    {
+                                      BOOKING: "bg-blue-100 text-blue-800",
+                                      PAYMENT: "bg-green-100 text-green-800",
+                                      REVIEW: "bg-yellow-100 text-yellow-800",
+                                      CHAT: "bg-purple-100 text-purple-800",
+                                      SYSTEM: "bg-gray-100 text-gray-800",
+                                    }[notification.type] ||
+                                    "bg-gray-100 text-gray-800"
+                                  }`}
                                 >
                                   {notification.type}
                                 </span>
                                 {notification.isRead ? (
-                                  <CheckCircle className="w-4 h-4 text-green-500" />
+                                  <CheckCircle
+                                    className="w-4 h-4 text-green-500"
+                                    title="Read"
+                                  />
                                 ) : (
-                                  <AlertCircle className="w-4 h-4 text-yellow-500" />
+                                  <AlertCircle
+                                    className="w-4 h-4 text-yellow-500"
+                                    title="Unread"
+                                  />
                                 )}
                               </div>
-                              <p className="text-sm text-gray-600 mb-2">
+                              <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                                 {notification.message}
                               </p>
                               <div className="flex items-center gap-4 text-xs text-gray-500">
-                                <span>
+                                <span title="Notification ID">
                                   ID: {notification.id.slice(0, 8)}...
                                 </span>
-                                <span>
+                                <span title="Created At">
                                   Created: {formatDate(notification.createdAt)}
                                 </span>
-                                <span>
+                                <span title="Receiver">
                                   To: {notification.userIdReceive.slice(0, 8)}
                                   ...
                                 </span>
+                                {notification.userIdSend && (
+                                  <span title="Sender">
+                                    From: {notification.userIdSend.slice(0, 8)}
+                                    ...
+                                  </span>
+                                )}
+                                {notification.deletedAt && (
+                                  <span
+                                    className="text-red-500"
+                                    title="Deleted At"
+                                  >
+                                    Deleted:{" "}
+                                    {formatDate(notification.deletedAt)}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
                         </div>
                       ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <p className="text-gray-500 text-lg">
+                        No notifications found
+                      </p>
+                      <p className="text-gray-400 text-sm mt-2">
+                        Try adjusting your filters or create a new notification
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Pagination Controls */}
+                  {pagination.totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-6">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handlePageChange(1)}
+                          disabled={pagination.page === 1}
+                          className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="First page"
+                        >
+                          <ChevronsLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handlePageChange(pagination.page - 1)}
+                          disabled={pagination.page === 1}
+                          className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Previous page"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {/* Page Numbers */}
+                        {[...Array(Math.min(pagination.totalPages, 5))].map(
+                          (_, index) => {
+                            const pageNumber =
+                              Math.max(1, pagination.page - 2) + index;
+                            if (pageNumber > pagination.totalPages) return null;
+
+                            return (
+                              <button
+                                key={pageNumber}
+                                onClick={() => handlePageChange(pageNumber)}
+                                className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                                  pageNumber === pagination.page
+                                    ? "bg-blue-600 text-white"
+                                    : "border border-gray-300 hover:bg-gray-50"
+                                }`}
+                              >
+                                {pageNumber}
+                              </button>
+                            );
+                          }
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handlePageChange(pagination.page + 1)}
+                          disabled={pagination.page === pagination.totalPages}
+                          className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Next page"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() =>
+                            handlePageChange(pagination.totalPages)
+                          }
+                          disabled={pagination.page === pagination.totalPages}
+                          className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Last page"
+                        >
+                          <ChevronsRight className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
