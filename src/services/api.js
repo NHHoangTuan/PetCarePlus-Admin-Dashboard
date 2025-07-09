@@ -276,7 +276,16 @@ export const bookingAPI = {
 // Notification API
 export const notificationAPI = {
   // Get all notifications
-  getAllNotifications: () => api.get("/admin/notifications"),
+  getAllNotifications: (params = {}) => {
+    const queryParams = new URLSearchParams({
+      page: params.page || 1,
+      size: params.size || 10,
+      ...(params.type && { type: params.type }),
+      ...(params.isRead !== undefined && { isRead: params.isRead }),
+      ...(params.search && { search: params.search }),
+    });
+    return api.get(`/admin/notifications?${queryParams}`);
+  },
 
   // Get single notification
   getNotification: (id) => api.get(`/admin/notifications/${id}`),
