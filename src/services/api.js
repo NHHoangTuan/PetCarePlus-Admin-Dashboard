@@ -198,7 +198,7 @@ export const userAPI = {
       sort: params.sort || "asc",
       ...params.filters,
     });
-    return api.get(`/users?${queryParams}`);
+    return api.get(`/admin/users?${queryParams}`);
   },
 
   // Get user by ID
