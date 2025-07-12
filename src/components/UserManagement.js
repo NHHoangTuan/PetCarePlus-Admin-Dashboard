@@ -289,14 +289,16 @@ const UserManagement = () => {
   const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
+      const backendFilters = getBackendFilters(filters.status);
       const params = {
         page: pagination.page,
         size: pagination.size,
         sortBy,
         sort: sortOrder,
         filters: {
-          ...filters,
+          roles: filters.roles,
           query: debouncedQuery,
+          ...backendFilters,
         },
       };
 
@@ -325,7 +327,8 @@ const UserManagement = () => {
   }, [
     pagination.page,
     pagination.size,
-    filters,
+    filters.roles,
+    filters.status,
     debouncedQuery,
     sortBy,
     sortOrder,
@@ -333,16 +336,7 @@ const UserManagement = () => {
 
   useEffect(() => {
     loadUsers();
-  }, [
-    pagination.page,
-    pagination.size,
-    filters.status,
-    filters.roles,
-    debouncedQuery,
-    sortBy,
-    sortOrder,
-    loadUsers,
-  ]);
+  }, [loadUsers]);
 
   const handleSearch = (e) => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));
@@ -428,6 +422,29 @@ const UserManagement = () => {
       isLoading: false,
       userData: null,
     });
+  };
+
+  const getBackendFilters = (status) => {
+    const backendFilters = {};
+
+    switch (status) {
+      case "blocked":
+        backendFilters.isBlocked = true;
+        break;
+      case "waiting":
+        backendFilters.isBlocked = false;
+        backendFilters.isEmailActivated = false;
+        break;
+      case "active":
+        backendFilters.isBlocked = false;
+        backendFilters.isEmailActivated = true;
+        break;
+      default:
+        // No status filter - don't add isBlocked or isEmailActivated
+        break;
+    }
+
+    return backendFilters;
   };
 
   const handleViewUser = async (userId) => {
