@@ -21,7 +21,9 @@ import PetManagement from "./components/PetManagement.js";
 import { ToastProvider } from "./context/ToastContext.js";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("adminToken")
+  );
 
   useEffect(() => {
     // Check authentication status on app load
@@ -66,6 +68,7 @@ function App() {
                 )
               }
             >
+              <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="services" element={<ServiceManagement />} />
@@ -77,7 +80,6 @@ function App() {
               <Route path="withdrawals" element={<WithdrawalManagement />} />
               <Route path="terms" element={<TermsManagement />} />
               <Route path="pets" element={<PetManagement />} />
-              <Route index element={<Navigate to="/dashboard" />} />
             </Route>
           </Routes>
         </div>
