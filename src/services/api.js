@@ -12,17 +12,11 @@ export const SERVERS = {
     url: "http://localhost:8080",
     description: "Local development server",
   },
-  railway: {
-    id: "railway",
-    name: "Railway (Dev)",
-    url: "https://petcareplus-backend-dev.up.railway.app",
-    description: "Railway dev server",
-  },
   render: {
     id: "azure",
-    name: "Azure (Dev Backup)",
+    name: "Azure (Dev)",
     url: "https://petcareapi.nhhtuan.id.vn",
-    description: "Azure backup dev server",
+    description: "Azure dev server",
   },
   heroku: {
     id: "heroku",
@@ -32,18 +26,18 @@ export const SERVERS = {
   },
 };
 
-// Get current server from localStorage or default to railway
+// Get current server from localStorage or default to Azure
 export const getCurrentServer = () => {
   const saved = localStorage.getItem("selectedServer");
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      return SERVERS[parsed.id] || SERVERS.railway;
+      return SERVERS[parsed.id] || SERVERS.heroku;
     } catch {
-      return SERVERS.railway;
+      return SERVERS.heroku;
     }
   }
-  return SERVERS.railway;
+  return SERVERS.heroku;
 };
 
 // Set current server
