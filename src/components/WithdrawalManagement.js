@@ -29,6 +29,8 @@ import { formatPrice, formatNumber } from "../utils/formatUtils";
 import { formatDate } from "../utils/dateUtils";
 import { parseValidationErrors } from "../utils/errorHandler";
 import { useToast } from "../context/ToastContext";
+import { useDebounce } from "../hooks/useDebounce";
+import { formatDate2 } from "../utils/dateUtils";
 
 // Withdrawal Detail Modal Component
 const WithdrawalDetailModal = ({
@@ -244,13 +246,13 @@ const WithdrawalDetailModal = ({
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-gray-500" />
                   <span className="text-gray-600">Created:</span>
-                  <span>{formatDate(withdrawal.createdAt)}</span>
+                  <span>{formatDate2(withdrawal.createdAt)}</span>
                 </div>
                 {withdrawal.processedAt && (
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-gray-500" />
                     <span className="text-gray-600">Processed:</span>
-                    <span>{formatDate(withdrawal.processedAt)}</span>
+                    <span>{formatDate2(withdrawal.processedAt)}</span>
                   </div>
                 )}
               </div>
@@ -478,7 +480,6 @@ const WithdrawalManagement = () => {
   });
 
   const [filters, setFilters] = useState({
-    query: "",
     status: "",
     bankName: "",
     amountFrom: "",
@@ -490,9 +491,21 @@ const WithdrawalManagement = () => {
 
   const { showSuccess, showError } = useToast();
 
+  const debouncedBankName = useDebounce(filters.bankName, 700);
+  const debouncedAmountFrom = useDebounce(filters.amountFrom, 700);
+  const debouncedAmountTo = useDebounce(filters.amountTo, 700);
+
   useEffect(() => {
     loadWithdrawals();
-  }, [pagination.page, pagination.size, filters, sortBy, sortOrder]);
+  }, [
+    pagination.page,
+    pagination.size,
+    debouncedBankName,
+    debouncedAmountFrom,
+    debouncedAmountTo,
+    sortBy,
+    sortOrder,
+  ]);
 
   const loadWithdrawals = async () => {
     setLoading(true);
@@ -503,11 +516,10 @@ const WithdrawalManagement = () => {
         sortBy,
         sort: sortOrder,
         filters: {
-          query: filters.query,
           status: filters.status,
-          bankName: filters.bankName,
-          amountFrom: filters.amountFrom,
-          amountTo: filters.amountTo,
+          bankName: debouncedBankName,
+          amountFrom: debouncedAmountFrom,
+          amountTo: debouncedAmountTo,
         },
       };
 
@@ -592,6 +604,15 @@ const WithdrawalManagement = () => {
     }
   };
 
+  const isBankNameType =
+    filters.bankName !== debouncedBankName && filters.bankName.length > 0;
+
+  const isAmountFromType =
+    filters.amountFrom !== debouncedAmountFrom && filters.amountFrom.length > 0;
+
+  const isAmountToType =
+    filters.amountTo !== debouncedAmountTo && filters.amountTo.length > 0;
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -606,10 +627,10 @@ const WithdrawalManagement = () => {
             <RefreshCw className="w-4 h-4" />
             Refresh
           </button>
-          <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
+          {/* <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -617,7 +638,7 @@ const WithdrawalManagement = () => {
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Search */}
-          <div className="relative">
+          {/* <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
@@ -626,7 +647,7 @@ const WithdrawalManagement = () => {
               onChange={handleSearch}
               className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
-          </div>
+          </div> */}
 
           {/* Status Filter */}
           <select
@@ -642,31 +663,55 @@ const WithdrawalManagement = () => {
           </select>
 
           {/* Bank Filter */}
-          <input
-            type="text"
-            placeholder="Bank Name"
-            value={filters.bankName}
-            onChange={(e) => handleFilterChange("bankName", e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+          <div className="relative">
+            <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Bank Name"
+              value={filters.bankName}
+              onChange={(e) => handleFilterChange("bankName", e.target.value)}
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            {isBankNameType && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              </div>
+            )}
+          </div>
 
           {/* Amount From */}
-          <input
-            type="number"
-            placeholder="Amount From"
-            value={filters.amountFrom}
-            onChange={(e) => handleFilterChange("amountFrom", e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+          <div className="relative">
+            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="number"
+              placeholder="Amount From"
+              value={filters.amountFrom}
+              onChange={(e) => handleFilterChange("amountFrom", e.target.value)}
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            {isAmountFromType && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              </div>
+            )}
+          </div>
 
           {/* Amount To */}
-          <input
-            type="number"
-            placeholder="Amount To"
-            value={filters.amountTo}
-            onChange={(e) => handleFilterChange("amountTo", e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+          <div className="relative">
+            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="number"
+              placeholder="Amount To"
+              value={filters.amountTo}
+              onChange={(e) => handleFilterChange("amountTo", e.target.value)}
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            {isAmountToType && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -790,7 +835,7 @@ const WithdrawalManagement = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(withdrawal.createdAt)}
+                      {formatDate2(withdrawal.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button

@@ -24,18 +24,10 @@ const ServerSelection = ({ onServerSelect, currentServer }) => {
       color: "blue",
     },
     {
-      id: "railway",
-      name: "Railway (Dev)",
-      url: "https://petcareplus-backend-dev.up.railway.app",
-      description: "Railway dev server",
-      icon: Globe,
-      color: "green",
-    },
-    {
       id: "azure",
-      name: "Azure (Dev Backup)",
+      name: "Azure (Dev)",
       url: "https://petcareapi.nhhtuan.id.vn",
-      description: "Azure backup dev server",
+      description: "Azure dev server",
       icon: Server,
       color: "purple",
     },
@@ -45,7 +37,7 @@ const ServerSelection = ({ onServerSelect, currentServer }) => {
       url: "https://pet-care-plus-f159a7ab1dca.herokuapp.com",
       description: "Heroku backup dev server",
       icon: Server,
-      color: "blue",
+      color: "green",
     },
   ]);
 

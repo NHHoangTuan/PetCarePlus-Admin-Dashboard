@@ -12,6 +12,8 @@ import {
   Upload,
   Loader,
   Sliders,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { serviceAPI } from "../services/api";
 import { parseValidationErrors } from "../utils/errorHandler";
@@ -24,6 +26,7 @@ import { formatDate2 } from "../utils/dateUtils";
 import { useDebounce } from "../hooks/useDebounce";
 import { formatCurrency } from "../utils/formatUtils";
 import { useToast } from "../context/ToastContext";
+import { formatPrice, formatNumber } from "../utils/formatUtils";
 
 // Service Detail/Edit Modal Component
 const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
@@ -971,7 +974,7 @@ const ServiceManagement = () => {
         </div>
 
         {/* Pagination */}
-        {pagination.totalPages > 1 && (
+        {/* {pagination.totalPages > 1 && (
           <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
             <div className="flex-1 flex justify-between sm:hidden">
               <button
@@ -1049,7 +1052,85 @@ const ServiceManagement = () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
+
+        {/* Pagination */}
+        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+          <div className="flex-1 flex justify-between sm:hidden">
+            <button
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page <= 1}
+              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page >= pagination.totalPages}
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-700">
+                Showing{" "}
+                <span className="font-medium">
+                  {formatNumber((pagination.page - 1) * pagination.size + 1)}
+                </span>{" "}
+                to{" "}
+                <span className="font-medium">
+                  {formatNumber(
+                    Math.min(
+                      pagination.page * pagination.size,
+                      pagination.totalElements
+                    )
+                  )}
+                </span>{" "}
+                of{" "}
+                <span className="font-medium">
+                  {formatNumber(pagination.totalElements)}
+                </span>{" "}
+                results
+              </p>
+            </div>
+            <div>
+              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                <button
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page <= 1}
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
+                  const page = i + 1;
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                        pagination.page === page
+                          ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                          : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+                <button
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                  disabled={pagination.page >= pagination.totalPages}
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Service Modal */}

@@ -12,17 +12,11 @@ export const SERVERS = {
     url: "http://localhost:8080",
     description: "Local development server",
   },
-  railway: {
-    id: "railway",
-    name: "Railway (Dev)",
-    url: "https://petcareplus-backend-dev.up.railway.app",
-    description: "Railway dev server",
-  },
-  render: {
+  azure: {
     id: "azure",
-    name: "Azure (Dev Backup)",
+    name: "Azure (Dev)",
     url: "https://petcareapi.nhhtuan.id.vn",
-    description: "Azure backup dev server",
+    description: "Azure dev server",
   },
   heroku: {
     id: "heroku",
@@ -32,18 +26,32 @@ export const SERVERS = {
   },
 };
 
-// Get current server from localStorage or default to railway
+// Get current server from localStorage or default to Azure
 export const getCurrentServer = () => {
   const saved = localStorage.getItem("selectedServer");
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      return SERVERS[parsed.id] || SERVERS.railway;
-    } catch {
-      return SERVERS.railway;
+      //console.log("📊 Parsed server:", parsed);
+
+      const server = SERVERS[parsed.id];
+      //console.log("🎯 Found server:", server);
+
+      if (server) {
+        //console.log("✅ Using saved server:", server.name);
+        return server;
+      } else {
+        //console.warn("❌ Server not found in SERVERS object");
+        //console.log("Available servers:", Object.keys(SERVERS));
+        return SERVERS.azure;
+      }
+    } catch (error) {
+      //console.error("❌ Error parsing saved server:", error);
+      return SERVERS.azure;
     }
   }
-  return SERVERS.railway;
+  //console.log("🔧 No saved server, using default");
+  return SERVERS.azure;
 };
 
 // Set current server
@@ -73,6 +81,9 @@ const api = axios.create({
 const updateApiBaseURL = (newBaseURL) => {
   API_BASE_URL = newBaseURL;
   api.defaults.baseURL = newBaseURL;
+
+  // log all localStorage items for debugging
+  console.log("localStorage server:", localStorage.getItem("selectedServer"));
 };
 
 let isRefreshing = false;
