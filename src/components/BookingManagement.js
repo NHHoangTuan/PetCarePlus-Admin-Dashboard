@@ -12,6 +12,7 @@ import {
   Download,
 } from "lucide-react";
 import { bookingAPI } from "../services/api";
+import { userAPI } from "../services/api";
 import { formatDate2 } from "../utils/dateUtils";
 import { useDebounce } from "../hooks/useDebounce";
 import {
@@ -22,6 +23,7 @@ import {
 } from "../utils/formatUtils";
 
 import { useToast } from "../context/ToastContext";
+import { set } from "@cloudinary/url-gen/actions/variable";
 
 // Booking Detail Modal Component
 const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
@@ -418,10 +420,12 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
 
 const BookingManagement = () => {
   const [bookings, setBookings] = useState([]);
-  const [allBookings, setAllBookings] = useState([]);
+  //const [allBookings, setAllBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [allUsers, setAllUsers] = useState([]);
+  const [allProviders, setAllProviders] = useState([]);
 
   const [pagination, setPagination] = useState({
     page: 1,
@@ -445,55 +449,97 @@ const BookingManagement = () => {
 
   const debouncedQuery = useDebounce(filters.query, 500);
 
-  const uniqueUsers = React.useMemo(() => {
-    const userMap = new Map();
-    allBookings.forEach((booking) => {
-      if (booking.user && !userMap.has(booking.user.id)) {
-        userMap.set(booking.user.id, booking.user);
-      }
-    });
-    return Array.from(userMap.values()).sort((a, b) =>
-      `${a.name} ${a.lastName}`.localeCompare(`${b.name} ${b.lastName}`)
-    );
-  }, [allBookings]);
+  // const uniqueUsers = React.useMemo(() => {
+  //   const userMap = new Map();
+  //   allBookings.forEach((booking) => {
+  //     if (booking.user && !userMap.has(booking.user.id)) {
+  //       userMap.set(booking.user.id, booking.user);
+  //     }
+  //   });
+  //   return Array.from(userMap.values()).sort((a, b) =>
+  //     `${a.name} ${a.lastName}`.localeCompare(`${b.name} ${b.lastName}`)
+  //   );
+  // }, [allBookings]);
 
-  const uniqueProviders = React.useMemo(() => {
-    const providerMap = new Map();
-    allBookings.forEach((booking) => {
-      if (
-        booking.providerService &&
-        !providerMap.has(booking.providerService.providerId)
-      ) {
-        providerMap.set(booking.providerService.providerId, {
-          id: booking.providerService.providerId,
-          name: booking.providerService.providerName,
-        });
-      }
-    });
-    return Array.from(providerMap.values()).sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-  }, [allBookings]);
+  // const uniqueProviders = React.useMemo(() => {
+  //   const providerMap = new Map();
+  //   allBookings.forEach((booking) => {
+  //     if (
+  //       booking.providerService &&
+  //       !providerMap.has(booking.providerService.providerId)
+  //     ) {
+  //       providerMap.set(booking.providerService.providerId, {
+  //         id: booking.providerService.providerId,
+  //         name: booking.providerService.providerName,
+  //       });
+  //     }
+  //   });
+  //   return Array.from(providerMap.values()).sort((a, b) =>
+  //     a.name.localeCompare(b.name)
+  //   );
+  // }, [allBookings]);
 
-  useEffect(() => {
-    loadAllBookingsForFilters();
+  // useEffect(() => {
+  //   loadAllBookingsForFilters();
+  // }, []);
+
+  // const loadAllBookingsForFilters = async () => {
+  //   try {
+  //     // Load all bookings to get unique users/providers
+  //     const response = await bookingAPI.getBookings({
+  //       page: 1,
+  //       size: 1000, // Get more records for filtering
+  //       sortBy: "createdAt",
+  //       sort: "desc",
+  //     });
+
+  //     setAllBookings(response.data.content);
+  //   } catch (error) {
+  //     console.error("Error loading bookings for filters:", error);
+  //   }
+  // };
+
+  const loadAllUsers = useCallback(async () => {
+    try {
+      // filter by role
+      const params = {
+        filters: {
+          roles: ["USER"],
+        },
+      };
+      const response = await userAPI.getUsers(params);
+      setAllUsers(response.data.items);
+    } catch (error) {
+      console.error("Error loading users:", error);
+      showError(
+        `Failed to load users: ${
+          error.response?.data?.message || error.message
+        }`,
+        3000
+      );
+    }
   }, []);
 
-  const loadAllBookingsForFilters = async () => {
+  const loadAllProviders = useCallback(async () => {
     try {
-      // Load all bookings to get unique users/providers
-      const response = await bookingAPI.getBookings({
-        page: 1,
-        size: 1000, // Get more records for filtering
-        sortBy: "createdAt",
-        sort: "desc",
-      });
-
-      setAllBookings(response.data.content);
+      // filter by role
+      const params = {
+        filters: {
+          roles: ["SERVICE_PROVIDER"],
+        },
+      };
+      const response = await userAPI.getUsers(params);
+      setAllProviders(response.data.items);
     } catch (error) {
-      console.error("Error loading bookings for filters:", error);
+      console.error("Error loading providers:", error);
+      showError(
+        `Failed to load providers: ${
+          error.response?.data?.message || error.message
+        }`,
+        3000
+      );
     }
-  };
+  }, []);
 
   const loadBookings = useCallback(async () => {
     setLoading(true);
@@ -541,7 +587,6 @@ const BookingManagement = () => {
   useEffect(() => {
     loadBookings();
   }, [
-    allBookings,
     pagination.page,
     pagination.size,
     debouncedQuery, // Use debounced query
@@ -553,6 +598,14 @@ const BookingManagement = () => {
     sortOrder,
     loadBookings,
   ]);
+
+  useEffect(() => {
+    loadAllUsers();
+  }, [loadAllUsers]);
+
+  useEffect(() => {
+    loadAllProviders();
+  }, [loadAllProviders]);
 
   const handleSearch = (e) => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));
@@ -720,7 +773,7 @@ const BookingManagement = () => {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">All Users</option>
-            {uniqueUsers.map((user) => (
+            {allUsers.map((user) => (
               <option key={user.id} value={user.id}>
                 {user.name} {user.lastName} ({user.email})
               </option>
@@ -734,7 +787,7 @@ const BookingManagement = () => {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">All Providers</option>
-            {uniqueProviders.map((provider) => (
+            {allProviders.map((provider) => (
               <option key={provider.id} value={provider.id}>
                 {provider.name}
               </option>

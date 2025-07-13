@@ -659,6 +659,8 @@ const ServiceManagement = () => {
         ...prev,
         totalPages: response.data.totalPages,
         totalElements: response.data.totalElements,
+        page: response.data.number + 1,
+        size: response.data.size,
       }));
     } catch (error) {
       console.error("Error searching services:", error);
@@ -992,12 +994,12 @@ const ServiceManagement = () => {
                 <p className="text-sm text-gray-700">
                   Showing{" "}
                   <span className="font-medium">
-                    {pagination.page * pagination.size + 1}
+                    {(pagination.page - 1) * pagination.size + 1}
                   </span>{" "}
                   to{" "}
                   <span className="font-medium">
                     {Math.min(
-                      (pagination.page + 1) * pagination.size,
+                      pagination.page * pagination.size,
                       pagination.totalElements
                     )}
                   </span>{" "}
@@ -1011,15 +1013,16 @@ const ServiceManagement = () => {
               <div>
                 <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
                   <button
-                    onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page === 0}
+                    onClick={() => handlePageChange(pagination.page)}
+                    disabled={pagination.page === 1}
                     className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                   >
                     Previous
                   </button>
                   {[...Array(Math.min(pagination.totalPages, 5))].map(
                     (_, index) => {
-                      const page = index;
+                      const page = index + 1;
+
                       return (
                         <button
                           key={page}
@@ -1030,14 +1033,14 @@ const ServiceManagement = () => {
                               : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
                           }`}
                         >
-                          {page + 1}
+                          {page}
                         </button>
                       );
                     }
                   )}
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page === pagination.totalPages - 1}
+                    disabled={pagination.page === pagination.totalPages}
                     className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                   >
                     Next

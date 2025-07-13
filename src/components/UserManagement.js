@@ -5,13 +5,21 @@ import { userAPI } from "../services/api";
 import { formatDate2 } from "../utils/dateUtils";
 import { useDebounce } from "../hooks/useDebounce";
 import { useToast } from "../context/ToastContext";
+import ConfirmationModal from "./common/ConfirmationModal";
+import { set } from "@cloudinary/url-gen/actions/variable";
 
 // User Detail Modal Component
 const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
   const [selectedRole, setSelectedRole] = useState(user?.role || "");
   const [isUpdatingRole, setIsUpdatingRole] = useState(false);
   const { showSuccess, showError, showInfo, showWarning } = useToast();
-
+  const [confirmationModal, setConfirmationModal] = useState({
+    isOpen: false,
+    type: "warning",
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
   useEffect(() => {
     if (user) {
       setSelectedRole(user.role);
@@ -21,22 +29,35 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
   const handleRoleUpdate = async () => {
     if (!user || selectedRole === user.role) return;
 
-    setIsUpdatingRole(true);
-    try {
-      await userAPI.updateUserRole(user.id, selectedRole);
-      onRoleUpdate();
-      onClose();
-    } catch (error) {
-      console.error("Error updating user role:", error);
-      showError(
-        `Failed to updating user role: ${
-          error.response?.data?.message || error.message
-        }`,
-        3000
-      );
-    } finally {
-      setIsUpdatingRole(false);
-    }
+    setConfirmationModal({
+      isOpen: true,
+      type: "warning",
+      title: "Confirm Role Update",
+      message: `Are you sure you want to change the role of "${user.name} ${user.lastName}" to "${selectedRole}"?`,
+      onConfirm: async () => {
+        setIsUpdatingRole(true);
+        setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
+        try {
+          await userAPI.updateUserRole(user.id, selectedRole);
+          onRoleUpdate();
+          onClose();
+          showSuccess(
+            `User role updated to "${selectedRole}" successfully`,
+            3000
+          );
+        } catch (error) {
+          console.error("Error updating user role:", error);
+          showError(
+            `Failed to updating user role: ${
+              error.response?.data?.message || error.message
+            }`,
+            3000
+          );
+        } finally {
+          setIsUpdatingRole(false);
+        }
+      },
+    });
   };
 
   if (!isOpen || !user) return null;
@@ -209,6 +230,21 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
             Close
           </button>
         </div>
+
+        {/* Add confirmation modal */}
+        <ConfirmationModal
+          isOpen={confirmationModal.isOpen}
+          onClose={() =>
+            setConfirmationModal((prev) => ({ ...prev, isOpen: false }))
+          }
+          onConfirm={confirmationModal.onConfirm}
+          title={confirmationModal.title}
+          message={confirmationModal.message}
+          confirmText="Update Role"
+          cancelText="Cancel"
+          type={confirmationModal.type}
+          icon={UserCheck}
+        />
       </div>
     </div>
   );
@@ -236,17 +272,33 @@ const UserManagement = () => {
 
   const debouncedQuery = useDebounce(filters.query, 500);
 
+  // Add confirmation modal state
+  const [confirmationModal, setConfirmationModal] = useState({
+    isOpen: false,
+    type: "warning",
+    title: "",
+    message: "",
+    confirmText: "Confirm",
+    cancelText: "Cancel",
+    onConfirm: null,
+    icon: null,
+    isLoading: false,
+    userData: null,
+  });
+
   const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
+      const backendFilters = getBackendFilters(filters.status);
       const params = {
         page: pagination.page,
         size: pagination.size,
         sortBy,
         sort: sortOrder,
         filters: {
-          ...filters,
+          roles: filters.roles,
           query: debouncedQuery,
+          ...backendFilters,
         },
       };
 
@@ -275,7 +327,8 @@ const UserManagement = () => {
   }, [
     pagination.page,
     pagination.size,
-    filters,
+    filters.roles,
+    filters.status,
     debouncedQuery,
     sortBy,
     sortOrder,
@@ -283,16 +336,7 @@ const UserManagement = () => {
 
   useEffect(() => {
     loadUsers();
-  }, [
-    pagination.page,
-    pagination.size,
-    filters.status,
-    filters.roles,
-    debouncedQuery,
-    sortBy,
-    sortOrder,
-    loadUsers,
-  ]);
+  }, [loadUsers]);
 
   const handleSearch = (e) => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));
@@ -320,17 +364,87 @@ const UserManagement = () => {
     setPagination((prev) => ({ ...prev, page: newPage }));
   };
 
-  const handleBlockUser = async (userId, shouldBlock) => {
-    try {
-      if (shouldBlock) {
-        await userAPI.blockUser(userId);
-      } else {
-        await userAPI.unblockUser(userId);
-      }
-      loadUsers(); // Reload data
-    } catch (error) {
-      console.error("Error updating user status:", error);
+  const handleBlockUser = async (userId, shouldBlock, userName) => {
+    const userAction = shouldBlock ? "block" : "unblock";
+
+    setConfirmationModal({
+      isOpen: true,
+      type: shouldBlock ? "danger" : "success",
+      title: `${shouldBlock ? "Block" : "Unblock"} User`,
+      message: `Are you sure you want to ${userAction} "${userName}"?`,
+      confirmText: shouldBlock ? "Block User" : "Unblock User",
+      cancelText: "Cancel",
+      icon: shouldBlock ? Ban : CheckCircle,
+      userData: { userId, shouldBlock, userName },
+      onConfirm: async () => {
+        setConfirmationModal((prev) => ({ ...prev, isLoading: true }));
+
+        try {
+          if (shouldBlock) {
+            await userAPI.blockUser(userId);
+            showSuccess(
+              `User "${userName}" has been blocked successfully`,
+              3000
+            );
+          } else {
+            await userAPI.unblockUser(userId);
+            showSuccess(
+              `User "${userName}" has been unblocked successfully`,
+              3000
+            );
+          }
+          loadUsers(); // Reload data
+          closeConfirmationModal();
+        } catch (error) {
+          console.error("Error block user:", error);
+          showError(
+            `Failed to block user: ${
+              error.response?.data?.message || error.message
+            }`,
+            3000
+          );
+          setConfirmationModal((prev) => ({ ...prev, isLoading: false }));
+        }
+      },
+    });
+  };
+
+  const closeConfirmationModal = () => {
+    setConfirmationModal({
+      isOpen: false,
+      type: "warning",
+      title: "",
+      message: "",
+      confirmText: "Confirm",
+      cancelText: "Cancel",
+      onConfirm: null,
+      icon: null,
+      isLoading: false,
+      userData: null,
+    });
+  };
+
+  const getBackendFilters = (status) => {
+    const backendFilters = {};
+
+    switch (status) {
+      case "blocked":
+        backendFilters.isBlocked = true;
+        break;
+      case "waiting":
+        backendFilters.isBlocked = false;
+        backendFilters.isEmailActivated = false;
+        break;
+      case "active":
+        backendFilters.isBlocked = false;
+        backendFilters.isEmailActivated = true;
+        break;
+      default:
+        // No status filter - don't add isBlocked or isEmailActivated
+        break;
     }
+
+    return backendFilters;
   };
 
   const handleViewUser = async (userId) => {
@@ -562,16 +676,20 @@ const UserManagement = () => {
                         </button>
                         <button
                           onClick={() =>
-                            handleBlockUser(user.id, !user.isBlocked)
+                            handleBlockUser(
+                              user.id,
+                              !user.blockedAt,
+                              `${user.name} ${user.lastName}`
+                            )
                           }
                           className={`${
-                            user.isBlocked
+                            user.blockedAt
                               ? "text-green-600 hover:text-green-900"
                               : "text-red-600 hover:text-red-900"
                           }`}
-                          title={user.isBlocked ? "Unblock User" : "Block User"}
+                          title={user.blockedAt ? "Unblock User" : "Block User"}
                         >
-                          {user.isBlocked ? (
+                          {user.blockedAt ? (
                             <CheckCircle className="w-4 h-4" />
                           ) : (
                             <Ban className="w-4 h-4" />
@@ -675,6 +793,34 @@ const UserManagement = () => {
         }}
         onRoleUpdate={handleRoleUpdate}
       />
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={confirmationModal.onConfirm}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        confirmText={confirmationModal.confirmText}
+        cancelText={confirmationModal.cancelText}
+        type={confirmationModal.type}
+        icon={confirmationModal.icon}
+        isLoading={confirmationModal.isLoading}
+      >
+        {/* Custom content for user info */}
+        {confirmationModal.userData && (
+          <div className="bg-gray-50 rounded-lg p-3 text-left">
+            <div className="text-sm">
+              <div className="font-medium text-gray-900">
+                {confirmationModal.userData.userName}
+              </div>
+              <div className="text-gray-600 text-xs mt-1">
+                ID: {confirmationModal.userData.userId?.substring(0, 8)}...
+              </div>
+            </div>
+          </div>
+        )}
+      </ConfirmationModal>
     </div>
   );
 };

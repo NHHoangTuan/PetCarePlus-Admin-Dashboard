@@ -198,7 +198,7 @@ export const userAPI = {
       sort: params.sort || "asc",
       ...params.filters,
     });
-    return api.get(`/users?${queryParams}`);
+    return api.get(`/admin/users?${queryParams}`);
   },
 
   // Get user by ID
@@ -211,8 +211,8 @@ export const userAPI = {
   updateUserRole: (id, role) => api.put(`/admin/users/${id}/role`, { role }),
 
   // Block/Unblock user
-  blockUser: (id) => api.patch(`/users/${id}/block`),
-  unblockUser: (id) => api.patch(`/users/${id}/unblock`),
+  blockUser: (id) => api.patch(`/admin/users/${id}/block`),
+  unblockUser: (id) => api.patch(`/admin/users/${id}/unblock`),
 
   // Delete user
   deleteUser: (id) => api.delete(`/users/${id}`),
