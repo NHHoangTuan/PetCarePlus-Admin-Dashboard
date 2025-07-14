@@ -12,6 +12,12 @@ export const SERVERS = {
     url: "http://localhost:8080",
     description: "Local development server",
   },
+  azureprod: {
+    id: "azureprod",
+    name: "Azure (Prod)",
+    url: "https://petcareplus.software",
+    description: "Azure production server",
+  },
   azure: {
     id: "azure",
     name: "Azure (Dev)",

@@ -24,6 +24,14 @@ const ServerSelection = ({ onServerSelect, currentServer }) => {
       color: "blue",
     },
     {
+      id: "azureprod",
+      name: "Azure (Prod)",
+      url: "https://petcareplus.software",
+      description: "Azure production server",
+      icon: Server,
+      color: "blue",
+    },
+    {
       id: "azure",
       name: "Azure (Dev)",
       url: "https://petcareapi.nhhtuan.id.vn",
