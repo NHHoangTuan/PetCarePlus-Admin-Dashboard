@@ -475,8 +475,8 @@ const WithdrawalManagement = () => {
   const [pagination, setPagination] = useState({
     page: 1,
     size: 10,
-    pages: 0,
-    total: 0,
+    totalPages: 0,
+    totalElements: 0,
   });
 
   const [filters, setFilters] = useState({
@@ -525,11 +525,13 @@ const WithdrawalManagement = () => {
 
       const response = await withdrawalAPI.getWithdrawals(params);
 
-      setWithdrawals(response.data.items);
+      setWithdrawals(response.data.data);
       setPagination((prev) => ({
         ...prev,
-        pages: response.data.pages,
-        total: response.data.total,
+        totalPages: response.data.paging.totalPage,
+        totalElements: response.data.paging.totalItem,
+        page: response.data.paging.pageNumber,
+        size: response.data.paging.pageSize,
       }));
     } catch (error) {
       const parsedError = parseValidationErrors(error);
@@ -864,7 +866,7 @@ const WithdrawalManagement = () => {
             </button>
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page >= pagination.pages}
+              disabled={pagination.page >= pagination.totalPages}
               className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
             >
               Next
@@ -882,13 +884,13 @@ const WithdrawalManagement = () => {
                   {formatNumber(
                     Math.min(
                       pagination.page * pagination.size,
-                      pagination.total
+                      pagination.totalElements
                     )
                   )}
                 </span>{" "}
                 of{" "}
                 <span className="font-medium">
-                  {formatNumber(pagination.total)}
+                  {formatNumber(pagination.totalElements)}
                 </span>{" "}
                 results
               </p>
@@ -902,7 +904,7 @@ const WithdrawalManagement = () => {
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                {[...Array(Math.min(5, pagination.pages))].map((_, i) => {
+                {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
                   const page = i + 1;
                   return (
                     <button
@@ -920,7 +922,7 @@ const WithdrawalManagement = () => {
                 })}
                 <button
                   onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page >= pagination.pages}
+                  disabled={pagination.page >= pagination.totalPages}
                   className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                 >
                   <ChevronRight className="w-5 h-5" />

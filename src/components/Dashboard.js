@@ -21,7 +21,7 @@ const Dashboard = () => {
     try {
       // Get users data to calculate stats
       const response = await userAPI.getUsers({ size: 1000 }); // Get more to calculate stats
-      const users = response.data.items;
+      const users = response.data.data;
 
       const totalUsers = users?.length;
       const activeUsers = users.filter((user) => !user.blockedAt)?.length;

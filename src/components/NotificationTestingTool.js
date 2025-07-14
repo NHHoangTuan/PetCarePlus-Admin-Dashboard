@@ -572,13 +572,14 @@ const NotificationTestingTool = () => {
       const response = await notificationAPI.getAllNotifications(params);
       //console.log("API Response:", response);
       const responseData = response.data;
-      setNotifications(responseData.items || []);
+      setNotifications(responseData.data || []);
 
       setPagination((prev) => ({
         ...prev,
-        page: responseData.page || 1,
-        totalPages: responseData.pages || 1,
-        totalElements: responseData.total || 0,
+        totalPages: response.data.paging.totalPage,
+        totalElements: response.data.paging.totalItem,
+        page: response.data.paging.pageNumber,
+        size: response.data.paging.pageSize,
       }));
 
       setApiResponse({
@@ -589,10 +590,10 @@ const NotificationTestingTool = () => {
       });
 
       // Show success toast
-      showSuccess(
-        `Successfully loaded ${response.data.items?.length || 0} notifications`,
-        3000
-      );
+      // showSuccess(
+      //   `Successfully loaded ${response.data.data?.length || 0} notifications`,
+      //   3000
+      // );
     } catch (error) {
       setApiError({
         method: "GET",

@@ -416,7 +416,7 @@ const PetEditorModal = ({
     setLoadingOwners(true);
     try {
       const response = await userAPI.getUsers({ page: 1, size: 100 });
-      setOwners(response.data.items || []);
+      setOwners(response.data.data || []);
     } catch (error) {
       console.error("Error loading owners:", error);
     } finally {
@@ -798,11 +798,13 @@ const UserPetsModal = ({ userId, userName, isOpen, onClose }) => {
         page: pagination.page,
         size: pagination.size,
       });
-      setPets(response.data.items || []);
+      setPets(response.data.data || []);
       setPagination((prev) => ({
         ...prev,
-        totalPages: response.data.pages || 0,
-        totalElements: response.data.total || 0,
+        totalPages: response.data.paging.totalPage,
+        totalElements: response.data.paging.totalItem,
+        page: response.data.paging.pageNumber,
+        size: response.data.paging.pageSize,
       }));
     } catch (error) {
       const parsedError = parseValidationErrors(error);
@@ -1076,7 +1078,7 @@ const PetStatistics = ({ onClose }) => {
     setLoading(true);
     try {
       const response = await userAPI.getUsers({ page: 1, size: 100 });
-      setUsers(response.data.items || []);
+      setUsers(response.data.data || []);
     } catch (error) {
       const parsedError = parseValidationErrors(error);
       showError(parsedError.message);
@@ -1237,11 +1239,13 @@ const PetManagement = () => {
       };
 
       const response = await petAPI.getPets(params);
-      setPets(response.data.items);
+      setPets(response.data.data);
       setPagination((prev) => ({
         ...prev,
-        totalPages: response.data.pages,
-        totalElements: response.data.total,
+        totalPages: response.data.paging.totalPage,
+        totalElements: response.data.paging.totalItem,
+        page: response.data.paging.pageNumber,
+        size: response.data.paging.pageSize,
       }));
     } catch (error) {
       const parsedError = parseValidationErrors(error);
