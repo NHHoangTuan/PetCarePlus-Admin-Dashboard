@@ -475,8 +475,8 @@ const WithdrawalManagement = () => {
   const [pagination, setPagination] = useState({
     page: 1,
     size: 10,
-    pages: 0,
-    total: 0,
+    totalPages: 0,
+    totalElements: 0,
   });
 
   const [filters, setFilters] = useState({
@@ -866,7 +866,7 @@ const WithdrawalManagement = () => {
             </button>
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page >= pagination.pages}
+              disabled={pagination.page >= pagination.totalPages}
               className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
             >
               Next
