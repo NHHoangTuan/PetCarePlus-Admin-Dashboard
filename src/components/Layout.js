@@ -11,6 +11,7 @@ import {
   DollarSign,
   FileText,
   PawPrint,
+  Bell,
 } from "lucide-react";
 
 const Layout = ({ onLogout }) => {
@@ -33,6 +34,7 @@ const Layout = ({ onLogout }) => {
     { path: "/withdrawals", label: "Withdrawal", icon: DollarSign }, // Added Withdrawal Management
     { path: "/terms", label: "Terms & Conditions", icon: FileText }, // Added Terms Management
     { path: "/pets", label: "Pet Management", icon: PawPrint }, // Added Pet Management
+    { path: "/notifications", label: "Notifications", icon: Bell },
   ];
   return (
     <div className="min-h-screen bg-gray-100">
