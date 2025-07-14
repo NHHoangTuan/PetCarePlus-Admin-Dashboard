@@ -510,7 +510,7 @@ const BookingManagement = () => {
         },
       };
       const response = await userAPI.getUsers(params);
-      setAllUsers(response.data.items);
+      setAllUsers(response.data.data);
     } catch (error) {
       console.error("Error loading users:", error);
       showError(
@@ -531,7 +531,7 @@ const BookingManagement = () => {
         },
       };
       const response = await userAPI.getUsers(params);
-      setAllProviders(response.data.items);
+      setAllProviders(response.data.data);
     } catch (error) {
       console.error("Error loading providers:", error);
       showError(
@@ -563,11 +563,13 @@ const BookingManagement = () => {
       const response = await bookingAPI.getBookings(params);
       //console.log("Bookings response:", response.data);
 
-      setBookings(response.data.content);
+      setBookings(response.data.data);
       setPagination((prev) => ({
         ...prev,
-        totalPages: response.data.totalPages,
-        totalElements: response.data.totalElements,
+        totalPages: response.data.paging.totalPage,
+        totalElements: response.data.paging.totalItem,
+        page: response.data.paging.pageNumber,
+        size: response.data.paging.pageSize,
       }));
     } catch (error) {
       console.error("Error loading bookings:", error);

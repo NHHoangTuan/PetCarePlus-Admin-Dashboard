@@ -657,13 +657,13 @@ const ServiceManagement = () => {
         },
       };
       const response = await serviceAPI.searchServices(params);
-      setServices(response.data.content);
+      setServices(response.data.data);
       setPagination((prev) => ({
         ...prev,
-        totalPages: response.data.totalPages,
-        totalElements: response.data.totalElements,
-        page: response.data.number + 1,
-        size: response.data.size,
+        totalPages: response.data.paging.totalPage,
+        totalElements: response.data.paging.totalItem,
+        page: response.data.paging.pageNumber,
+        size: response.data.paging.pageSize,
       }));
     } catch (error) {
       console.error("Error searching services:", error);

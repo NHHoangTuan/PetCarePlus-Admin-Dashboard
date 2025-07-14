@@ -315,9 +315,9 @@ const UserManagement = () => {
       const response = await userAPI.getUsers(params);
 
       // Filter users based on status on frontend
-      let filteredUsers = response.data.items;
+      let filteredUsers = response.data.data;
       if (filters.status) {
-        filteredUsers = response.data.items.filter((user) => {
+        filteredUsers = response.data.data.filter((user) => {
           const userStatus = getUserStatus(user);
           return userStatus === filters.status;
         });
@@ -326,8 +326,10 @@ const UserManagement = () => {
       setUsers(filteredUsers);
       setPagination((prev) => ({
         ...prev,
-        totalPages: response.data.pages,
-        totalElements: response.data.total,
+        totalPages: response.data.paging.totalPage,
+        totalElements: response.data.paging.totalItem,
+        page: response.data.paging.pageNumber,
+        size: response.data.paging.pageSize,
       }));
     } catch (error) {
       console.error("Error loading users:", error);
