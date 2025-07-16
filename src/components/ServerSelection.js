@@ -60,12 +60,22 @@ const ServerSelection = ({ onServerSelect, currentServer }) => {
 
   const checkServerHealth = async (server) => {
     try {
-      const response = await axios.get(`${server.url}/health`, {
-        timeout: 5000, // 5 second timeout
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      let response = null;
+      if (server.id === "azureprod") {
+        response = await axios.get(`${server.url}/swagger-ui/index.html`, {
+          timeout: 10000, // 10 second timeout
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      } else {
+        response = await axios.get(`${server.url}/health`, {
+          timeout: 5000, // 5 second timeout
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
 
       return {
         status: "online",
