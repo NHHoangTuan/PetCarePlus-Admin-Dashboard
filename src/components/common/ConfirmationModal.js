@@ -76,7 +76,7 @@ const ConfirmationModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
+      <div className="bg-white rounded-2xl max-w-md w-full p-6 relative">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -109,14 +109,14 @@ const ConfirmationModal = ({
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-2xl hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {cancelText}
             </button>
             <button
               onClick={handleConfirm}
               disabled={isLoading}
-              className={`px-4 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${styles.confirmButton}`}
+              className={`px-4 py-2 text-white rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${styles.confirmButton}`}
             >
               {isLoading && (
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>

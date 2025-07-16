@@ -318,7 +318,7 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
                       Pet ID
                     </span>
                     <span className="text-sm font-mono bg-gray-100 px-3 py-1 rounded-lg">
-                      {pet.id.substring(0, 8)}...
+                      {pet.id}
                     </span>
                   </div>
 
@@ -389,9 +389,7 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
                       Owner ID
                     </span>
                     <span className="text-sm font-mono bg-gray-100 px-3 py-1 rounded-lg">
-                      {pet.userId
-                        ? `${pet.userId.substring(0, 8)}...`
-                        : "Unknown"}
+                      {pet.userId ? `${pet.userId}` : "Unknown"}
                     </span>
                   </div>
 
@@ -2446,24 +2444,24 @@ const PetManagement = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50/50">
                 <tr>
-                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Pet
                   </th>
-                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Species
                   </th>
-                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Breed
                   </th>
-                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Age
                   </th>
-                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Owner
                   </th>
                   <th
                     onClick={() => handleSort("createdAt")}
-                    className="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100/50 transition-colors"
+                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100/50 transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       Created
@@ -2478,7 +2476,7 @@ const PetManagement = () => {
                       )}
                     </div>
                   </th>
-                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -2518,7 +2516,7 @@ const PetManagement = () => {
                       key={pet.id}
                       className="hover:bg-blue-50/50 transition-all duration-200 group"
                     >
-                      <td className="px-8 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap">
                         <div className="flex items-center gap-4">
                           <div className="relative">
                             {pet.imageUrl ? (
@@ -2556,25 +2554,25 @@ const PetManagement = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-8 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <span className="text-sm font-medium text-gray-900">
                             {getSpeciesLabel(pet.species)}
                           </span>
                         </div>
                       </td>
-                      <td className="px-8 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap">
                         <div className="text-sm text-gray-900 font-medium">
                           {pet.breed || "Unknown"}
                         </div>
                       </td>
-                      <td className="px-8 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
                           <Calendar className="w-4 h-4" />
                           {getAgeDisplay(pet.age, pet.dayOfBirth)}
                         </div>
                       </td>
-                      <td className="px-8 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-mono">
                           <User className="w-4 h-4" />
                           {pet.userId
@@ -2582,12 +2580,12 @@ const PetManagement = () => {
                             : "Unknown"}
                         </div>
                       </td>
-                      <td className="px-8 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap">
                         <div className="text-sm text-gray-600 font-medium">
                           {formatDate2(pet.createdAt)}
                         </div>
                       </td>
-                      <td className="px-8 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleViewPet(pet.id)}

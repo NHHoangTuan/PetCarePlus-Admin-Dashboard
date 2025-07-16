@@ -51,6 +51,7 @@ import { parseValidationErrors } from "../utils/errorHandler";
 import { useToast } from "../context/ToastContext";
 import { useDebounce } from "../hooks/useDebounce";
 import { formatNumber } from "../utils/formatUtils";
+import ConfirmationModal from "./common/ConfirmationModal";
 
 // Notification Detail Modal
 const NotificationDetailModal = ({
@@ -253,19 +254,21 @@ const NotificationDetailModal = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-xl flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-white" />
+                {notification.updatedAt && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-xl flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-500">
+                        Last Updated
+                      </p>
+                      <p className="text-sm text-slate-900">
+                        {formatDate2(notification.updatedAt)}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-500">
-                      Last Updated
-                    </p>
-                    <p className="text-sm text-slate-900">
-                      {formatDate2(notification.updatedAt)}
-                    </p>
-                  </div>
-                </div>
+                )}
 
                 {notification.readAt && (
                   <div className="flex items-center gap-3">
@@ -289,26 +292,28 @@ const NotificationDetailModal = ({
 
         {/* Footer */}
         <div className="flex items-center justify-between p-6 border-t border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50">
-          <div className="text-sm text-slate-500">
-            Last updated: {formatDate2(notification.updatedAt)}
-          </div>
+          {notification.updatedAt && (
+            <div className="text-sm text-slate-500">
+              Last updated: {formatDate2(notification.updatedAt)}
+            </div>
+          )}
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 transition-colors"
             >
               Close
             </button>
             <button
               onClick={() => onEdit(notification)}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all flex items-center gap-2"
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl hover:from-blue-600 hover:to-blue-700 transition-all flex items-center gap-2"
             >
               <Edit className="w-4 h-4" />
               Edit
             </button>
             <button
               onClick={() => onDelete(notification)}
-              className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all flex items-center gap-2"
+              className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl hover:from-red-600 hover:to-red-700 transition-all flex items-center gap-2"
             >
               <Trash2 className="w-4 h-4" />
               Delete
@@ -695,14 +700,14 @@ const NotificationEditorModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 text-slate-700 bg-white border-2 border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+              className="px-6 py-3 text-slate-700 bg-white border-2 border-slate-300 rounded-2xl hover:bg-slate-50 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 transition-all flex items-center gap-2"
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 transition-all flex items-center gap-2"
             >
               {loading ? (
                 <RefreshCw className="w-5 h-5 animate-spin" />
@@ -814,6 +819,8 @@ const NotificationManagement = () => {
     isRead: "",
   });
 
+  const [confirmationModal, setConfirmationModal] = useState({});
+
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("desc");
 
@@ -921,20 +928,33 @@ const NotificationManagement = () => {
     notificationId,
     notificationTitle
   ) => {
-    if (
-      !window.confirm(`Are you sure you want to delete "${notificationTitle}"?`)
-    ) {
-      return;
-    }
+    setConfirmationModal({
+      isOpen: true,
+      type: "danger",
+      title: `Delete Notification`,
+      message: `Are you sure you want to delete ${notificationTitle}?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      icon: Trash2,
+      onConfirm: async () => {
+        setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
 
-    try {
-      await notificationAPI.deleteNotification(notificationId);
-      showSuccess("Notification deleted successfully!");
-      loadNotifications();
-    } catch (error) {
-      const parsedError = parseValidationErrors(error);
-      showError(parsedError.message);
-    }
+        try {
+          await notificationAPI.deleteNotification(notificationId);
+          showSuccess("Notification deleted successfully!");
+          loadNotifications();
+        } catch (error) {
+          const parsedError = parseValidationErrors(error);
+          showError(parsedError.message);
+        }
+      },
+    });
+  };
+
+  const closeConfirmationModal = () => {
+    setConfirmationModal({
+      isOpen: false,
+    });
   };
 
   const handleCreateNew = () => {
@@ -988,361 +1008,489 @@ const NotificationManagement = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-full p-4 md:p-8">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-4 mb-4">
-          <div className="p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl shadow-lg">
-            <Bell className="w-10 h-10 text-white" />
-          </div>
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">
-              Notification Management
-            </h1>
-            <p className="text-slate-600 mt-1">
-              Manage and monitor all system notifications
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Header Section with Gradient */}
+      <div className="relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">
-                Total Notifications
-              </p>
-              <p className="text-3xl font-bold text-slate-900">
-                {formatNumber(stats.total)}
-              </p>
-            </div>
-            <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl">
-              <Bell className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
+        <div className="relative px-8 py-12">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            {/* Title Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                  <Bell className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                    Notification Management
+                  </h1>
+                  <p className="text-gray-600 mt-1">
+                    Manage and monitor all system notifications
+                  </p>
+                </div>
+              </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">Unread</p>
-              <p className="text-3xl font-bold text-amber-600">
-                {formatNumber(stats.unread)}
-              </p>
-            </div>
-            <div className="p-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl">
-              <AlertCircle className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">Read</p>
-              <p className="text-3xl font-bold text-emerald-600">
-                {formatNumber(stats.read)}
-              </p>
-            </div>
-            <div className="p-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl">
-              <CheckCircle className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">Success Rate</p>
-              <p className="text-3xl font-bold text-purple-600">
-                {stats.total > 0
-                  ? Math.round((stats.read / stats.total) * 100)
-                  : 0}
-                %
-              </p>
-            </div>
-            <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl">
-              <TrendingUp className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={loadNotifications}
-            className="p-3 text-slate-500 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 hover:text-slate-600 transition-colors shadow-sm"
-            title="Refresh"
-          >
-            <RefreshCw className="w-5 h-5" />
-          </button>
-
-          <div className="flex items-center gap-2 text-sm text-slate-600">
-            <Activity className="w-4 h-4 text-emerald-500" />
-            <span>Real-time updates</span>
-          </div>
-        </div>
-
-        <button
-          onClick={handleCreateNew}
-          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
-        >
-          <Plus className="w-5 h-5" />
-          Create Notification
-        </button>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 border border-slate-200">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search notifications..."
-              value={filters.query}
-              onChange={handleSearch}
-              className="pl-10 pr-4 py-3 w-full border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-            />
-          </div>
-
-          <select
-            value={filters.type}
-            onChange={(e) => handleFilterChange("type", e.target.value)}
-            className="px-4 py-3 w-full border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-          >
-            <option value="">All Types</option>
-            {notificationTypes.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={filters.isRead}
-            onChange={(e) => handleFilterChange("isRead", e.target.value)}
-            className="px-4 py-3 w-full border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-          >
-            <option value="">All Status</option>
-            <option value="true">Read</option>
-            <option value="false">Unread</option>
-          </select>
-
-          {hasActiveFilters && (
-            <button
-              onClick={resetFilters}
-              className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors"
-            >
-              <XCircle className="w-4 h-4" />
-              Clear Filters
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Notifications Table */}
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-gradient-to-r from-slate-50 to-blue-50">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Notification
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Recipient
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th
-                  className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer hover:bg-slate-100"
-                  onClick={() => handleSort("createdAt")}
-                >
-                  <div className="flex items-center">
-                    Created
-                    {sortBy === "createdAt" && (
-                      <span className="ml-1.5">
-                        {sortOrder === "asc" ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )}
-                      </span>
-                    )}
-                  </div>
-                </th>
-                <th className="relative px-6 py-4">
-                  <span className="sr-only">Actions</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
-              {loading ? (
-                <tr>
-                  <td colSpan="6" className="text-center py-16">
-                    <div className="flex justify-center items-center text-slate-500">
-                      <RefreshCw className="w-8 h-8 animate-spin mr-3" />
-                      <span className="text-lg">Loading notifications...</span>
+              {/* Stats Cards */}
+              <div className="flex flex-wrap gap-4">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-100 rounded-xl">
+                      <Bell className="w-4 h-4 text-blue-600" />
                     </div>
-                  </td>
-                </tr>
-              ) : notifications.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="text-center py-16">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-gradient-to-r from-slate-200 to-slate-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Bell className="w-8 h-8 text-slate-400" />
-                      </div>
-                      <h3 className="text-lg font-medium text-slate-800">
-                        No notifications found
-                      </h3>
-                      <p className="text-slate-500 mt-2">
-                        Try adjusting your filters or create a new notification
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {formatNumber(pagination.totalElements)}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Total Notifications
                       </p>
                     </div>
-                  </td>
-                </tr>
-              ) : (
-                notifications.map((notification) => (
-                  <tr
-                    key={notification.id}
-                    className={`hover:bg-slate-50 transition-colors ${
-                      !notification.isRead
-                        ? "bg-gradient-to-r from-blue-50/30 to-indigo-50/30"
-                        : ""
-                    }`}
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0">
-                          {notification.imageUrl ? (
-                            <img
-                              className="h-12 w-12 rounded-xl object-cover shadow-sm"
-                              src={notification.imageUrl}
-                              alt=""
-                            />
-                          ) : (
-                            <div className="h-12 w-12 bg-gradient-to-r from-slate-200 to-slate-300 rounded-xl flex items-center justify-center">
-                              <Bell className="w-6 h-6 text-slate-400" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-slate-900 line-clamp-1">
-                            {notification.title}
-                          </div>
-                          <div className="text-xs text-slate-500 mt-1 line-clamp-1">
-                            {notification.message}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeBadge(
-                            notification.type
-                          )}`}
-                        >
-                          {notification.type}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-slate-900 font-mono">
-                        {notification.userIdReceive.substring(0, 8)}...
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        {notification.isRead ? (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            Read
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                            <AlertCircle className="w-3 h-3 mr-1" />
-                            Unread
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-600">
-                      {formatDate2(notification.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 text-right text-sm font-medium relative">
-                      <button
-                        onClick={() =>
-                          setActiveDropdown(
-                            activeDropdown === notification.id
-                              ? null
-                              : notification.id
-                          )
-                        }
-                        className="p-2 text-slate-500 rounded-full hover:bg-slate-100 hover:text-slate-700 transition-colors"
-                      >
-                        <MoreVertical className="w-5 h-5" />
-                      </button>
-                      <ActionsDropdown
-                        notification={notification}
-                        isOpen={activeDropdown === notification.id}
-                        onClose={() => setActiveDropdown(null)}
-                        onView={handleViewNotification}
-                        onEdit={handleEditNotification}
-                        onDelete={handleDeleteNotification}
-                      />
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </div>
 
-        {/* Pagination */}
-        {pagination.totalPages > 1 && (
-          <div className="bg-white px-6 py-4 flex items-center justify-between border-t border-slate-200">
-            <div className="flex items-center text-sm text-slate-700">
-              <span>
-                Showing {(pagination.page - 1) * pagination.size + 1} to{" "}
-                {Math.min(
-                  pagination.page * pagination.size,
-                  pagination.totalElements
-                )}{" "}
-                of {formatNumber(pagination.totalElements)} results
-              </span>
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-amber-100 rounded-xl">
+                      <AlertCircle className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {formatNumber(stats.unread)}
+                      </p>
+                      <p className="text-sm text-gray-600">Unread</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-green-100 rounded-xl">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {formatNumber(stats.read)}
+                      </p>
+                      <p className="text-sm text-gray-600">Read</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-3">
               <button
-                onClick={() => handlePageChange(pagination.page - 1)}
-                disabled={pagination.page <= 1}
-                className="p-2 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                onClick={loadNotifications}
+                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <RefreshCw className="w-5 h-5 relative z-10" />
+                <span className="relative z-10 font-medium">Refresh</span>
               </button>
-              <span className="px-4 py-2 text-sm font-medium text-slate-700">
-                Page {pagination.page} of {pagination.totalPages}
-              </span>
+
               <button
-                onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page >= pagination.totalPages}
-                className="p-2 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                onClick={handleCreateNew}
+                className="group relative px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <ChevronRight className="w-4 h-4" />
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <Plus className="w-5 h-5 relative z-10" />
+                <span className="relative z-10 font-medium">
+                  Create Notification
+                </span>
               </button>
             </div>
           </div>
-        )}
+        </div>
+      </div>
+
+      {/* Filters Section */}
+      <div className="px-8 -mt-6 relative z-10">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+              <Filter className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">
+              Filters & Search
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Search */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Search Notifications
+              </label>
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Search title, message..."
+                  value={filters.query}
+                  onChange={handleSearch}
+                  className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                />
+              </div>
+            </div>
+
+            {/* Type Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Type</label>
+              <select
+                value={filters.type}
+                onChange={(e) => handleFilterChange("type", e.target.value)}
+                className="px-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+              >
+                <option value="">All Types</option>
+                {notificationTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Status Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Status
+              </label>
+              <select
+                value={filters.isRead}
+                onChange={(e) => handleFilterChange("isRead", e.target.value)}
+                className="px-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+              >
+                <option value="">All Status</option>
+                <option value="true">Read</option>
+                <option value="false">Unread</option>
+              </select>
+            </div>
+
+            {/* Clear Filters */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Actions
+              </label>
+              {hasActiveFilters && (
+                <button
+                  onClick={resetFilters}
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-red-100 text-red-700 rounded-2xl hover:bg-red-200 transition-all duration-300 w-full"
+                >
+                  <XCircle className="w-4 h-4" />
+                  Clear Filters
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="px-8 mt-8 pb-8">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
+          {/* Table Header */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                  <Bell className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  Notification Directory
+                </h3>
+              </div>
+              <div className="text-sm text-gray-600">
+                {formatNumber(pagination.totalElements)} notifications total
+              </div>
+            </div>
+          </div>
+
+          {/* Table Content */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50/50">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Notification
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Recipient
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th
+                    onClick={() => handleSort("createdAt")}
+                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      Created
+                      {sortBy === "createdAt" && (
+                        <div className="p-1 bg-blue-100 rounded">
+                          {sortOrder === "asc" ? (
+                            <ChevronUp className="w-3 h-3 text-blue-600" />
+                          ) : (
+                            <ChevronDown className="w-3 h-3 text-blue-600" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white/50 divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="px-8 py-12 text-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="relative">
+                          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                          <Bell className="w-6 h-6 text-blue-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                        </div>
+                        <div className="text-gray-600">
+                          Loading notifications...
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : notifications.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-8 py-12 text-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="p-6 bg-gray-100 rounded-full">
+                          <Bell className="w-12 h-12 text-gray-400" />
+                        </div>
+                        <div className="text-gray-500 text-lg">
+                          No notifications found
+                        </div>
+                        <div className="text-gray-400 text-sm">
+                          Try adjusting your search filters
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  notifications.map((notification) => (
+                    <tr
+                      key={notification.id}
+                      className={`hover:bg-blue-50/50 transition-all duration-200 group ${
+                        !notification.isRead ? "bg-blue-50/30" : ""
+                      }`}
+                    >
+                      <td className="px-6 py-6 whitespace-nowrap">
+                        <div className="flex items-center gap-4">
+                          <div className="relative">
+                            {notification.imageUrl ? (
+                              <img
+                                src={notification.imageUrl}
+                                alt={notification.title}
+                                className="w-10 h-10 rounded-2xl object-cover border-2 border-white shadow-lg group-hover:shadow-xl transition-shadow duration-300"
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                  e.target.nextSibling.style.display = "flex";
+                                }}
+                              />
+                            ) : (
+                              <div className="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center shadow-lg">
+                                <Bell className="w-5 h-5 text-gray-500" />
+                              </div>
+                            )}
+                            <div
+                              className="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl items-center justify-center shadow-lg"
+                              style={{ display: "none" }}
+                            >
+                              <Bell className="w-5 h-5 text-gray-500" />
+                            </div>
+                            {!notification.isRead && (
+                              <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-start">
+                            <div className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                              {notification.title
+                                ? notification.title.length > 24
+                                  ? notification.title.substring(0, 24) + "..."
+                                  : notification.title
+                                : ""}
+                            </div>
+                            <div className="text-sm text-gray-500 mt-1 line-clamp-2">
+                              {notification.message
+                                ? notification.message.length > 32
+                                  ? notification.message.substring(0, 32) +
+                                    "..."
+                                  : notification.message
+                                : ""}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          {/* <div className="p-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl">
+                            {React.createElement(
+                              getTypeIcon(notification.type),
+                              { className: "w-5 h-5 text-blue-600" }
+                            )}
+                          </div> */}
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeBadge(
+                              notification.type
+                            )}`}
+                          >
+                            {notification.type}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-mono">
+                          <User className="w-4 h-4" />
+                          {notification.userIdReceive.substring(0, 6)}...
+                        </div>
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          {notification.isRead ? (
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Read
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
+                              <AlertCircle className="w-3 h-3 mr-1" />
+                              Unread
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap">
+                        <div className="text-sm text-gray-600 font-medium">
+                          {formatDate2(notification.createdAt)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap relative">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() =>
+                              handleViewNotification(notification.id)
+                            }
+                            className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="View Details"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleEditNotification(notification.id)
+                            }
+                            className="p-2 bg-green-100 hover:bg-green-200 text-green-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="Edit Notification"
+                          >
+                            <Edit className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDeleteNotification(
+                                notification.id,
+                                notification.title
+                              )
+                            }
+                            className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="Delete Notification"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Enhanced Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="text-sm text-gray-700">
+                    Showing{" "}
+                    <span className="font-bold text-blue-600">
+                      {formatNumber(
+                        (pagination.page - 1) * pagination.size + 1
+                      )}
+                    </span>{" "}
+                    to{" "}
+                    <span className="font-bold text-blue-600">
+                      {formatNumber(
+                        Math.min(
+                          pagination.page * pagination.size,
+                          pagination.totalElements
+                        )
+                      )}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-bold text-blue-600">
+                      {formatNumber(pagination.totalElements)}
+                    </span>{" "}
+                    results
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    disabled={pagination.page <= 1}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {[...Array(Math.min(5, pagination.totalPages))].map(
+                      (_, i) => {
+                        const page = i + 1;
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
+                              pagination.page === page
+                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      }
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    disabled={pagination.page >= pagination.totalPages}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modals */}
@@ -1368,6 +1516,20 @@ const NotificationManagement = () => {
         onClose={() => setIsEditorModalOpen(false)}
         onSave={handleSave}
         isEditing={isEditing}
+      />
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={confirmationModal.onConfirm}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        confirmText={confirmationModal.confirmText}
+        cancelText={confirmationModal.cancelText}
+        type={confirmationModal.type}
+        icon={confirmationModal.icon}
+        isLoading={confirmationModal.isLoading}
       />
     </div>
   );
