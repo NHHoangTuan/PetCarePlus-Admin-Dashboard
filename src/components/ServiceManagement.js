@@ -31,6 +31,7 @@ import { useDebounce } from "../hooks/useDebounce";
 import { formatCurrency } from "../utils/formatUtils";
 import { useToast } from "../context/ToastContext";
 import { formatPrice, formatNumber } from "../utils/formatUtils";
+import ConfirmationModal from "./common/ConfirmationModal";
 
 // Service Detail/Edit Modal Component
 const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
@@ -759,6 +760,7 @@ const ServiceManagement = () => {
   const [sortOrder, setSortOrder] = useState("asc");
 
   const { showSuccess, showError, showInfo, showWarning } = useToast();
+  const [confirmationModal, setConfirmationModal] = useState({});
 
   const debouncedQuery = useDebounce(filters.query, 500);
 
@@ -897,26 +899,38 @@ const ServiceManagement = () => {
     setIsModalOpen(true);
   };
 
+  const closeConfirmationModal = () => {
+    setConfirmationModal({
+      isOpen: false,
+    });
+  };
+
   const handleDeleteService = async (serviceId, serviceName) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the service "${serviceName}"?`
-      )
-    ) {
-      try {
-        await serviceAPI.deleteService(serviceId);
-        //loadServices();
-        searchServices();
-      } catch (error) {
-        console.error("Error deleting service:", error);
-        showError(
-          `Failed to delete service: ${
-            error.response?.data?.message || error.message
-          }`,
-          3000
-        );
-      }
-    }
+    setConfirmationModal({
+      isOpen: true,
+      type: "danger",
+      title: `Delete Service`,
+      message: `Are you sure you want to delete service "${serviceName}"?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      icon: Trash2,
+      onConfirm: async () => {
+        setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
+        try {
+          await serviceAPI.deleteService(serviceId);
+          //loadServices();
+          searchServices();
+        } catch (error) {
+          console.error("Error deleting service:", error);
+          showError(
+            `Failed to delete service: ${
+              error.response?.data?.message || error.message
+            }`,
+            3000
+          );
+        }
+      },
+    });
   };
 
   const handleModalSave = () => {
@@ -1253,6 +1267,20 @@ const ServiceManagement = () => {
         onClose={closeModal}
         onSave={handleModalSave}
         mode={modalMode}
+      />
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={confirmationModal.onConfirm}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        confirmText={confirmationModal.confirmText}
+        cancelText={confirmationModal.cancelText}
+        type={confirmationModal.type}
+        icon={confirmationModal.icon}
+        isLoading={confirmationModal.isLoading}
       />
     </div>
   );

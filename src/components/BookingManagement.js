@@ -33,6 +33,7 @@ import {
 
 import { useToast } from "../context/ToastContext";
 import { set } from "@cloudinary/url-gen/actions/variable";
+import ConfirmationModal from "./common/ConfirmationModal";
 
 // Booking Detail Modal Component
 const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
@@ -433,6 +434,7 @@ const BookingManagement = () => {
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [confirmationModal, setConfirmationModal] = useState({});
 
   const [pagination, setPagination] = useState({
     page: 1,
@@ -460,6 +462,7 @@ const BookingManagement = () => {
 
   const loadBookings = useCallback(async () => {
     setLoading(true);
+
     try {
       const params = {
         page: pagination.page,
@@ -504,6 +507,12 @@ const BookingManagement = () => {
     sortBy,
     sortOrder,
   ]);
+
+  const closeConfirmationModal = () => {
+    setConfirmationModal({
+      isOpen: false,
+    });
+  };
 
   useEffect(() => {
     loadBookings();
@@ -572,24 +581,30 @@ const BookingManagement = () => {
   };
 
   const handleDeleteBooking = async (bookingId, customerName) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the booking for "${customerName}"?`
-      )
-    ) {
-      try {
-        await bookingAPI.deleteBooking(bookingId);
-        loadBookings();
-      } catch (error) {
-        console.error("Error deleting booking:", error);
-        showError(
-          `Failed to delete booking: ${
-            error.response?.data?.message || error.message
-          }`,
-          3000
-        );
-      }
-    }
+    setConfirmationModal({
+      isOpen: true,
+      type: "danger",
+      title: `Delete Booking`,
+      message: `Are you sure you want to delete booking of "${customerName}"?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      icon: Trash2,
+      onConfirm: async () => {
+        setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
+        try {
+          await bookingAPI.deleteBooking(bookingId);
+          loadBookings();
+        } catch (error) {
+          console.error("Error deleting booking:", error);
+          showError(
+            `Failed to delete booking: ${
+              error.response?.data?.message || error.message
+            }`,
+            3000
+          );
+        }
+      },
+    });
   };
 
   const handleStatusUpdate = () => {
@@ -1111,6 +1126,20 @@ const BookingManagement = () => {
         isOpen={isDetailModalOpen}
         onClose={closeDetailModal}
         onStatusUpdate={handleStatusUpdate}
+      />
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={confirmationModal.onConfirm}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        confirmText={confirmationModal.confirmText}
+        cancelText={confirmationModal.cancelText}
+        type={confirmationModal.type}
+        icon={confirmationModal.icon}
+        isLoading={confirmationModal.isLoading}
       />
     </div>
   );
