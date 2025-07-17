@@ -231,390 +231,504 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
       : "Service Details";
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <X className="w-6 h-6" />
-          </button>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        {/* Header with Gradient */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 opacity-10"></div>
+          <div className="relative p-6 border-b border-slate-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-2xl bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 shadow-lg">
+                  <Package className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 mb-1">
+                    {title}
+                  </h2>
+                  <p className="text-slate-600 text-sm">
+                    {mode === "create"
+                      ? "Add a new service to the system"
+                      : mode === "edit"
+                      ? "Modify service information"
+                      : "View service details"}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-slate-400" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {isEditMode ? (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Service Name */}
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Service Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                  hasFieldError("name")
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="Enter service name"
-              />
-              {hasFieldError("name") && (
-                <div className="mt-1 flex items-center text-sm text-red-600">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {getFieldError("name")}
-                </div>
-              )}
-            </div>
-
-            {/* Description */}
-            <div>
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                rows={4}
-                value={formData.description}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                  hasFieldError("description")
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="Enter service description"
-              />
-              {hasFieldError("description") && (
-                <div className="mt-1 flex items-center text-sm text-red-600">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {getFieldError("description")}
-                </div>
-              )}
-            </div>
-
-            {/* Icon URL with Upload */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Service Icon
-              </label>
-
-              {/* Compression Settings */}
-              <div className="mb-3 p-3 bg-gray-50 rounded-md">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="flex items-center text-sm">
-                    <input
-                      type="checkbox"
-                      checked={compressionEnabled}
-                      onChange={(e) => setCompressionEnabled(e.target.checked)}
-                      className="mr-2"
-                    />
-                    <Sliders className="w-4 h-4 mr-1" />
-                    Enable compression before upload
-                  </label>
-                </div>
-
-                {compressionEnabled && (
-                  <div className="mt-2">
-                    <label className="block text-xs text-gray-600 mb-1">
-                      Quality:
-                    </label>
-                    <select
-                      value={compressionQuality}
-                      onChange={(e) => setCompressionQuality(e.target.value)}
-                      className="text-xs border border-gray-300 rounded px-2 py-1"
+          <div className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-6">
+                  {/* Service Name */}
+                  <div className="group">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
                     >
-                      <option value="icon">Icon (200x200, high quality)</option>
-                      <option value="low">Low (400x300, 60% quality)</option>
-                      <option value="medium">
-                        Medium (800x600, 80% quality)
-                      </option>
-                      <option value="high">High (1200x900, 90% quality)</option>
-                    </select>
+                      Service Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-3 border rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                        hasFieldError("name")
+                          ? "border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50"
+                          : "border-slate-300 bg-white hover:border-slate-400"
+                      }`}
+                      placeholder="Enter service name"
+                    />
+                    {hasFieldError("name") && (
+                      <div className="mt-2 flex items-center text-sm text-red-600 bg-red-50 rounded-xl p-2">
+                        <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                        {getFieldError("name")}
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  {/* Description */}
+                  <div className="group">
+                    <label
+                      htmlFor="description"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      rows={4}
+                      value={formData.description}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-3 border rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none ${
+                        hasFieldError("description")
+                          ? "border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50"
+                          : "border-slate-300 bg-white hover:border-slate-400"
+                      }`}
+                      placeholder="Enter service description"
+                    />
+                    {hasFieldError("description") && (
+                      <div className="mt-2 flex items-center text-sm text-red-600 bg-red-50 rounded-xl p-2">
+                        <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                        {getFieldError("description")}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Base Price */}
+                  <div className="group">
+                    <label
+                      htmlFor="basePrice"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
+                      Base Price (VND)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        id="basePrice"
+                        name="basePrice"
+                        min="0"
+                        step="0.01"
+                        required
+                        value={formData.basePrice}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 pl-12 border rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                          hasFieldError("basePrice")
+                            ? "border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50"
+                            : "border-slate-300 bg-white hover:border-slate-400"
+                        }`}
+                        placeholder="0.00"
+                      />
+                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500">
+                        ₫
+                      </div>
+                    </div>
+                    {hasFieldError("basePrice") && (
+                      <div className="mt-2 flex items-center text-sm text-red-600 bg-red-50 rounded-xl p-2">
+                        <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                        {getFieldError("basePrice")}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-6">
+                  {/* Service Icon */}
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      Service Icon
+                    </label>
+
+                    {/* Compression Settings */}
+                    <div className="mb-4 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl border border-slate-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <label className="flex items-center text-sm font-medium text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={compressionEnabled}
+                            onChange={(e) =>
+                              setCompressionEnabled(e.target.checked)
+                            }
+                            className="mr-3 w-4 h-4 text-blue-600 bg-white border-slate-300 rounded focus:ring-blue-500"
+                          />
+                          <Sliders className="w-4 h-4 mr-2 text-blue-600" />
+                          Enable compression before upload
+                        </label>
+                      </div>
+
+                      {compressionEnabled && (
+                        <div className="mt-3">
+                          <label className="block text-xs font-medium text-slate-600 mb-2">
+                            Quality Settings:
+                          </label>
+                          <select
+                            value={compressionQuality}
+                            onChange={(e) =>
+                              setCompressionQuality(e.target.value)
+                            }
+                            className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="icon">
+                              Icon (200x200, high quality)
+                            </option>
+                            <option value="low">
+                              Low (400x300, 60% quality)
+                            </option>
+                            <option value="medium">
+                              Medium (800x600, 80% quality)
+                            </option>
+                            <option value="high">
+                              High (1200x900, 90% quality)
+                            </option>
+                          </select>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Image Preview */}
+                    {previewImage && (
+                      <div className="mb-4 relative inline-block">
+                        <div className="relative">
+                          <img
+                            src={previewImage}
+                            alt="Service icon preview"
+                            className="w-24 h-24 object-cover rounded-2xl border-4 border-white shadow-lg"
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                              setPreviewImage("");
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleRemoveImage}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Upload Button */}
+                    <div className="flex gap-3 mb-4">
+                      <button
+                        type="button"
+                        onClick={handleUploadClick}
+                        disabled={uploadingImage}
+                        className={`group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                          uploadingImage ? "animate-pulse" : ""
+                        }`}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        {uploadingImage ? (
+                          <Loader className="w-5 h-5 animate-spin relative z-10" />
+                        ) : (
+                          <Upload className="w-5 h-5 relative z-10" />
+                        )}
+                        <span className="relative z-10 font-medium">
+                          {uploadingImage
+                            ? "Uploading..."
+                            : compressionEnabled
+                            ? "Compress & Upload"
+                            : "Upload Image"}
+                        </span>
+                      </button>
+
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                      />
+                    </div>
+
+                    {/* Manual URL Input */}
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium text-slate-600">
+                        Or enter URL manually:
+                      </div>
+                      <input
+                        type="url"
+                        id="iconUrl"
+                        name="iconUrl"
+                        value={formData.iconUrl}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 border rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                          hasFieldError("iconUrl")
+                            ? "border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50"
+                            : "border-slate-300 bg-white hover:border-slate-400"
+                        }`}
+                        placeholder="https://example.com/icon.png"
+                      />
+
+                      {hasFieldError("iconUrl") && (
+                        <div className="mt-2 flex items-center text-sm text-red-600 bg-red-50 rounded-xl p-2">
+                          <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                          {getFieldError("iconUrl")}
+                        </div>
+                      )}
+
+                      <div className="text-xs text-slate-500 bg-slate-50 rounded-xl p-2">
+                        Supported formats: JPEG, PNG, GIF, WebP (max 5MB)
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Image Preview */}
-              {previewImage && (
-                <div className="mb-3 relative inline-block">
-                  <img
-                    src={previewImage}
-                    alt="Service icon preview"
-                    className="w-20 h-20 object-cover rounded border"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                      setPreviewImage("");
-                    }}
-                  />
+              {/* Error Message */}
+              {error && (
+                <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-2xl p-4 shadow-sm">
+                  <div className="flex items-center">
+                    <div className="p-2 bg-red-500 rounded-xl mr-3">
+                      <AlertCircle className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-red-800 font-medium">Error</h4>
+                      <div className="text-red-700 text-sm">{error}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Footer */}
+              <div className="flex items-center justify-between pt-6 border-t border-slate-200">
+                <div className="text-sm text-slate-500">
+                  {mode === "create"
+                    ? "Create a new service"
+                    : "Update service information"}
+                </div>
+                <div className="flex gap-3">
                   <button
                     type="button"
-                    onClick={handleRemoveImage}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                    onClick={onClose}
+                    className="px-6 py-3 text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 transition-all duration-200 font-medium"
                   >
-                    <X className="w-3 h-3" />
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={`group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium ${
+                      loading ? "animate-pulse" : ""
+                    }`}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    {loading ? (
+                      <Loader className="w-5 h-5 animate-spin relative z-10" />
+                    ) : (
+                      <Package className="w-5 h-5 relative z-10" />
+                    )}
+                    <span className="relative z-10">
+                      {loading
+                        ? "Saving..."
+                        : mode === "create"
+                        ? "Create Service"
+                        : "Update Service"}
+                    </span>
                   </button>
                 </div>
-              )}
-
-              {/* Upload Button */}
-              <div className="flex gap-2 mb-2">
-                <button
-                  type="button"
-                  onClick={handleUploadClick}
-                  disabled={uploadingImage}
-                  className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-                >
-                  {uploadingImage ? (
-                    <Loader className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Upload className="w-4 h-4 mr-2" />
-                  )}
-                  {uploadingImage
-                    ? "Uploading..."
-                    : compressionEnabled
-                    ? "Compress & Upload"
-                    : "Upload Image"}
-                </button>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
               </div>
-
-              {/* Manual URL Input */}
-              <div className="text-sm text-gray-500 mb-2">
-                Or enter URL manually:
-              </div>
-              <input
-                type="url"
-                id="iconUrl"
-                name="iconUrl"
-                value={formData.iconUrl}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                  hasFieldError("iconUrl")
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="https://example.com/icon.png"
-              />
-
-              {hasFieldError("iconUrl") && (
-                <div className="mt-1 flex items-center text-sm text-red-600">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {getFieldError("iconUrl")}
-                </div>
-              )}
-
-              <div className="mt-1 text-xs text-gray-500">
-                Supported formats: JPEG, PNG, GIF, WebP (max 5MB)
-              </div>
-            </div>
-
-            {/* Icon URL
-            <div>
-              <label
-                htmlFor="iconUrl"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Icon URL
-              </label>
-              <input
-                type="url"
-                id="iconUrl"
-                name="iconUrl"
-                value={formData.iconUrl}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                  hasFieldError("iconUrl")
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="https://example.com/icon.png"
-              />
-              {hasFieldError("iconUrl") && (
-                <div className="mt-1 flex items-center text-sm text-red-600">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {getFieldError("iconUrl")}
-                </div>
-              )}
-              {formData.iconUrl && (
-                <div className="mt-2">
-                  <img
-                    src={formData.iconUrl}
-                    alt="Service icon preview"
-                    className="w-12 h-12 object-cover rounded border"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
-                  />
-                </div>
-              )}
-            </div> */}
-
-            {/* Base Price */}
-            <div>
-              <label
-                htmlFor="basePrice"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Base Price (VND)
-              </label>
-              <input
-                type="number"
-                id="basePrice"
-                name="basePrice"
-                min="0"
-                step="0.01"
-                required
-                value={formData.basePrice}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                  hasFieldError("basePrice")
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="0.00"
-              />
-              {hasFieldError("basePrice") && (
-                <div className="mt-1 flex items-center text-sm text-red-600">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {getFieldError("basePrice")}
-                </div>
-              )}
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                <div className="flex items-center">
-                  <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
-                  <div className="text-red-600 text-sm">{error}</div>
-                </div>
-              </div>
-            )}
-
-            {/* Footer */}
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                <Package className="w-4 h-4" />
-                {loading
-                  ? "Saving..."
-                  : mode === "create"
-                  ? "Create Service"
-                  : "Update Service"}
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         ) : (
           // View Mode
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                ID
-              </label>
-              <p className="text-sm text-gray-900">{service.id}</p>
-            </div>
-            {/* Service Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Service Name
-                </label>
-                <p className="text-sm text-gray-900">{service?.name}</p>
+          <div className="p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column - Basic Info */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Service ID */}
+                <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl p-4 border border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-500 rounded-xl">
+                      <Package className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">
+                        Service ID
+                      </label>
+                      <p className="text-lg font-mono text-slate-900">
+                        {service.id}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Service Details */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                      Service Name
+                    </label>
+                    <p className="text-lg font-medium text-slate-900">
+                      {service?.name}
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                      Base Price
+                    </label>
+                    <p className="text-lg font-bold text-green-600">
+                      {formatCurrency(service?.basePrice, "VND")}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                  <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                    Description
+                  </label>
+                  <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-3 border border-slate-200">
+                    <p className="text-slate-700 leading-relaxed">
+                      {service?.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Timestamps */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-500 rounded-xl">
+                        <Package className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-600">
+                          Created At
+                        </label>
+                        <p className="text-sm text-slate-900 font-medium">
+                          {formatDate2(service?.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-500 rounded-xl">
+                        <Package className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-600">
+                          Updated At
+                        </label>
+                        <p className="text-sm text-slate-900 font-medium">
+                          {formatDate2(service?.updatedAt)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delete Status */}
+                <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`p-2 rounded-xl ${
+                        service?.deletedAt ? "bg-red-500" : "bg-green-500"
+                      }`}
+                    >
+                      <Package className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">
+                        Status
+                      </label>
+                      <p
+                        className={`text-sm font-medium ${
+                          service?.deletedAt ? "text-red-600" : "text-green-600"
+                        }`}
+                      >
+                        {service?.deletedAt === null
+                          ? "Active"
+                          : `Deleted: ${formatDate2(service?.deletedAt)}`}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Base Price
-                </label>
-                <p className="text-sm text-gray-900 font-semibold">
-                  {formatCurrency(service?.basePrice, "VND")}
-                </p>
+
+              {/* Right Column - Icon */}
+              <div className="space-y-6">
+                <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                  <label className="text-sm font-semibold text-slate-700 mb-4 block">
+                    Service Icon
+                  </label>
+                  {service?.iconUrl ? (
+                    <div className="text-center">
+                      <div className="relative inline-block">
+                        <img
+                          src={service.iconUrl}
+                          alt="Service icon"
+                          className="w-32 h-32 object-cover rounded-2xl border-4 border-white shadow-lg mx-auto"
+                        />
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/20 to-transparent"></div>
+                      </div>
+                      <p className="mt-3 text-sm text-slate-500">
+                        Service Icon
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="w-32 h-32 mx-auto bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center">
+                        <Package className="w-16 h-16 text-slate-400" />
+                      </div>
+                      <p className="mt-3 text-sm text-slate-500">
+                        No icon available
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <p className="text-sm text-gray-900">{service?.description}</p>
-            </div>
-
-            {service?.iconUrl && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Icon
-                </label>
-                <img
-                  src={service.iconUrl}
-                  alt="Service icon"
-                  className="w-32 h-32 object-cover rounded border "
-                />
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Created At
-              </label>
-              <p className="text-sm text-gray-900">
-                {formatDate2(service?.createdAt)}
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Updated At
-              </label>
-              <p className="text-sm text-gray-900">
-                {formatDate2(service?.updatedAt)}
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Deleted At
-              </label>
-              <p className="text-sm text-gray-900">
-                {service?.deletedAt === null
-                  ? "Not Delete"
-                  : formatDate2(service?.deletedAt)}
-              </p>
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end gap-3 pt-4 border-t">
+            <div className="flex items-center justify-between pt-6 border-t border-slate-200 mt-6">
+              <div className="text-sm text-slate-500">
+                Service details and information
+              </div>
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-6 py-3 text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 transition-all duration-200 font-medium"
               >
                 Close
               </button>
