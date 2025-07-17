@@ -1024,7 +1024,7 @@ const NotificationManagement = () => {
                   <Bell className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
                     Notification Management
                   </h1>
                   <p className="text-gray-600 mt-1">
