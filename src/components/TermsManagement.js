@@ -1325,24 +1325,24 @@ const TermsManagement = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handlePreview(termsItem)}
-                            className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all duration-200 flex items-center justify-center"
+                            className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-xl transition-all duration-200 hover:scale-110"
                             title="Preview"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-5 h-5" />
                           </button>
                           <button
                             onClick={() => handleEdit(termsItem)}
-                            className="w-8 h-8 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all duration-200 flex items-center justify-center"
+                            className="p-2 bg-green-100 hover:bg-green-200 text-green-600 rounded-xl transition-all duration-200 hover:scale-110"
                             title="Edit"
                           >
-                            <Edit className="w-4 h-4" />
+                            <Edit className="w-5 h-5" />
                           </button>
                           <button
                             onClick={() => handleDelete(termsItem)}
-                            className="w-8 h-8 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all duration-200 flex items-center justify-center"
+                            className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-all duration-200 hover:scale-110"
                             title="Delete"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
                       </td>

@@ -1287,7 +1287,7 @@ const NotificationManagement = () => {
                         !notification.isRead ? "bg-blue-50/30" : ""
                       }`}
                     >
-                      <td className="px-6 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap text-left">
                         <div className="flex items-center gap-4">
                           <div className="relative">
                             {notification.imageUrl ? (
@@ -1334,7 +1334,7 @@ const NotificationManagement = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap text-left">
                         <div className="flex items-center gap-3">
                           {/* <div className="p-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl">
                             {React.createElement(
@@ -1351,13 +1351,13 @@ const NotificationManagement = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap text-left">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-mono">
                           <User className="w-4 h-4" />
                           {notification.userIdReceive.substring(0, 6)}...
                         </div>
                       </td>
-                      <td className="px-6 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap text-left">
                         <div className="flex items-center gap-2">
                           {notification.isRead ? (
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
@@ -1372,12 +1372,12 @@ const NotificationManagement = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-6 whitespace-nowrap">
+                      <td className="px-6 py-6 whitespace-nowrap text-left">
                         <div className="text-sm text-gray-600 font-medium">
                           {formatDate2(notification.createdAt)}
                         </div>
                       </td>
-                      <td className="px-6 py-6 whitespace-nowrap relative">
+                      <td className="px-6 py-6 whitespace-nowrap relative text-left">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() =>

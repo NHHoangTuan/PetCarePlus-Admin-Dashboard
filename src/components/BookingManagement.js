@@ -12,6 +12,13 @@ import {
   Download,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
+  ReceiptText,
+  RefreshCw,
+  AlertCircle,
+  Filter,
+  Mail,
 } from "lucide-react";
 import { bookingAPI } from "../services/api";
 import { userAPI } from "../services/api";
@@ -426,8 +433,6 @@ const BookingManagement = () => {
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [allUsers, setAllUsers] = useState([]);
-  const [allProviders, setAllProviders] = useState([]);
 
   const [pagination, setPagination] = useState({
     page: 1,
@@ -442,6 +447,7 @@ const BookingManagement = () => {
     paymentStatus: "",
     userId: "",
     providerId: "",
+    mail: "",
   });
 
   const [sortBy, setSortBy] = useState("createdAt");
@@ -449,99 +455,8 @@ const BookingManagement = () => {
 
   const { showSuccess, showError, showInfo, showWarning } = useToast();
 
-  const debouncedQuery = useDebounce(filters.query, 500);
-
-  // const uniqueUsers = React.useMemo(() => {
-  //   const userMap = new Map();
-  //   allBookings.forEach((booking) => {
-  //     if (booking.user && !userMap.has(booking.user.id)) {
-  //       userMap.set(booking.user.id, booking.user);
-  //     }
-  //   });
-  //   return Array.from(userMap.values()).sort((a, b) =>
-  //     `${a.name} ${a.lastName}`.localeCompare(`${b.name} ${b.lastName}`)
-  //   );
-  // }, [allBookings]);
-
-  // const uniqueProviders = React.useMemo(() => {
-  //   const providerMap = new Map();
-  //   allBookings.forEach((booking) => {
-  //     if (
-  //       booking.providerService &&
-  //       !providerMap.has(booking.providerService.providerId)
-  //     ) {
-  //       providerMap.set(booking.providerService.providerId, {
-  //         id: booking.providerService.providerId,
-  //         name: booking.providerService.providerName,
-  //       });
-  //     }
-  //   });
-  //   return Array.from(providerMap.values()).sort((a, b) =>
-  //     a.name.localeCompare(b.name)
-  //   );
-  // }, [allBookings]);
-
-  // useEffect(() => {
-  //   loadAllBookingsForFilters();
-  // }, []);
-
-  // const loadAllBookingsForFilters = async () => {
-  //   try {
-  //     // Load all bookings to get unique users/providers
-  //     const response = await bookingAPI.getBookings({
-  //       page: 1,
-  //       size: 1000, // Get more records for filtering
-  //       sortBy: "createdAt",
-  //       sort: "desc",
-  //     });
-
-  //     setAllBookings(response.data.content);
-  //   } catch (error) {
-  //     console.error("Error loading bookings for filters:", error);
-  //   }
-  // };
-
-  const loadAllUsers = useCallback(async () => {
-    try {
-      // filter by role
-      const params = {
-        filters: {
-          roles: ["USER"],
-        },
-      };
-      const response = await userAPI.getUsers(params);
-      setAllUsers(response.data.data);
-    } catch (error) {
-      console.error("Error loading users:", error);
-      showError(
-        `Failed to load users: ${
-          error.response?.data?.message || error.message
-        }`,
-        3000
-      );
-    }
-  }, []);
-
-  const loadAllProviders = useCallback(async () => {
-    try {
-      // filter by role
-      const params = {
-        filters: {
-          roles: ["SERVICE_PROVIDER"],
-        },
-      };
-      const response = await userAPI.getUsers(params);
-      setAllProviders(response.data.data);
-    } catch (error) {
-      console.error("Error loading providers:", error);
-      showError(
-        `Failed to load providers: ${
-          error.response?.data?.message || error.message
-        }`,
-        3000
-      );
-    }
-  }, []);
+  const debouncedQuery = useDebounce(filters.query, 700);
+  const debouncedMail = useDebounce(filters.mail, 700);
 
   const loadBookings = useCallback(async () => {
     setLoading(true);
@@ -557,6 +472,7 @@ const BookingManagement = () => {
           paymentStatus: filters.paymentStatus,
           userId: filters.userId,
           providerId: filters.providerId,
+          mail: debouncedMail, // Use debounced mail
         },
       };
 
@@ -580,6 +496,7 @@ const BookingManagement = () => {
     pagination.page,
     pagination.size,
     debouncedQuery, // Use debounced query
+    debouncedMail, // Use debounced mail
     filters.status,
     filters.paymentStatus,
     filters.userId,
@@ -594,6 +511,7 @@ const BookingManagement = () => {
     pagination.page,
     pagination.size,
     debouncedQuery, // Use debounced query
+    debouncedMail, // Use debounced mail
     filters.status,
     filters.paymentStatus,
     filters.userId,
@@ -603,14 +521,6 @@ const BookingManagement = () => {
     loadBookings,
   ]);
 
-  useEffect(() => {
-    loadAllUsers();
-  }, [loadAllUsers]);
-
-  useEffect(() => {
-    loadAllProviders();
-  }, [loadAllProviders]);
-
   const handleSearch = (e) => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));
     setPagination((prev) => ({ ...prev, page: 1 }));
@@ -618,6 +528,14 @@ const BookingManagement = () => {
 
   const isSearching =
     filters.query !== debouncedQuery && filters.query.length > 0;
+
+  const isMailType = filters.mail !== debouncedMail && filters.mail.length > 0;
+
+  //   const isUserIdType =
+  //   filters.userId !== debouncedUserId && filters.userId.length > 0;
+
+  // const isProviderIdType =
+  //   filters.providerId !== debouncedProviderId && filters.providerId.length > 0;
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -707,418 +625,481 @@ const BookingManagement = () => {
     return colors[status] || "bg-gray-100 text-gray-800";
   };
 
+  // Get stats for header cards
+  const stats = React.useMemo(() => {
+    const totalBookings = pagination.totalElements;
+    const completedBookings = bookings.filter(
+      (b) => b.status === "COMPLETED"
+    ).length;
+    const pendingBookings = bookings.filter(
+      (b) => b.status === "PENDING"
+    ).length;
+    const totalRevenue = bookings.reduce(
+      (sum, b) => sum + (b.totalPrice || 0),
+      0
+    );
+
+    return {
+      totalBookings,
+      completedBookings,
+      pendingBookings,
+      totalRevenue,
+    };
+  }, [bookings, pagination.totalElements]);
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Booking Management</h1>
-        <div className="flex gap-2">
-          <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
-            <Download className="w-4 h-4" />
-            Export
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Header Section with Gradient */}
+      <div className="relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
+
+        <div className="relative px-8 py-12">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            {/* Title Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                  <ReceiptText className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                    Booking Management
+                  </h1>
+                  <p className="text-gray-600 mt-1">
+                    Manage and monitor all system bookings
+                  </p>
+                </div>
+              </div>
+
+              {/* Stats Cards */}
+              <div className="flex flex-wrap gap-4">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-100 rounded-xl">
+                      <ReceiptText className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {formatNumber(pagination.totalElements)}
+                      </p>
+                      <p className="text-sm text-gray-600">Total Bookings</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-amber-100 rounded-xl">
+                      <Clock className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {formatNumber(stats.pendingBookings)}
+                      </p>
+                      <p className="text-sm text-gray-600">Pending</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-green-100 rounded-xl">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {formatNumber(stats.completedBookings)}
+                      </p>
+                      <p className="text-sm text-gray-600">Completed</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={loadBookings}
+                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <RefreshCw className="w-5 h-5 relative z-10" />
+                <span className="relative z-10 font-medium">Refresh</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search bookings..."
-              value={filters.query}
-              onChange={handleSearch}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            {isSearching && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-              </div>
-            )}
+      {/* Filters Section */}
+      <div className="px-8 -mt-6 relative z-10">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+              <Filter className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">
+              Filters & Search
+            </h2>
           </div>
 
-          {/* Status Filter */}
-          <select
-            value={filters.status}
-            onChange={(e) => handleFilterChange("status", e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">All Status</option>
-            <option value="PENDING">Pending</option>
-            <option value="ACCEPTED">Accepted</option>
-            <option value="ONGOING">Ongoing</option>
-            <option value="SERVICE_DONE">Service Done</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="CANCELLED">Cancelled</option>
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Search */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Search Bookings
+              </label>
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Search by user name, provider name"
+                  value={filters.query}
+                  onChange={handleSearch}
+                  className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                />
+              </div>
+            </div>
 
-          {/* Payment Status Filter */}
-          <select
-            value={filters.paymentStatus}
-            onChange={(e) =>
-              handleFilterChange("paymentStatus", e.target.value)
-            }
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">All Payments</option>
-            <option value="PENDING">Payment Pending</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="FAILED">Failed</option>
-            <option value="CANCELLED">Cancelled</option>
-            <option value="REFUNDED">Refunded</option>
-          </select>
+            {/* Status Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Status
+              </label>
+              <select
+                value={filters.status}
+                onChange={(e) => handleFilterChange("status", e.target.value)}
+                className="px-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+              >
+                <option value="">All Status</option>
+                <option value="PENDING">Pending</option>
+                <option value="ACCEPTED">Accepted</option>
+                <option value="ONGOING">Ongoing</option>
+                <option value="SERVICE_DONE">Service Done</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+            </div>
 
-          {/* User Filter - Dropdown */}
-          <select
-            value={filters.userId}
-            onChange={(e) => handleFilterChange("userId", e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">All Users</option>
-            {allUsers.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name} {user.lastName} ({user.email})
-              </option>
-            ))}
-          </select>
+            {/* Payment Status Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Payment Status
+              </label>
+              <select
+                value={filters.paymentStatus}
+                onChange={(e) =>
+                  handleFilterChange("paymentStatus", e.target.value)
+                }
+                className="px-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+              >
+                <option value="">All Payments</option>
+                <option value="PENDING">Payment Pending</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="FAILED">Failed</option>
+                <option value="CANCELLED">Cancelled</option>
+                <option value="REFUNDED">Refunded</option>
+              </select>
+            </div>
 
-          {/* Provider Filter - Input or Dropdown */}
-          <select
-            value={filters.providerId}
-            onChange={(e) => handleFilterChange("providerId", e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">All Providers</option>
-            {allProviders.map((provider) => (
-              <option key={provider.id} value={provider.id}>
-                {provider.name}
-              </option>
-            ))}
-          </select>
+            {/* Mail Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Mail</label>
+              <div className="relative group">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Mail"
+                  value={filters.mail}
+                  onChange={(e) => handleFilterChange("mail", e.target.value)}
+                  className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                />
+                {isMailType && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Bookings Table */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort("createdAt")}
-                >
-                  <div className="flex items-center">
-                    Booking Date
-                    {sortBy === "createdAt" && (
-                      <span className="ml-1">
-                        {sortOrder === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </div>
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Service
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Schedule
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort("totalPrice")}
-                >
-                  <div className="flex items-center">
-                    Total Price
-                    {sortBy === "totalPrice" && (
-                      <span className="ml-1">
-                        {sortOrder === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </div>
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Payment
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {loading ? (
+      {/* Main Content */}
+      <div className="px-8 mt-8 pb-8">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
+          {/* Table Header */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                  <ReceiptText className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  Booking Directory
+                </h3>
+              </div>
+              <div className="text-sm text-gray-600">
+                {formatNumber(pagination.totalElements)} bookings total
+              </div>
+            </div>
+          </div>
+          {/* Table Content */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200/50">
+              <thead className="bg-gradient-to-r from-gray-50/80 to-gray-100/80 backdrop-blur-sm">
                 <tr>
-                  <td colSpan="8" className="px-6 py-4 text-center">
-                    Loading...
-                  </td>
-                </tr>
-              ) : bookings.length === 0 ? (
-                <tr>
-                  <td colSpan="8" className="px-6 py-4 text-center">
-                    No bookings found
-                  </td>
-                </tr>
-              ) : (
-                bookings.map((booking) => (
-                  <tr key={booking.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {formatDate2(booking.createdAt)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {booking.user.name} {booking.user.lastName}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {booking.user.email}
-                          </div>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100/50 transition-colors"
+                    onClick={() => handleSort("createdAt")}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-gray-500 group-hover:text-gray-700" />
+                      Booking Date
+                      {sortBy === "createdAt" && (
+                        <div className="p-1 bg-blue-100 rounded">
+                          {sortOrder === "asc" ? (
+                            <ChevronUp className="w-3 h-3 text-blue-600" />
+                          ) : (
+                            <ChevronDown className="w-3 h-3 text-blue-600" />
+                          )}
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        {booking.providerService.iconUrl && (
-                          <img
-                            src={booking.providerService.iconUrl}
-                            alt="Service"
-                            className="w-8 h-8 object-cover rounded mr-2"
-                          />
-                        )}
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {booking.providerService.serviceName}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {booking.providerService.providerName}
-                          </div>
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-gray-500" />
+                      User
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Service
+                  </th>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-200/50 transition-all duration-200 group"
+                    onClick={() => handleSort("totalPrice")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Total Price
+                      {sortBy === "totalPrice" && (
+                        <div className="p-1 bg-blue-100 rounded">
+                          {sortOrder === "asc" ? (
+                            <ChevronUp className="w-3 h-3 text-blue-600" />
+                          ) : (
+                            <ChevronDown className="w-3 h-3 text-blue-600" />
+                          )}
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {formatDate2(booking.scheduledStartTime)}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        to {formatDate2(booking.scheduledEndTime)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {formatCurrency(booking.totalPrice)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(
-                          booking.status
-                        )}`}
-                      >
-                        {booking.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(
-                          booking.paymentStatus
-                        )}`}
-                      >
-                        {booking.paymentStatus}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleViewBooking(booking.id)}
-                          className="text-blue-600 hover:text-blue-900"
-                          title="View Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleDeleteBooking(
-                              booking.id,
-                              `${booking.user.name} ${booking.user.lastName}`
-                            )
-                          }
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete Booking"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Payment
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200/50">
+                {loading ? (
+                  <tr>
+                    <td colSpan="8" className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                        <p className="text-gray-500 font-medium">
+                          Loading bookings...
+                        </p>
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : bookings.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                          <Calendar className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <div>
+                          <p className="text-gray-500 font-medium">
+                            No bookings found
+                          </p>
+                          <p className="text-gray-400 text-sm">
+                            Try adjusting your filters
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  bookings.map((booking) => (
+                    <tr
+                      key={booking.id}
+                      className="hover:bg-white/50 transition-all duration-200 group"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="text-sm font-medium text-gray-900">
+                          {formatDate2(booking.createdAt)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {booking.user.name} {booking.user.lastName}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {booking.user.email}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="flex items-center gap-3">
+                          {booking.providerService.iconUrl && (
+                            <img
+                              src={booking.providerService.iconUrl}
+                              alt="Service"
+                              className="w-10 h-10 object-cover rounded-lg shadow-sm"
+                            />
+                          )}
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {booking.providerService.serviceName}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {booking.providerService.providerName}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="text-sm font-bold text-gray-900">
+                          {formatCurrency(booking.totalPrice)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium shadow-sm ${getStatusBadgeColor(
+                            booking.status
+                          )}`}
+                        >
+                          {booking.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium shadow-sm ${getPaymentStatusColor(
+                            booking.paymentStatus
+                          )}`}
+                        >
+                          {booking.paymentStatus}
+                        </span>
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap text-left">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleViewBooking(booking.id)}
+                            className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="View Details"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDeleteBooking(
+                                booking.id,
+                                `${booking.user.name} ${booking.user.lastName}`
+                              )
+                            }
+                            className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="Delete Booking"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
 
-        {/* Pagination */}
-        {/* {pagination.totalPages > 1 && (
-          <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => handlePageChange(pagination.page - 1)}
-                disabled={pagination.page === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page === pagination.totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
+          {/* Enhanced Pagination */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="text-sm text-gray-700">
                   Showing{" "}
-                  <span className="font-medium">
-                    {(pagination.page - 1) * pagination.size + 1}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber((pagination.page - 1) * pagination.size + 1)}
                   </span>{" "}
                   to{" "}
-                  <span className="font-medium">
-                    {Math.min(
-                      pagination.page * pagination.size,
-                      pagination.totalElements
+                  <span className="font-bold text-blue-600">
+                    {formatNumber(
+                      Math.min(
+                        pagination.page * pagination.size,
+                        pagination.totalElements
+                      )
                     )}
                   </span>{" "}
                   of{" "}
-                  <span className="font-medium">
-                    {pagination.totalElements}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber(pagination.totalElements)}
                   </span>{" "}
                   results
-                </p>
+                </div>
               </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+
+              {pagination.totalPages > 1 && (
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                    disabled={pagination.page <= 1}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
+                    <ChevronLeft className="w-4 h-4" />
                     Previous
                   </button>
-                  {[...Array(Math.min(pagination.totalPages, 5))].map(
-                    (_, index) => {
-                      const page = index + 1;
-                      return (
-                        <button
-                          key={page}
-                          onClick={() => handlePageChange(page)}
-                          className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                            page === pagination.page
-                              ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                              : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      );
-                    }
-                  )}
+
+                  <div className="flex items-center gap-1">
+                    {[...Array(Math.min(5, pagination.totalPages))].map(
+                      (_, i) => {
+                        const page = i + 1;
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
+                              pagination.page === page
+                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      }
+                    )}
+                  </div>
+
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page === pagination.totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                    disabled={pagination.page >= pagination.totalPages}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
                     Next
+                    <ChevronRight className="w-4 h-4" />
                   </button>
-                </nav>
-              </div>
-            </div>
-          </div>
-        )} */}
-
-        {/* Pagination */}
-        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page <= 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page >= pagination.totalPages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Showing{" "}
-                <span className="font-medium">
-                  {formatNumber((pagination.page - 1) * pagination.size + 1)}
-                </span>{" "}
-                to{" "}
-                <span className="font-medium">
-                  {formatNumber(
-                    Math.min(
-                      pagination.page * pagination.size,
-                      pagination.totalElements
-                    )
-                  )}
-                </span>{" "}
-                of{" "}
-                <span className="font-medium">
-                  {formatNumber(pagination.totalElements)}
-                </span>{" "}
-                results
-              </p>
-            </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <button
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={pagination.page <= 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
-                  const page = i + 1;
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        pagination.page === page
-                          ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                          : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  );
-                })}
-                <button
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page >= pagination.totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </nav>
+                </div>
+              )}
             </div>
           </div>
         </div>

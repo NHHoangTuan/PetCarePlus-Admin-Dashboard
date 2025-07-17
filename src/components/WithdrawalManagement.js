@@ -20,12 +20,18 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   MoreHorizontal,
   Edit,
   Trash2,
 } from "lucide-react";
 import { withdrawalAPI } from "../services/api";
-import { formatPrice, formatNumber } from "../utils/formatUtils";
+import {
+  formatPrice,
+  formatNumber,
+  formatCurrency,
+} from "../utils/formatUtils";
 import { formatDate } from "../utils/dateUtils";
 import { parseValidationErrors } from "../utils/errorHandler";
 import { useToast } from "../context/ToastContext";
@@ -152,7 +158,7 @@ const WithdrawalDetailModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-900">
             Withdrawal Details
@@ -182,19 +188,19 @@ const WithdrawalDetailModal = ({
                 <div className="flex justify-between">
                   <span className="text-gray-600">Amount:</span>
                   <span className="font-semibold text-lg">
-                    ${formatPrice(withdrawal.amount)}
+                    {formatCurrency(withdrawal.amount, "VND")}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Fee:</span>
                   <span className="text-red-600">
-                    -${formatPrice(withdrawal.fee)}
+                    -{formatCurrency(withdrawal.fee, "VND")}
                   </span>
                 </div>
                 <div className="flex justify-between border-t pt-2">
                   <span className="text-gray-600 font-medium">Net Amount:</span>
                   <span className="font-bold text-green-600 text-lg">
-                    ${formatPrice(withdrawal.netAmount)}
+                    {formatCurrency(withdrawal.netAmount, "VND")}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -616,318 +622,400 @@ const WithdrawalManagement = () => {
     filters.amountTo !== debouncedAmountTo && filters.amountTo.length > 0;
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Withdrawal Management
-        </h1>
-        <div className="flex gap-2">
-          <button
-            onClick={loadWithdrawals}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </button>
-          {/* <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
-            <Download className="w-4 h-4" />
-            Export
-          </button> */}
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Header with Gradient */}
+      <div className="relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          {/* Search */}
-          {/* <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search withdrawals..."
-              value={filters.query}
-              onChange={handleSearch}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div> */}
+        <div className="relative px-8 py-12">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            {/* Title Section */}
 
-          {/* Status Filter */}
-          <select
-            value={filters.status}
-            onChange={(e) => handleFilterChange("status", e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">All Status</option>
-            <option value="PENDING">Pending</option>
-            <option value="APPROVED">Approved</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="REJECTED">Rejected</option>
-          </select>
-
-          {/* Bank Filter */}
-          <div className="relative">
-            <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Bank Name"
-              value={filters.bankName}
-              onChange={(e) => handleFilterChange("bankName", e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            {isBankNameType && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                  <DollarSign className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                    Withdrawal Management
+                  </h1>
+                  <p className="text-gray-600 mt-1">
+                    Manage withdrawal requests and transactions
+                  </p>
+                </div>
               </div>
-            )}
-          </div>
 
-          {/* Amount From */}
-          <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="number"
-              placeholder="Amount From"
-              value={filters.amountFrom}
-              onChange={(e) => handleFilterChange("amountFrom", e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            {isAmountFromType && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-              </div>
-            )}
-          </div>
-
-          {/* Amount To */}
-          <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="number"
-              placeholder="Amount To"
-              value={filters.amountTo}
-              onChange={(e) => handleFilterChange("amountTo", e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            {isAmountToType && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Withdrawals Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  onClick={() => handleSort("id")}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                >
-                  ID
-                  {sortBy === "id" && (
-                    <span className="ml-1">
-                      {sortOrder === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
-                </th>
-                <th
-                  onClick={() => handleSort("amount")}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                >
-                  Amount
-                  {sortBy === "amount" && (
-                    <span className="ml-1">
-                      {sortOrder === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Bank Details
-                </th>
-                <th
-                  onClick={() => handleSort("status")}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                >
-                  Status
-                  {sortBy === "status" && (
-                    <span className="ml-1">
-                      {sortOrder === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
-                </th>
-                <th
-                  onClick={() => handleSort("createdAt")}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                >
-                  Created
-                  {sortBy === "createdAt" && (
-                    <span className="ml-1">
-                      {sortOrder === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {loading ? (
-                <tr>
-                  <td colSpan="6" className="px-6 py-4 text-center">
-                    <div className="flex justify-center items-center">
-                      <RefreshCw className="w-5 h-5 animate-spin text-gray-400 mr-2" />
-                      Loading...
+              {/* Stats Cards */}
+              <div className="flex flex-wrap gap-4">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-100 rounded-xl">
+                      <FileText className="w-4 h-4 text-blue-600" />
                     </div>
-                  </td>
-                </tr>
-              ) : withdrawals.length === 0 ? (
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {formatNumber(withdrawals.length)}
+                      </p>
+                      <p className="text-sm text-gray-600">Total Withdrawals</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={loadWithdrawals}
+                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <RefreshCw className="w-5 h-5 relative z-10" />
+                <span className="relative z-10 font-medium">Refresh</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters Section */}
+      <div className="px-8 -mt-6 relative z-10">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+              <Filter className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">
+              Filters & Search
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Status Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Status
+              </label>
+              <select
+                value={filters.status}
+                onChange={(e) => handleFilterChange("status", e.target.value)}
+                className="px-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+              >
+                <option value="">All Status</option>
+                <option value="PENDING">Pending</option>
+                <option value="APPROVED">Approved</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="REJECTED">Rejected</option>
+              </select>
+            </div>
+
+            {/* Bank Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Bank Name
+              </label>
+              <div className="relative group">
+                <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Bank Name"
+                  value={filters.bankName}
+                  onChange={(e) =>
+                    handleFilterChange("bankName", e.target.value)
+                  }
+                  className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                />
+                {isBankNameType && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Amount From */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Amount From
+              </label>
+              <div className="relative group">
+                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
+                <input
+                  type="number"
+                  placeholder="Amount From"
+                  value={filters.amountFrom}
+                  onChange={(e) =>
+                    handleFilterChange("amountFrom", e.target.value)
+                  }
+                  className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                />
+                {isAmountFromType && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Amount To */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Amount To
+              </label>
+              <div className="relative group">
+                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
+                <input
+                  type="number"
+                  placeholder="Amount To"
+                  value={filters.amountTo}
+                  onChange={(e) =>
+                    handleFilterChange("amountTo", e.target.value)
+                  }
+                  className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                />
+                {isAmountToType && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Directory Section */}
+      <div className="px-8 mt-8 pb-8">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
+          {/* Table Header */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                  <DollarSign className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  Withdrawal Directory
+                </h3>
+              </div>
+              <div className="text-sm text-gray-600">
+                {formatNumber(withdrawals.length)} withdrawals total
+              </div>
+            </div>
+          </div>
+
+          {/* Table Content */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50/50">
                 <tr>
-                  <td
-                    colSpan="6"
-                    className="px-6 py-4 text-center text-gray-500"
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th
+                    onClick={() => handleSort("amount")}
+                    className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors duration-200"
                   >
-                    No withdrawals found
-                  </td>
+                    <div className="flex items-center gap-2">
+                      <span>Amount</span>
+                      {sortBy === "amount" && (
+                        <div className="p-1 bg-blue-100 rounded">
+                          {sortOrder === "asc" ? (
+                            <ChevronUp className="w-3 h-3 text-blue-600" />
+                          ) : (
+                            <ChevronDown className="w-3 h-3 text-blue-600" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Bank Details
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th
+                    onClick={() => handleSort("createdAt")}
+                    className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors duration-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>Created</span>
+                      {sortBy === "createdAt" && (
+                        <div className="p-1 bg-blue-100 rounded">
+                          {sortOrder === "asc" ? (
+                            <ChevronUp className="w-3 h-3 text-blue-600" />
+                          ) : (
+                            <ChevronDown className="w-3 h-3 text-blue-600" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ) : (
-                withdrawals.map((withdrawal) => (
-                  <tr key={withdrawal.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-mono text-gray-900">
-                        {withdrawal.id.slice(0, 8)}...
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-4 text-center">
+                      <div className="flex justify-center items-center">
+                        <RefreshCw className="w-5 h-5 animate-spin text-gray-400 mr-2" />
+                        Loading...
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        <div className="font-semibold">
-                          ${formatPrice(withdrawal.amount)}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Fee: ${formatPrice(withdrawal.fee)}
-                        </div>
-                        <div className="text-xs text-green-600 font-medium">
-                          Net: ${formatPrice(withdrawal.netAmount)}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        <div className="font-medium">{withdrawal.bankName}</div>
-                        <div className="text-xs text-gray-500">
-                          {withdrawal.accountNumber}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {withdrawal.accountHolderName}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full items-center gap-1 ${getStatusBadgeColor(
-                          withdrawal.status
-                        )}`}
-                      >
-                        {getStatusIcon(withdrawal.status)}
-                        {withdrawal.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate2(withdrawal.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleViewDetails(withdrawal)}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page <= 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page >= pagination.totalPages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Showing{" "}
-                <span className="font-medium">
-                  {formatNumber((pagination.page - 1) * pagination.size + 1)}
-                </span>{" "}
-                to{" "}
-                <span className="font-medium">
-                  {formatNumber(
-                    Math.min(
-                      pagination.page * pagination.size,
-                      pagination.totalElements
-                    )
-                  )}
-                </span>{" "}
-                of{" "}
-                <span className="font-medium">
-                  {formatNumber(pagination.totalElements)}
-                </span>{" "}
-                results
-              </p>
-            </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <button
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={pagination.page <= 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
-                  const page = i + 1;
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        pagination.page === page
-                          ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                          : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                      }`}
+                ) : withdrawals.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="6"
+                      className="px-6 py-4 text-center text-gray-500"
                     >
-                      {page}
-                    </button>
-                  );
-                })}
-                <button
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page >= pagination.totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </nav>
+                      No withdrawals found
+                    </td>
+                  </tr>
+                ) : (
+                  withdrawals.map((withdrawal) => (
+                    <tr key={withdrawal.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-mono">
+                          {withdrawal.id
+                            ? withdrawal.id.substring(0, 12) + "..."
+                            : "Unknown"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="text-sm text-gray-900">
+                          <div className="font-semibold">
+                            {formatCurrency(withdrawal.amount, "VND")}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Fee: {formatCurrency(withdrawal.fee, "VND")}
+                          </div>
+                          <div className="text-xs text-green-600 font-medium">
+                            Net: {formatCurrency(withdrawal.netAmount, "VND")}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="text-sm text-gray-900">
+                          <div className="font-medium">
+                            {withdrawal.bankName}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {withdrawal.accountNumber}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {withdrawal.accountHolderName}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <span
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full items-center gap-1 ${getStatusBadgeColor(
+                            withdrawal.status
+                          )}`}
+                        >
+                          {getStatusIcon(withdrawal.status)}
+                          {withdrawal.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap text-left">
+                        <div className="text-sm text-gray-600 font-medium">
+                          {formatDate2(withdrawal.createdAt)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleViewDetails(withdrawal)}
+                            className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="Preview"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Enhanced Pagination */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="text-sm text-gray-700">
+                  Showing{" "}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber((pagination.page - 1) * pagination.size + 1)}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber(
+                      Math.min(
+                        pagination.page * pagination.size,
+                        pagination.totalElements
+                      )
+                    )}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber(pagination.totalElements)}
+                  </span>{" "}
+                  results
+                </div>
+              </div>
+
+              {pagination.totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    disabled={pagination.page <= 1}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {[...Array(Math.min(5, pagination.totalPages))].map(
+                      (_, i) => {
+                        const page = i + 1;
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
+                              pagination.page === page
+                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      }
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    disabled={pagination.page >= pagination.totalPages}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
