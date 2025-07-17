@@ -104,321 +104,449 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
   if (!isOpen || !booking) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Booking Details</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            ID
-          </label>
-          <p className="text-sm text-gray-900">{booking.id}</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column - Booking Info */}
-          <div className="space-y-6">
-            {/* Booking Status */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-gray-900 mb-3">
-                Booking Status
-              </h3>
-              <div className="flex items-center justify-between mb-3">
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(
-                    booking.status
-                  )}`}
-                >
-                  {booking.status}
-                </span>
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${getPaymentStatusColor(
-                    booking.paymentStatus
-                  )}`}
-                >
-                  Payment: {booking.paymentStatus}
-                </span>
-              </div>
-
-              {/* Status Update Buttons */}
-              {/* {!showCancelForm &&
-                booking.status !== "COMPLETED" &&
-                booking.status !== "CANCELLED" && (
-                  <div className="flex gap-2 flex-wrap">
-                    {booking.status === "PENDING" && (
-                      <button
-                        onClick={() => handleStatusUpdate("CONFIRMED")}
-                        disabled={updatingStatus}
-                        className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50"
-                      >
-                        Confirm
-                      </button>
-                    )}
-                    {(booking.status === "CONFIRMED" ||
-                      booking.status === "PENDING") && (
-                      <button
-                        onClick={() => handleStatusUpdate("IN_PROGRESS")}
-                        disabled={updatingStatus}
-                        className="px-3 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-700 disabled:opacity-50"
-                      >
-                        Start Service
-                      </button>
-                    )}
-                    {booking.status === "IN_PROGRESS" && (
-                      <button
-                        onClick={() => handleStatusUpdate("COMPLETED")}
-                        disabled={updatingStatus}
-                        className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 disabled:opacity-50"
-                      >
-                        Complete
-                      </button>
-                    )}
-                    <button
-                      onClick={() => setShowCancelForm(true)}
-                      disabled={updatingStatus}
-                      className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 disabled:opacity-50"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )} */}
-
-              {/* Cancel Form */}
-              {showCancelForm && (
-                <div className="mt-3 p-3 bg-red-50 rounded border">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cancellation Reason
-                  </label>
-                  <textarea
-                    value={cancelReason}
-                    onChange={(e) => setCancelReason(e.target.value)}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="Enter reason for cancellation..."
-                  />
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      onClick={() => handleStatusUpdate("CANCELLED")}
-                      disabled={updatingStatus || !cancelReason.trim()}
-                      className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 disabled:opacity-50"
-                    >
-                      Confirm Cancel
-                    </button>
-                    <button
-                      onClick={() => setShowCancelForm(false)}
-                      className="px-3 py-1 bg-gray-300 text-gray-700 rounded text-sm hover:bg-gray-400"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl w-full max-w-6xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        {/* Header with Gradient */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 opacity-10"></div>
+          <div className="relative p-6 border-b border-slate-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 shadow-lg">
+                  <Calendar className="w-6 h-6 text-white" />
                 </div>
-              )}
-            </div>
-
-            {/* Customer Info */}
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-3">
-                Customer Information
-              </h3>
-              <div className="space-y-2">
-                <div className="flex items-center">
-                  <User className="w-4 h-4 text-gray-400 mr-2" />
-                  <span className="text-sm">
-                    {booking.user.name} {booking.user.lastName}
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <span className="text-sm text-gray-600">
-                    {booking.user.email}
-                  </span>
-                </div>
-                <div className="text-xs text-gray-500">
-                  Customer since: {formatDate2(booking.user.createdAt)}
-                </div>
-              </div>
-            </div>
-
-            {/* Service Provider Info */}
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-3">
-                Service Provider
-              </h3>
-              <div className="flex items-start space-x-3">
-                {booking.providerService.iconUrl && (
-                  <img
-                    src={booking.providerService.iconUrl}
-                    alt="Service icon"
-                    className="w-12 h-12 object-cover rounded"
-                  />
-                )}
                 <div>
-                  <div className="font-medium">
-                    {booking.providerService.serviceName}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    Provider: {booking.providerService.providerName}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    Base Price:{" "}
-                    {formatCurrency(booking.providerService.basePrice, "VND")}
-                  </div>
-                  {booking.providerService.customPrice && (
-                    <div className="text-sm text-green-600 font-medium">
-                      Custom Price:{" "}
-                      {formatCurrency(
-                        booking.providerService.customPrice,
-                        "VND"
-                      )}
-                    </div>
-                  )}
+                  <h2 className="text-2xl font-bold text-slate-900 mb-1">
+                    Booking Details
+                  </h2>
+                  <p className="text-slate-600 text-sm">
+                    Comprehensive booking information and management
+                  </p>
                 </div>
               </div>
-              {booking.providerService.customDescription && (
-                <div className="mt-2 text-sm text-gray-600 bg-gray-50 p-2 rounded">
-                  {booking.providerService.customDescription}
-                </div>
-              )}
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-slate-400" />
+              </button>
             </div>
+          </div>
+        </div>
 
-            {/* Timing Info */}
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-3">Schedule</h3>
-              <div className="space-y-2">
-                <div className="flex items-center">
-                  <Calendar className="w-4 h-4 text-gray-400 mr-2" />
-                  <span className="text-sm">
-                    Booked: {formatDate2(booking.bookingTime)}
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <Clock className="w-4 h-4 text-gray-400 mr-2" />
-                  <span className="text-sm">
-                    Scheduled: {formatDate2(booking.scheduledStartTime)} -{" "}
-                    {formatDate2(booking.scheduledEndTime)}
-                  </span>
-                </div>
-                {booking.actualEndTime && (
-                  <div className="flex items-center">
-                    <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                    <span className="text-sm">
-                      Completed: {formatDate2(booking.actualEndTime)}
-                    </span>
-                  </div>
-                )}
+        <div className="p-6">
+          {/* Booking ID */}
+          <div className="mb-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl p-4 border border-slate-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500 rounded-xl">
+                <ReceiptText className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Booking ID
+                </label>
+                <p className="text-lg font-mono text-slate-900">{booking.id}</p>
               </div>
             </div>
           </div>
 
-          {/* Right Column - Pets & Pricing */}
-          <div className="space-y-6">
-            {/* Pet Services */}
-            <div class="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-gray-900 mb-3">Pet Services</h3>
-              <div className="space-y-3">
-                {booking.petList?.map((petService, index) => (
-                  <div key={index} className="border rounded-lg p-3">
-                    <div className="flex items-start space-x-3">
-                      {petService.petImageUrl && (
-                        <img
-                          src={petService.petImageUrl}
-                          alt={petService.petName}
-                          className="w-16 h-16 object-cover rounded-full"
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            {/* Left Column - Main Information */}
+            <div className="space-y-6">
+              {/* Booking Status */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                    <AlertCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Booking Status
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-4">
+                    <label className="text-sm font-medium text-slate-600 mb-2 block">
+                      Status
+                    </label>
+                    <span
+                      className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium shadow-sm ${getStatusBadgeColor(
+                        booking.status
+                      )}`}
+                    >
+                      {booking.status}
+                    </span>
+                  </div>
+                  <div className="bg-gradient-to-r from-slate-50 to-green-50 rounded-xl p-4">
+                    <label className="text-sm font-medium text-slate-600 mb-2 block">
+                      Payment Status
+                    </label>
+                    <span
+                      className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium shadow-sm ${getPaymentStatusColor(
+                        booking.paymentStatus
+                      )}`}
+                    >
+                      {booking.paymentStatus}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Cancel Form */}
+                {showCancelForm && (
+                  <div className="mt-6 p-4 bg-gradient-to-r from-red-50 to-red-100 rounded-2xl border border-red-200">
+                    <h4 className="text-lg font-semibold text-red-900 mb-3">
+                      Cancel Booking
+                    </h4>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-red-700 mb-2">
+                          Cancellation Reason
+                        </label>
+                        <textarea
+                          value={cancelReason}
+                          onChange={(e) => setCancelReason(e.target.value)}
+                          rows={3}
+                          className="w-full px-4 py-3 border border-red-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                          placeholder="Enter reason for cancellation..."
                         />
-                      )}
-                      <div className="flex-1">
-                        <div className="font-medium">{petService.petName}</div>
-                        <div className="text-sm text-gray-600">
-                          {petService.serviceName}
-                        </div>
-                        <div className="text-sm font-medium text-green-600">
-                          {formatCurrency(petService.price, "VND")}
-                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => handleStatusUpdate("CANCELLED")}
+                          disabled={updatingStatus || !cancelReason.trim()}
+                          className={`px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 flex items-center gap-2 transition-all duration-200 ${
+                            updatingStatus ? "animate-pulse" : ""
+                          }`}
+                        >
+                          <X className="w-4 h-4" />
+                          Confirm Cancel
+                        </button>
+                        <button
+                          onClick={() => setShowCancelForm(false)}
+                          className="px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-xl hover:bg-slate-50 transition-all duration-200"
+                        >
+                          Cancel
+                        </button>
                       </div>
                     </div>
                   </div>
-                ))}
+                )}
+              </div>
+
+              {/* Customer Information */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Customer Information
+                  </h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                      {booking.user.name?.charAt(0)}
+                      {booking.user.lastName?.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-lg font-medium text-slate-900">
+                        {booking.user.name} {booking.user.lastName}
+                      </p>
+                      <p className="text-sm text-slate-600">
+                        {booking.user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-3">
+                    <p className="text-sm text-slate-600">
+                      Customer since: {formatDate2(booking.user.createdAt)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Service Provider Information */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Service Provider
+                  </h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4">
+                    {booking.providerService.iconUrl && (
+                      <img
+                        src={booking.providerService.iconUrl}
+                        alt="Service icon"
+                        className="w-16 h-16 object-cover rounded-2xl border-4 border-white shadow-lg"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <p className="text-lg font-medium text-slate-900">
+                        {booking.providerService.serviceName}
+                      </p>
+                      <p className="text-sm text-slate-600 mb-2">
+                        Provider: {booking.providerService.providerName}
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-3">
+                          <p className="text-xs text-slate-600">Base Price</p>
+                          <p className="text-sm font-medium text-slate-900">
+                            {formatCurrency(
+                              booking.providerService.basePrice,
+                              "VND"
+                            )}
+                          </p>
+                        </div>
+                        {booking.providerService.customPrice && (
+                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-3">
+                            <p className="text-xs text-slate-600">
+                              Custom Price
+                            </p>
+                            <p className="text-sm font-medium text-green-600">
+                              {formatCurrency(
+                                booking.providerService.customPrice,
+                                "VND"
+                              )}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  {booking.providerService.customDescription && (
+                    <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-3">
+                      <p className="text-sm text-slate-700">
+                        {booking.providerService.customDescription}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Schedule Information */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl">
+                    <Clock className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Schedule
+                  </h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl">
+                    <Calendar className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <p className="text-sm text-slate-600">Booked</p>
+                      <p className="text-sm font-medium text-slate-900">
+                        {formatDate2(booking.bookingTime)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-slate-50 to-purple-50 rounded-xl">
+                    <Clock className="w-5 h-5 text-purple-600" />
+                    <div>
+                      <p className="text-sm text-slate-600">Scheduled</p>
+                      <p className="text-sm font-medium text-slate-900">
+                        {formatDate2(booking.scheduledStartTime)} -{" "}
+                        {formatDate2(booking.scheduledEndTime)}
+                      </p>
+                    </div>
+                  </div>
+                  {booking.actualEndTime && (
+                    <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <div>
+                        <p className="text-sm text-slate-600">Completed</p>
+                        <p className="text-sm font-medium text-slate-900">
+                          {formatDate2(booking.actualEndTime)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Pricing Summary */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-gray-900 mb-3">
-                Payment Summary
-              </h3>
-              <div className="space-y-2">
-                <div className="flex justify-between text-lg font-bold">
-                  <span>Total Amount:</span>
-                  <span className="text-green-600">
-                    {formatCurrency(booking.totalPrice, "VND")}
-                  </span>
+            {/* Right Column - Pets & Pricing */}
+            <div className="space-y-6">
+              {/* Pet Services */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Pet Services
+                  </h3>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span>Payment Status:</span>
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${getPaymentStatusColor(
-                      booking.paymentStatus
-                    )}`}
-                  >
-                    {booking.paymentStatus}
-                  </span>
+                <div className="space-y-4">
+                  {booking.petList?.map((petService, index) => (
+                    <div
+                      key={index}
+                      className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl p-4 border border-slate-200"
+                    >
+                      <div className="flex items-start gap-4">
+                        {petService.petImageUrl && (
+                          <img
+                            src={petService.petImageUrl}
+                            alt={petService.petName}
+                            className="w-16 h-16 object-cover rounded-full border-4 border-white shadow-lg"
+                          />
+                        )}
+                        <div className="flex-1">
+                          <p className="text-lg font-medium text-slate-900">
+                            {petService.petName}
+                          </p>
+                          <p className="text-sm text-slate-600 mb-2">
+                            {petService.serviceName}
+                          </p>
+                          <div className="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                            {formatCurrency(petService.price, "VND")}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
 
-            {/* Notes */}
-            {(booking.note || booking.cancellationReason) && (
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Notes</h3>
-                {booking.note && (
-                  <div className="mb-2">
-                    <div className="text-sm font-medium text-gray-700">
-                      Customer Note:
-                    </div>
-                    <div className="text-sm text-gray-600 bg-blue-50 p-2 rounded">
-                      {booking.note}
+              {/* Payment Summary */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl">
+                    <Download className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Payment Summary
+                  </h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 border border-green-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-medium text-slate-900">
+                        Total Amount:
+                      </span>
+                      <span className="text-2xl font-bold text-green-600">
+                        {formatCurrency(booking.totalPrice, "VND")}
+                      </span>
                     </div>
                   </div>
-                )}
-                {booking.cancellationReason && (
-                  <div>
-                    <div className="text-sm font-medium text-gray-700">
-                      Cancellation Reason:
-                    </div>
-                    <div className="text-sm text-gray-600 bg-red-50 p-2 rounded">
-                      {booking.cancellationReason}
+                  <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-slate-600">
+                        Payment Status:
+                      </span>
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium shadow-sm ${getPaymentStatusColor(
+                          booking.paymentStatus
+                        )}`}
+                      >
+                        {booking.paymentStatus}
+                      </span>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
-            )}
 
-            {/* Timestamps */}
-            <div className="text-xs text-gray-500 space-y-1">
-              <div>Created: {formatDate2(booking.createdAt)}</div>
-              <div>Updated: {formatDate2(booking.updatedAt)}</div>
-              {booking.deletedAt && (
-                <div className="text-red-500">
-                  Deleted: {formatDate2(booking.deletedAt)}
+              {/* Notes */}
+              {(booking.note || booking.cancellationReason) && (
+                <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl">
+                      <ReceiptText className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900">
+                      Notes
+                    </h3>
+                  </div>
+                  <div className="space-y-4">
+                    {booking.note && (
+                      <div>
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">
+                          Customer Note:
+                        </label>
+                        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-3 border border-blue-200">
+                          <p className="text-sm text-slate-700">
+                            {booking.note}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {booking.cancellationReason && (
+                      <div>
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">
+                          Cancellation Reason:
+                        </label>
+                        <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-xl p-3 border border-red-200">
+                          <p className="text-sm text-slate-700">
+                            {booking.cancellationReason}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
+
+              {/* Timestamps */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-gradient-to-r from-slate-500 to-slate-600 rounded-xl">
+                    <Clock className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Timestamps
+                  </h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl">
+                    <Calendar className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <p className="text-sm text-slate-600">Created</p>
+                      <p className="text-sm font-medium text-slate-900">
+                        {formatDate2(booking.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-slate-50 to-purple-50 rounded-xl">
+                    <Clock className="w-4 h-4 text-purple-600" />
+                    <div>
+                      <p className="text-sm text-slate-600">Updated</p>
+                      <p className="text-sm font-medium text-slate-900">
+                        {formatDate2(booking.updatedAt)}
+                      </p>
+                    </div>
+                  </div>
+                  {booking.deletedAt && (
+                    <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-red-50 to-pink-50 rounded-xl">
+                      <AlertCircle className="w-4 h-4 text-red-600" />
+                      <div>
+                        <p className="text-sm text-slate-600">Deleted</p>
+                        <p className="text-sm font-medium text-red-600">
+                          {formatDate2(booking.deletedAt)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 pt-6 border-t mt-6">
+        <div className="flex items-center justify-between p-6 border-t border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50">
+          <div className="text-sm text-slate-500">
+            Booking information and details
+          </div>
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-6 py-3 text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 transition-all duration-200 font-medium"
           >
             Close
           </button>

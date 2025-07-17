@@ -1029,7 +1029,7 @@ const ServiceManagement = () => {
             {/* Search */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
-                Search Notifications
+                Search Services
               </label>
               <div className="relative group">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-800 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
