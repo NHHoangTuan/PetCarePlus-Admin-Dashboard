@@ -15,8 +15,6 @@ import {
   CheckCircle,
   XCircle,
   RefreshCw,
-  ChevronLeft,
-  ChevronRight,
   Languages,
   BookOpen,
   Shield,
@@ -26,11 +24,18 @@ import {
   Save,
   Type,
   Code,
+  FolderOpen,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { termsAPI } from "../services/api";
-import { formatDate } from "../utils/dateUtils";
+import { formatDate, formatDate2 } from "../utils/dateUtils";
 import { parseValidationErrors } from "../utils/errorHandler";
 import { useToast } from "../context/ToastContext";
+import { formatPrice, formatNumber } from "../utils/formatUtils";
+import ConfirmationModal from "./common/ConfirmationModal";
 
 // Terms Editor Modal
 const TermsEditorModal = ({
@@ -254,20 +259,37 @@ function example() {
   const selectedType = termsTypes.find((t) => t.value === formData.type);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-7xl max-h-[95vh] overflow-hidden flex flex-col">
-        {/* Header - unchanged */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            {selectedType && <selectedType.icon className="w-6 h-6" />}
-            {isEditing ? "Edit Terms" : "Create New Terms"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <X className="w-6 h-6" />
-          </button>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white/95 backdrop-blur-xl rounded-3xl w-full max-w-7xl max-h-[95vh] overflow-hidden flex flex-col shadow-2xl border border-white/20">
+        {/* Header with Gradient */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 text-white">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiPgo8Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyIi8+CjwvZz4KPC9zdmc+')] opacity-30"></div>
+
+          <div className="relative px-8 py-6 flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
+                {selectedType && (
+                  <selectedType.icon className="w-6 h-6 text-white" />
+                )}
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">
+                  {isEditing ? "Edit Terms" : "Create New Terms"}
+                </h2>
+                <p className="text-blue-100 text-sm">
+                  {isEditing
+                    ? "Update existing terms and conditions"
+                    : "Create new legal document"}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-white/20 rounded-2xl transition-all duration-200 hover:scale-110"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+          </div>
         </div>
 
         <form
@@ -275,17 +297,17 @@ function example() {
           className="flex-1 flex flex-col overflow-hidden"
         >
           {/* Form Fields */}
-          <div className="p-6 border-b border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
                   Terms Type *
                 </label>
                 <select
                   value={formData.type}
                   onChange={(e) => handleInputChange("type", e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
                     validationErrors.type ? "border-red-500" : "border-gray-300"
                   }`}
                   required
@@ -297,15 +319,16 @@ function example() {
                   ))}
                 </select>
                 {validationErrors.type && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <XCircle className="w-4 h-4" />
                     {validationErrors.type}
                   </p>
                 )}
               </div>
 
               {/* Language */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
                   Language *
                 </label>
                 <select
@@ -313,7 +336,7 @@ function example() {
                   onChange={(e) =>
                     handleInputChange("language", e.target.value)
                   }
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
                     validationErrors.language
                       ? "border-red-500"
                       : "border-gray-300"
@@ -327,7 +350,8 @@ function example() {
                   ))}
                 </select>
                 {validationErrors.language && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <XCircle className="w-4 h-4" />
                     {validationErrors.language}
                   </p>
                 )}
@@ -335,8 +359,8 @@ function example() {
 
               {/* Version (only for editing) */}
               {isEditing && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-700">
                     Version
                   </label>
                   <input
@@ -345,7 +369,7 @@ function example() {
                     onChange={(e) =>
                       handleInputChange("version", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
                     placeholder="e.g., 1.0, 2.1"
                   />
                 </div>
@@ -353,30 +377,36 @@ function example() {
 
               {/* Active Status (only for editing) */}
               {isEditing && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-700">
                     Status
                   </label>
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center">
+                  <div className="flex items-center gap-6">
+                    <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="radio"
                         name="active"
                         checked={formData.active === true}
                         onChange={() => handleInputChange("active", true)}
-                        className="mr-2"
+                        className="w-4 h-4 text-green-600 focus:ring-green-500"
                       />
-                      <span className="text-sm text-green-600">Active</span>
+                      <span className="text-sm font-medium text-green-700 flex items-center gap-1">
+                        <CheckCircle className="w-4 h-4" />
+                        Active
+                      </span>
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="radio"
                         name="active"
                         checked={formData.active === false}
                         onChange={() => handleInputChange("active", false)}
-                        className="mr-2"
+                        className="w-4 h-4 text-red-600 focus:ring-red-500"
                       />
-                      <span className="text-sm text-red-600">Inactive</span>
+                      <span className="text-sm font-medium text-red-700 flex items-center gap-1">
+                        <XCircle className="w-4 h-4" />
+                        Inactive
+                      </span>
                     </label>
                   </div>
                 </div>
@@ -384,22 +414,23 @@ function example() {
             </div>
 
             {/* Title */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="mt-6 space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">
                 Title *
               </label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-2 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
                   validationErrors.title ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="Enter title..."
                 required
               />
               {validationErrors.title && (
-                <p className="mt-1 text-sm text-red-600">
+                <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                  <XCircle className="w-4 h-4" />
                   {validationErrors.title}
                 </p>
               )}
@@ -410,40 +441,50 @@ function example() {
           <div className="flex-1 flex overflow-hidden">
             {/* Editor Section */}
             <div className="flex-1 flex flex-col border-r border-gray-200">
-              <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
-                <label className="text-sm font-medium text-gray-700">
-                  Content * (Markdown Supported)
-                </label>
-                <div className="flex gap-2">
+              <div className="flex justify-between items-center p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                    <Code className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <label className="text-lg font-semibold text-gray-800">
+                      Content Editor
+                    </label>
+                    <p className="text-sm text-gray-600">Markdown supported</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={insertMarkdownSample}
-                    className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                    className="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-xl hover:bg-blue-200 transition-colors duration-200 flex items-center gap-2"
                   >
+                    <Plus className="w-4 h-4" />
                     Insert Sample
                   </button>
                   <button
                     type="button"
                     onClick={() => setPreviewMode(!previewMode)}
-                    className={`px-3 py-1 text-xs rounded flex items-center gap-1 ${
+                    className={`px-4 py-2 text-sm rounded-xl flex items-center gap-2 transition-colors duration-200 ${
                       previewMode
                         ? "bg-green-100 text-green-700 hover:bg-green-200"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    <Eye className="w-3 h-3" />
+                    <Eye className="w-4 h-4" />
                     {previewMode ? "Hide Preview" : "Show Preview"}
                   </button>
                 </div>
               </div>
 
-              <textarea
-                value={formData.content}
-                onChange={(e) => handleInputChange("content", e.target.value)}
-                className={`flex-1 p-4 border-0 focus:ring-0 focus:outline-none resize-none font-mono text-sm ${
-                  validationErrors.content ? "border-red-500" : ""
-                }`}
-                placeholder="# Terms Title
+              <div className="flex-1 relative">
+                <textarea
+                  value={formData.content}
+                  onChange={(e) => handleInputChange("content", e.target.value)}
+                  className={`w-full h-full p-6 border-0 focus:ring-0 focus:outline-none resize-none font-mono text-sm bg-white/80 backdrop-blur-sm transition-all duration-300 ${
+                    validationErrors.content ? "border-red-500" : ""
+                  }`}
+                  placeholder="# Terms Title
 
 ## Section 1
 Your content here...
@@ -456,30 +497,44 @@ Your content here...
 
 > Blockquote here
 
-`inline code` and:
+\`inline code\` and:
 
-```
+\`\`\`
 code block
-```"
-                required
-              />
-              {validationErrors.content && (
-                <p className="p-4 text-sm text-red-600 border-t border-red-200">
-                  {validationErrors.content}
-                </p>
-              )}
+\`\`\`"
+                  required
+                />
+                {validationErrors.content && (
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-red-50 border-t border-red-200">
+                    <p className="text-sm text-red-600 flex items-center gap-1">
+                      <XCircle className="w-4 h-4" />
+                      {validationErrors.content}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Preview Section */}
             {previewMode && (
-              <div className="flex-1 flex flex-col">
-                <div className="p-4 border-b border-gray-200 bg-gray-50">
-                  <h3 className="text-sm font-medium text-gray-700">
-                    Live Preview
-                  </h3>
+              <div className="flex-1 flex flex-col bg-white/95 backdrop-blur-sm">
+                <div className="p-6 bg-gradient-to-r from-green-50 to-teal-50 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl">
+                      <Eye className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800">
+                        Live Preview
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Real-time markdown rendering
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-4 bg-white">
-                  <div className="max-w-none text-left">
+                <div className="flex-1 overflow-y-auto p-6">
+                  <div className="max-w-none">
                     <ReactMarkdown components={markdownComponents}>
                       {formData.content || "*No content to preview*"}
                     </ReactMarkdown>
@@ -490,26 +545,43 @@ code block
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
-            >
-              {saving ? (
-                <RefreshCw className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              {isEditing ? "Update" : "Create"}
-            </button>
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200 flex-shrink-0">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl">
+                  <Save className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-sm text-gray-600">
+                  {isEditing ? "Update existing terms" : "Create new terms"}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-6 py-3 text-gray-700 border border-gray-300 rounded-2xl hover:bg-gray-50 transition-all duration-200 hover:scale-105"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  {saving ? (
+                    <RefreshCw className="w-5 h-5 animate-spin relative z-10" />
+                  ) : (
+                    <Save className="w-5 h-5 relative z-10" />
+                  )}
+                  <span className="relative z-10 font-medium">
+                    {isEditing ? "Update" : "Create"}
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -633,53 +705,60 @@ const TermsPreviewModal = ({ terms, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl">
-        {/* Header - unchanged */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            {getTypeIcon(terms.type)}
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">{terms.title}</h2>
-              <p className="text-sm text-gray-600">
-                {getTypeLabel(terms.type)} • {terms.language.toUpperCase()} • v
-                {terms.version}
-              </p>
-            </div>
-          </div>
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-3">
-            <div className="flex bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode("rendered")}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
-                  viewMode === "rendered"
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                <Type className="w-4 h-4" />
-                Rendered
-              </button>
-              <button
-                onClick={() => setViewMode("markdown")}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
-                  viewMode === "markdown"
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                <Code className="w-4 h-4" />
-                Markdown
-              </button>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white/95 backdrop-blur-xl rounded-3xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-white/20">
+        {/* Header with Gradient */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 text-white">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiPgo8Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyIi8+CjwvZz4KPC9zdmc+')] opacity-30"></div>
+
+          <div className="relative px-8 py-6 flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
+                {getTypeIcon(terms.type)}
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">{terms.title}</h2>
+                <p className="text-blue-100 text-sm">
+                  {getTypeLabel(terms.type)} • {terms.language.toUpperCase()} •
+                  v{terms.version}
+                </p>
+              </div>
             </div>
 
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div className="flex items-center gap-4">
+              {/* View Mode Toggle */}
+              <div className="flex bg-white/20 backdrop-blur-sm rounded-2xl p-1 border border-white/30">
+                <button
+                  onClick={() => setViewMode("rendered")}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                    viewMode === "rendered"
+                      ? "bg-white/20 text-white shadow-sm"
+                      : "text-white/70 hover:text-white"
+                  }`}
+                >
+                  <Type className="w-4 h-4" />
+                  Rendered
+                </button>
+                <button
+                  onClick={() => setViewMode("markdown")}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                    viewMode === "markdown"
+                      ? "bg-white/20 text-white shadow-sm"
+                      : "text-white/70 hover:text-white"
+                  }`}
+                >
+                  <Code className="w-4 h-4" />
+                  Markdown
+                </button>
+              </div>
+
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-white/20 rounded-2xl transition-all duration-200 hover:scale-110"
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -708,19 +787,35 @@ const TermsPreviewModal = ({ terms, isOpen, onClose }) => {
           )}
         </div>
 
-        {/* Footer - unchanged */}
-        <div className="border-t border-gray-200 p-6 bg-gray-50">
-          <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
-            <div>Created: {formatDate(terms.createdAt)}</div>
-            <div>Last Updated: {formatDate(terms.updatedAt)}</div>
+        {/* Footer */}
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200 flex-shrink-0">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl">
+                <Calendar className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-sm text-gray-600">
+                Created: {formatDate2(terms.createdAt)}
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                <RefreshCw className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-sm text-gray-600">
+                Last Updated: {formatDate2(terms.updatedAt)}
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium"
+              className="group relative px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2"
             >
-              Close
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-600 to-gray-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <X className="w-5 h-5 relative z-10" />
+              <span className="relative z-10 font-medium">Close</span>
             </button>
           </div>
         </div>
@@ -748,6 +843,7 @@ const TermsManagement = () => {
   const [sortOrder, setSortOrder] = useState("desc");
 
   const { showSuccess, showError, showWarning } = useToast();
+  const [confirmationModal, setConfirmationModal] = useState({});
 
   const termsTypes = [
     { value: "USER_TERMS", label: "User Terms & Conditions", icon: Users },
@@ -841,6 +937,12 @@ const TermsManagement = () => {
     }
   };
 
+  const resetFilters = () => {
+    setFilters({ query: "", type: "", isRead: "" });
+  };
+
+  const hasActiveFilters = filters.query || filters.type;
+
   const handleSearch = (e) => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));
   };
@@ -876,20 +978,33 @@ const TermsManagement = () => {
   };
 
   const handleDelete = async (termsItem) => {
-    if (
-      !window.confirm(`Are you sure you want to delete "${termsItem.title}"?`)
-    ) {
-      return;
-    }
+    setConfirmationModal({
+      isOpen: true,
+      type: "danger",
+      title: `Delete Terms & Conditions`,
+      message: `Are you sure you want to delete ${termsItem.title}?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      icon: Trash2,
+      onConfirm: async () => {
+        setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
 
-    try {
-      await termsAPI.deleteTerms(termsItem.id);
-      showSuccess("Terms deleted successfully!");
-      loadTerms();
-    } catch (error) {
-      const parsedError = parseValidationErrors(error);
-      showError(parsedError.message);
-    }
+        try {
+          await termsAPI.deleteTerms(termsItem.id);
+          showSuccess("Terms deleted successfully!");
+          loadTerms();
+        } catch (error) {
+          const parsedError = parseValidationErrors(error);
+          showError(parsedError.message);
+        }
+      },
+    });
+  };
+
+  const closeConfirmationModal = () => {
+    setConfirmationModal({
+      isOpen: false,
+    });
   };
 
   const handleSave = (savedTerms) => {
@@ -899,9 +1014,9 @@ const TermsManagement = () => {
   const getTypeIcon = (type) => {
     const typeConfig = termsTypes.find((t) => t.value === type);
     return typeConfig ? (
-      <typeConfig.icon className="w-4 h-4" />
+      <typeConfig.icon className="w-5 h-5 text-gray-500" />
     ) : (
-      <FileText className="w-4 h-4" />
+      <FileText className="w-5 h-5 text-gray-500" />
     );
   };
 
@@ -911,236 +1026,332 @@ const TermsManagement = () => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Terms & Conditions Management
-        </h1>
-        <div className="flex gap-2">
-          <button
-            onClick={loadTerms}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </button>
-          <button
-            onClick={handleCreateNew}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Create New Terms
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Header with Gradient */}
+      <div className="relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
+
+        <div className="relative px-8 py-12">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            {/* Title Section */}
+
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                  <FileText className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                    Terms & Conditions Management
+                  </h1>
+                  <p className="text-gray-600 mt-1">
+                    Manage legal documents and policies
+                  </p>
+                </div>
+              </div>
+
+              {/* Stats Cards */}
+              <div className="flex flex-wrap gap-4">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-100 rounded-xl">
+                      <FileText className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {formatNumber(terms.length)}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Total Terms & Conditions
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={loadTerms}
+                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <RefreshCw className="w-5 h-5 relative z-10" />
+                <span className="relative z-10 font-medium">Refresh</span>
+              </button>
+
+              <button
+                onClick={handleCreateNew}
+                className="group relative px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <Plus className="w-5 h-5 relative z-10" />
+                <span className="relative z-10 font-medium">Create</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search terms..."
-              value={filters.query}
-              onChange={handleSearch}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+      {/* Filters Section */}
+      <div className="px-8 -mt-6 relative z-10">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+              <Filter className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">
+              Filters & Search
+            </h2>
           </div>
 
-          {/* Type Filter */}
-          <select
-            value={filters.type}
-            onChange={(e) => handleFilterChange("type", e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">All Types</option>
-            {termsTypes.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Search */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Search Notifications
+              </label>
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Search title, message..."
+                  value={filters.query}
+                  onChange={handleSearch}
+                  className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                />
+              </div>
+            </div>
 
-          {/* Language Filter */}
-          <select
-            value={filters.language}
-            onChange={(e) => handleFilterChange("language", e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">All Languages</option>
-            <option value="en">English</option>
-            <option value="vi">Tiếng Việt</option>
-          </select>
+            {/* Type Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Type</label>
+              <select
+                value={filters.type}
+                onChange={(e) => handleFilterChange("type", e.target.value)}
+                className="px-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+              >
+                <option value="">All Types</option>
+                {termsTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Active Filter */}
-          <select
-            value={filters.active}
-            onChange={(e) => handleFilterChange("active", e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">All Status</option>
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
-          </select>
+            {/* Status Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Language
+              </label>
+              <select
+                value={filters.language}
+                onChange={(e) => handleFilterChange("language", e.target.value)}
+                className="px-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+              >
+                <option value="">All Languages</option>
+                <option value="en">English</option>
+                <option value="vi">Tiếng Việt</option>
+              </select>
+            </div>
+
+            {/* Clear Filters */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Status
+              </label>
+              <select
+                value={filters.active}
+                onChange={(e) => handleFilterChange("active", e.target.value)}
+                className="px-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+              >
+                <option value="">All Status</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Terms Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  onClick={() => handleSort("type")}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                >
-                  Type
-                  {sortBy === "type" && (
-                    <span className="ml-1">
-                      {sortOrder === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
-                </th>
-                <th
-                  onClick={() => handleSort("title")}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                >
-                  Title
-                  {sortBy === "title" && (
-                    <span className="ml-1">
-                      {sortOrder === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
-                </th>
-                <th
-                  onClick={() => handleSort("language")}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                >
-                  Language
-                  {sortBy === "language" && (
-                    <span className="ml-1">
-                      {sortOrder === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
-                </th>
+      {/* Terms Directory Section */}
+      <div className="px-8 mt-8 pb-8">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
+          {/* Table Header */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                  <FileText className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  Notification Directory
+                </h3>
+              </div>
+              <div className="text-sm text-gray-600">
+                {formatNumber(terms.length)} notifications total
+              </div>
+            </div>
+          </div>
 
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th
-                  onClick={() => handleSort("updatedAt")}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                >
-                  Last Updated
-                  {sortBy === "updatedAt" && (
-                    <span className="ml-1">
-                      {sortOrder === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {loading ? (
+          {/* Table Content */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50/50">
                 <tr>
-                  <td colSpan="7" className="px-6 py-4 text-center">
-                    <div className="flex justify-center items-center">
-                      <RefreshCw className="w-5 h-5 animate-spin text-gray-400 mr-2" />
-                      Loading...
-                    </div>
-                  </td>
-                </tr>
-              ) : terms.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan="7"
-                    className="px-6 py-4 text-center text-gray-500"
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Title
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Language
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th
+                    onClick={() => handleSort("updatedAt")}
+                    className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors duration-200"
                   >
-                    No terms found
-                  </td>
+                    <div className="flex items-center gap-2">
+                      Last Updated
+                      {sortBy === "updatedAt" && (
+                        <div className="p-1 bg-blue-100 rounded">
+                          {sortOrder === "asc" ? (
+                            <ChevronUp className="w-3 h-3 text-blue-600" />
+                          ) : (
+                            <ChevronDown className="w-3 h-3 text-blue-600" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ) : (
-                terms.map((termsItem) => (
-                  <tr key={termsItem.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        {getTypeIcon(termsItem.type)}
-                        <div className="text-sm text-gray-900">
-                          <div className="font-medium">
-                            {getTypeLabel(termsItem.type)}
-                          </div>
+              </thead>
+              <tbody className="bg-white/50 divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-16 text-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="text-gray-600 font-medium">
+                          Loading terms...
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
-                        {termsItem.title}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-1">
-                        <Globe className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-900 uppercase">
-                          {termsItem.language}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full items-center gap-1 ${
-                          termsItem.active
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {termsItem.active ? (
-                          <CheckCircle className="w-3 h-3" />
-                        ) : (
-                          <XCircle className="w-3 h-3" />
-                        )}
-                        {termsItem.active ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(termsItem.updatedAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handlePreview(termsItem)}
-                          className="text-blue-600 hover:text-blue-900"
-                          title="Preview"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(termsItem)}
-                          className="text-green-600 hover:text-green-900"
-                          title="Edit"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(termsItem)}
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                  </tr>
+                ) : terms.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-8 py-12 text-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="p-6 bg-gray-100 rounded-full">
+                          <FileText className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <div className="text-gray-500 text-lg">
+                          No terms found
+                        </div>
+                        <div className="text-gray-400 text-sm">
+                          Try adjusting your filters
+                        </div>
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  terms.map((termsItem) => (
+                    <tr
+                      key={termsItem.id}
+                      className="hover:bg-white/50 transition-all duration-200"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center shadow-lg">
+                            {getTypeIcon(termsItem.type)}
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-gray-900 line-clamp-1">
+                              {getTypeLabel(termsItem.type)}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex text-sm items-start font-medium text-gray-900 max-w-xs truncate">
+                          {termsItem.title
+                            ? termsItem.title.length > 24
+                              ? termsItem.title.substring(0, 24) + "..."
+                              : termsItem.title
+                            : ""}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center">
+                            <Globe className="w-4 h-4 text-white" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-900 uppercase">
+                            {termsItem.language}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div
+                          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
+                            termsItem.active
+                              ? "bg-green-100 text-green-800 border border-green-200"
+                              : "bg-red-100 text-red-800 border border-red-200"
+                          }`}
+                        >
+                          {termsItem.active ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <XCircle className="w-4 h-4" />
+                          )}
+                          {termsItem.active ? "Active" : "Inactive"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                        {formatDate2(termsItem.updatedAt)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handlePreview(termsItem)}
+                            className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="Preview"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleEdit(termsItem)}
+                            className="p-2 bg-green-100 hover:bg-green-200 text-green-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="Edit"
+                          >
+                            <Edit className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(termsItem)}
+                            className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -1158,6 +1369,20 @@ const TermsManagement = () => {
         terms={selectedTerms}
         isOpen={isPreviewModalOpen}
         onClose={() => setIsPreviewModalOpen(false)}
+      />
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={confirmationModal.onConfirm}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        confirmText={confirmationModal.confirmText}
+        cancelText={confirmationModal.cancelText}
+        type={confirmationModal.type}
+        icon={confirmationModal.icon}
+        isLoading={confirmationModal.isLoading}
       />
     </div>
   );

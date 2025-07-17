@@ -14,6 +14,10 @@ import {
   Sliders,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
+  RefreshCw,
+  Filter,
 } from "lucide-react";
 import { serviceAPI } from "../services/api";
 import { parseValidationErrors } from "../utils/errorHandler";
@@ -27,6 +31,7 @@ import { useDebounce } from "../hooks/useDebounce";
 import { formatCurrency } from "../utils/formatUtils";
 import { useToast } from "../context/ToastContext";
 import { formatPrice, formatNumber } from "../utils/formatUtils";
+import ConfirmationModal from "./common/ConfirmationModal";
 
 // Service Detail/Edit Modal Component
 const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
@@ -227,393 +232,514 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
       : "Service Details";
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <X className="w-6 h-6" />
-          </button>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+        {/* Header with Gradient */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 opacity-10"></div>
+          <div className="relative p-6 border-b border-slate-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-2xl bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 shadow-lg">
+                  <Package className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 mb-1">
+                    {title}
+                  </h2>
+                  <p className="text-slate-600 text-sm">
+                    {mode === "create"
+                      ? "Add a new service to the system"
+                      : mode === "edit"
+                      ? "Modify service information"
+                      : "View service details"}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-slate-400" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {isEditMode ? (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Service Name */}
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Service Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                  hasFieldError("name")
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="Enter service name"
-              />
-              {hasFieldError("name") && (
-                <div className="mt-1 flex items-center text-sm text-red-600">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {getFieldError("name")}
-                </div>
-              )}
-            </div>
-
-            {/* Description */}
-            <div>
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                rows={4}
-                value={formData.description}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                  hasFieldError("description")
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="Enter service description"
-              />
-              {hasFieldError("description") && (
-                <div className="mt-1 flex items-center text-sm text-red-600">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {getFieldError("description")}
-                </div>
-              )}
-            </div>
-
-            {/* Icon URL with Upload */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Service Icon
-              </label>
-
-              {/* Compression Settings */}
-              <div className="mb-3 p-3 bg-gray-50 rounded-md">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="flex items-center text-sm">
-                    <input
-                      type="checkbox"
-                      checked={compressionEnabled}
-                      onChange={(e) => setCompressionEnabled(e.target.checked)}
-                      className="mr-2"
-                    />
-                    <Sliders className="w-4 h-4 mr-1" />
-                    Enable compression before upload
-                  </label>
-                </div>
-
-                {compressionEnabled && (
-                  <div className="mt-2">
-                    <label className="block text-xs text-gray-600 mb-1">
-                      Quality:
-                    </label>
-                    <select
-                      value={compressionQuality}
-                      onChange={(e) => setCompressionQuality(e.target.value)}
-                      className="text-xs border border-gray-300 rounded px-2 py-1"
+          <div className="p-6 flex-1 overflow-y-auto">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-6">
+                  {/* Service Name */}
+                  <div className="group">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
                     >
-                      <option value="icon">Icon (200x200, high quality)</option>
-                      <option value="low">Low (400x300, 60% quality)</option>
-                      <option value="medium">
-                        Medium (800x600, 80% quality)
-                      </option>
-                      <option value="high">High (1200x900, 90% quality)</option>
-                    </select>
+                      Service Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-3 border rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                        hasFieldError("name")
+                          ? "border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50"
+                          : "border-slate-300 bg-white hover:border-slate-400"
+                      }`}
+                      placeholder="Enter service name"
+                    />
+                    {hasFieldError("name") && (
+                      <div className="mt-2 flex items-center text-sm text-red-600 bg-red-50 rounded-xl p-2">
+                        <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                        {getFieldError("name")}
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  {/* Description */}
+                  <div className="group">
+                    <label
+                      htmlFor="description"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      rows={4}
+                      value={formData.description}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-3 border rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none ${
+                        hasFieldError("description")
+                          ? "border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50"
+                          : "border-slate-300 bg-white hover:border-slate-400"
+                      }`}
+                      placeholder="Enter service description"
+                    />
+                    {hasFieldError("description") && (
+                      <div className="mt-2 flex items-center text-sm text-red-600 bg-red-50 rounded-xl p-2">
+                        <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                        {getFieldError("description")}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Base Price */}
+                  <div className="group">
+                    <label
+                      htmlFor="basePrice"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
+                      Base Price (VND)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        id="basePrice"
+                        name="basePrice"
+                        min="0"
+                        step="0.01"
+                        required
+                        value={formData.basePrice}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 pl-12 border rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                          hasFieldError("basePrice")
+                            ? "border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50"
+                            : "border-slate-300 bg-white hover:border-slate-400"
+                        }`}
+                        placeholder="0.00"
+                      />
+                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500">
+                        ₫
+                      </div>
+                    </div>
+                    {hasFieldError("basePrice") && (
+                      <div className="mt-2 flex items-center text-sm text-red-600 bg-red-50 rounded-xl p-2">
+                        <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                        {getFieldError("basePrice")}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-6">
+                  {/* Service Icon */}
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      Service Icon
+                    </label>
+
+                    {/* Compression Settings */}
+                    <div className="mb-4 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl border border-slate-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <label className="flex items-center text-sm font-medium text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={compressionEnabled}
+                            onChange={(e) =>
+                              setCompressionEnabled(e.target.checked)
+                            }
+                            className="mr-3 w-4 h-4 text-blue-600 bg-white border-slate-300 rounded focus:ring-blue-500"
+                          />
+                          <Sliders className="w-4 h-4 mr-2 text-blue-600" />
+                          Enable compression before upload
+                        </label>
+                      </div>
+
+                      {compressionEnabled && (
+                        <div className="mt-3">
+                          <label className="block text-xs font-medium text-slate-600 mb-2">
+                            Quality Settings:
+                          </label>
+                          <select
+                            value={compressionQuality}
+                            onChange={(e) =>
+                              setCompressionQuality(e.target.value)
+                            }
+                            className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="icon">
+                              Icon (200x200, high quality)
+                            </option>
+                            <option value="low">
+                              Low (400x300, 60% quality)
+                            </option>
+                            <option value="medium">
+                              Medium (800x600, 80% quality)
+                            </option>
+                            <option value="high">
+                              High (1200x900, 90% quality)
+                            </option>
+                          </select>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Image Preview */}
+                    {previewImage && (
+                      <div className="mb-4 relative inline-block">
+                        <div className="relative">
+                          <img
+                            src={previewImage}
+                            alt="Service icon preview"
+                            className="w-24 h-24 object-cover rounded-2xl border-4 border-white shadow-lg"
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                              setPreviewImage("");
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleRemoveImage}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Upload Button */}
+                    <div className="flex gap-3 mb-4">
+                      <button
+                        type="button"
+                        onClick={handleUploadClick}
+                        disabled={uploadingImage}
+                        className={`group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                          uploadingImage ? "animate-pulse" : ""
+                        }`}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        {uploadingImage ? (
+                          <Loader className="w-5 h-5 animate-spin relative z-10" />
+                        ) : (
+                          <Upload className="w-5 h-5 relative z-10" />
+                        )}
+                        <span className="relative z-10 font-medium">
+                          {uploadingImage
+                            ? "Uploading..."
+                            : compressionEnabled
+                            ? "Compress & Upload"
+                            : "Upload Image"}
+                        </span>
+                      </button>
+
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                      />
+                    </div>
+
+                    {/* Manual URL Input */}
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium text-slate-600">
+                        Or enter URL manually:
+                      </div>
+                      <input
+                        type="url"
+                        id="iconUrl"
+                        name="iconUrl"
+                        value={formData.iconUrl}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 border rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                          hasFieldError("iconUrl")
+                            ? "border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50"
+                            : "border-slate-300 bg-white hover:border-slate-400"
+                        }`}
+                        placeholder="https://example.com/icon.png"
+                      />
+
+                      {hasFieldError("iconUrl") && (
+                        <div className="mt-2 flex items-center text-sm text-red-600 bg-red-50 rounded-xl p-2">
+                          <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                          {getFieldError("iconUrl")}
+                        </div>
+                      )}
+
+                      <div className="text-xs text-slate-500 bg-slate-50 rounded-xl p-2">
+                        Supported formats: JPEG, PNG, GIF, WebP (max 5MB)
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Image Preview */}
-              {previewImage && (
-                <div className="mb-3 relative inline-block">
-                  <img
-                    src={previewImage}
-                    alt="Service icon preview"
-                    className="w-20 h-20 object-cover rounded border"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                      setPreviewImage("");
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleRemoveImage}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
+              {/* Error Message */}
+              {error && (
+                <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-2xl p-4 shadow-sm">
+                  <div className="flex items-center">
+                    <div className="p-2 bg-red-500 rounded-xl mr-3">
+                      <AlertCircle className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-red-800 font-medium">Error</h4>
+                      <div className="text-red-700 text-sm">{error}</div>
+                    </div>
+                  </div>
                 </div>
               )}
-
-              {/* Upload Button */}
-              <div className="flex gap-2 mb-2">
-                <button
-                  type="button"
-                  onClick={handleUploadClick}
-                  disabled={uploadingImage}
-                  className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-                >
-                  {uploadingImage ? (
-                    <Loader className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Upload className="w-4 h-4 mr-2" />
-                  )}
-                  {uploadingImage
-                    ? "Uploading..."
-                    : compressionEnabled
-                    ? "Compress & Upload"
-                    : "Upload Image"}
-                </button>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-              </div>
-
-              {/* Manual URL Input */}
-              <div className="text-sm text-gray-500 mb-2">
-                Or enter URL manually:
-              </div>
-              <input
-                type="url"
-                id="iconUrl"
-                name="iconUrl"
-                value={formData.iconUrl}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                  hasFieldError("iconUrl")
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="https://example.com/icon.png"
-              />
-
-              {hasFieldError("iconUrl") && (
-                <div className="mt-1 flex items-center text-sm text-red-600">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {getFieldError("iconUrl")}
-                </div>
-              )}
-
-              <div className="mt-1 text-xs text-gray-500">
-                Supported formats: JPEG, PNG, GIF, WebP (max 5MB)
-              </div>
-            </div>
-
-            {/* Icon URL
-            <div>
-              <label
-                htmlFor="iconUrl"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Icon URL
-              </label>
-              <input
-                type="url"
-                id="iconUrl"
-                name="iconUrl"
-                value={formData.iconUrl}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                  hasFieldError("iconUrl")
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="https://example.com/icon.png"
-              />
-              {hasFieldError("iconUrl") && (
-                <div className="mt-1 flex items-center text-sm text-red-600">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {getFieldError("iconUrl")}
-                </div>
-              )}
-              {formData.iconUrl && (
-                <div className="mt-2">
-                  <img
-                    src={formData.iconUrl}
-                    alt="Service icon preview"
-                    className="w-12 h-12 object-cover rounded border"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
-                  />
-                </div>
-              )}
-            </div> */}
-
-            {/* Base Price */}
-            <div>
-              <label
-                htmlFor="basePrice"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Base Price (VND)
-              </label>
-              <input
-                type="number"
-                id="basePrice"
-                name="basePrice"
-                min="0"
-                step="0.01"
-                required
-                value={formData.basePrice}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                  hasFieldError("basePrice")
-                    ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="0.00"
-              />
-              {hasFieldError("basePrice") && (
-                <div className="mt-1 flex items-center text-sm text-red-600">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {getFieldError("basePrice")}
-                </div>
-              )}
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                <div className="flex items-center">
-                  <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
-                  <div className="text-red-600 text-sm">{error}</div>
-                </div>
-              </div>
-            )}
-
-            {/* Footer */}
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                <Package className="w-4 h-4" />
-                {loading
-                  ? "Saving..."
-                  : mode === "create"
-                  ? "Create Service"
-                  : "Update Service"}
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         ) : (
           // View Mode
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                ID
-              </label>
-              <p className="text-sm text-gray-900">{service.id}</p>
-            </div>
-            {/* Service Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Service Name
-                </label>
-                <p className="text-sm text-gray-900">{service?.name}</p>
+          <div className="p-6 flex-1 overflow-y-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 space-y-6">
+              {/* Left Column - Basic Info */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Service ID */}
+                <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl p-4 border border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-500 rounded-xl">
+                      <Package className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">
+                        Service ID
+                      </label>
+                      <p className="text-lg font-mono text-slate-900">
+                        {service.id}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Service Details */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                      Service Name
+                    </label>
+                    <p className="text-lg font-medium text-slate-900">
+                      {service?.name}
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                      Base Price
+                    </label>
+                    <p className="text-lg font-bold text-green-600">
+                      {formatCurrency(service?.basePrice, "VND")}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                  <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                    Description
+                  </label>
+                  <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-3 border border-slate-200">
+                    <p className="text-slate-700 leading-relaxed">
+                      {service?.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Timestamps */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-500 rounded-xl">
+                        <Package className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-600">
+                          Created At
+                        </label>
+                        <p className="text-sm text-slate-900 font-medium">
+                          {formatDate2(service?.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-500 rounded-xl">
+                        <Package className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-600">
+                          Updated At
+                        </label>
+                        <p className="text-sm text-slate-900 font-medium">
+                          {formatDate2(service?.updatedAt)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delete Status */}
+                <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`p-2 rounded-xl ${
+                        service?.deletedAt ? "bg-red-500" : "bg-green-500"
+                      }`}
+                    >
+                      <Package className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">
+                        Status
+                      </label>
+                      <p
+                        className={`text-sm font-medium ${
+                          service?.deletedAt ? "text-red-600" : "text-green-600"
+                        }`}
+                      >
+                        {service?.deletedAt === null
+                          ? "Active"
+                          : `Deleted: ${formatDate2(service?.deletedAt)}`}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Base Price
-                </label>
-                <p className="text-sm text-gray-900 font-semibold">
-                  {formatCurrency(service?.basePrice, "VND")}
-                </p>
+
+              {/* Right Column - Icon */}
+              <div className="space-y-6">
+                <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                  <label className="text-sm font-semibold text-slate-700 mb-4 block">
+                    Service Icon
+                  </label>
+                  {service?.iconUrl ? (
+                    <div className="text-center">
+                      <div className="relative inline-block">
+                        <img
+                          src={service.iconUrl}
+                          alt="Service icon"
+                          className="w-32 h-32 object-cover rounded-2xl border-4 border-white shadow-lg mx-auto"
+                        />
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/20 to-transparent"></div>
+                      </div>
+                      <p className="mt-3 text-sm text-slate-500">
+                        Service Icon
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="w-32 h-32 mx-auto bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center">
+                        <Package className="w-16 h-16 text-slate-400" />
+                      </div>
+                      <p className="mt-3 text-sm text-slate-500">
+                        No icon available
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
+          </div>
+        )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <p className="text-sm text-gray-900">{service?.description}</p>
-            </div>
-
-            {service?.iconUrl && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Icon
-                </label>
-                <img
-                  src={service.iconUrl}
-                  alt="Service icon"
-                  className="w-32 h-32 object-cover rounded border "
-                />
+        {/* Footer */}
+        {isEditMode ? (
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-slate-500 text-left">
+                {mode === "create"
+                  ? "Create a new service"
+                  : "Update service information"}
               </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Created At
-              </label>
-              <p className="text-sm text-gray-900">
-                {formatDate2(service?.createdAt)}
-              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-6 py-3 text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 transition-all duration-200 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium ${
+                    loading ? "animate-pulse" : ""
+                  }`}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  {loading ? (
+                    <Loader className="w-5 h-5 animate-spin relative z-10" />
+                  ) : (
+                    <Package className="w-5 h-5 relative z-10" />
+                  )}
+                  <span className="relative z-10">
+                    {loading
+                      ? "Saving..."
+                      : mode === "create"
+                      ? "Create Service"
+                      : "Update Service"}
+                  </span>
+                </button>
+              </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Updated At
-              </label>
-              <p className="text-sm text-gray-900">
-                {formatDate2(service?.updatedAt)}
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Deleted At
-              </label>
-              <p className="text-sm text-gray-900">
-                {service?.deletedAt === null
-                  ? "Not Delete"
-                  : formatDate2(service?.deletedAt)}
-              </p>
-            </div>
-
-            {/* Footer */}
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Close
-              </button>
+          </div>
+        ) : (
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-4 border-t border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-slate-500 text-left">
+                Service details and information
+              </div>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={onClose}
+                  className="px-6 py-3 text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 transition-all duration-200 font-medium"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -641,6 +767,7 @@ const ServiceManagement = () => {
   const [sortOrder, setSortOrder] = useState("asc");
 
   const { showSuccess, showError, showInfo, showWarning } = useToast();
+  const [confirmationModal, setConfirmationModal] = useState({});
 
   const debouncedQuery = useDebounce(filters.query, 500);
 
@@ -779,26 +906,38 @@ const ServiceManagement = () => {
     setIsModalOpen(true);
   };
 
+  const closeConfirmationModal = () => {
+    setConfirmationModal({
+      isOpen: false,
+    });
+  };
+
   const handleDeleteService = async (serviceId, serviceName) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the service "${serviceName}"?`
-      )
-    ) {
-      try {
-        await serviceAPI.deleteService(serviceId);
-        //loadServices();
-        searchServices();
-      } catch (error) {
-        console.error("Error deleting service:", error);
-        showError(
-          `Failed to delete service: ${
-            error.response?.data?.message || error.message
-          }`,
-          3000
-        );
-      }
-    }
+    setConfirmationModal({
+      isOpen: true,
+      type: "danger",
+      title: `Delete Service`,
+      message: `Are you sure you want to delete service "${serviceName}"?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      icon: Trash2,
+      onConfirm: async () => {
+        setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
+        try {
+          await serviceAPI.deleteService(serviceId);
+          //loadServices();
+          searchServices();
+        } catch (error) {
+          console.error("Error deleting service:", error);
+          showError(
+            `Failed to delete service: ${
+              error.response?.data?.message || error.message
+            }`,
+            3000
+          );
+        }
+      },
+    });
   };
 
   const handleModalSave = () => {
@@ -811,323 +950,318 @@ const ServiceManagement = () => {
     setSelectedService(null);
   };
 
-  // const formatDate = (dateString) => {
-  //   return new Date(dateString).toLocaleDateString("en-US", {
-  //     year: "numeric",
-  //     month: "long",
-  //     day: "numeric",
-  //     hour: "2-digit",
-  //     minute: "2-digit",
-  //   });
-  // };
-
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Service Management</h1>
-        <button
-          onClick={handleCreateService}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Add New Service
-        </button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Header Section with Gradient */}
+      <div className="relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search services..."
-              value={filters.search}
-              onChange={handleSearch}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            {isSearching && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+        <div className="relative px-8 py-12">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            {/* Title Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                  <Package className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                    Service Management
+                  </h1>
+                  <p className="text-gray-600 mt-1">
+                    Manage and monitor all system services
+                  </p>
+                </div>
               </div>
-            )}
+
+              {/* Stats Cards */}
+              <div className="flex flex-wrap gap-4">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-100 rounded-xl">
+                      <Package className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {formatNumber(pagination.totalElements)}
+                      </p>
+                      <p className="text-sm text-gray-600">Total Services</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={searchServices}
+                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <RefreshCw className="w-5 h-5 relative z-10" />
+                <span className="relative z-10 font-medium">Refresh</span>
+              </button>
+
+              <button
+                onClick={handleCreateService}
+                className="group relative px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <Plus className="w-5 h-5 relative z-10" />
+                <span className="relative z-10 font-medium">
+                  Create Service
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Services Table */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Service
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Base Price
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <div
-                    className="flex items-center cursor-pointer hover:bg-gray-100 rounded px-2 py-1"
+      {/* Filters Section */}
+      <div className="px-8 -mt-6 relative z-10">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+              <Filter className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">
+              Filters & Search
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Search */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Search Services
+              </label>
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-800 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={filters.query}
+                  onChange={handleSearch}
+                  className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Services Content */}
+      <div className="px-8 mt-8 pb-8">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
+          {/* Table Header */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                  <Package className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  Service Directory
+                </h3>
+              </div>
+              <div className="text-sm text-gray-600">
+                {formatNumber(pagination.totalElements)} services total
+              </div>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50/50">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Service
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Description
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Base Price
+                  </th>
+                  <th
                     onClick={() => handleSort("createdAt")}
+                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100/50 transition-colors"
                   >
-                    Created At
-                    {sortBy === "createdAt" && (
-                      <span className="ml-1">
-                        {sortOrder === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </div>
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {loading ? (
-                <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center">
-                    Loading...
-                  </td>
-                </tr>
-              ) : services.length === 0 ? (
-                <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center">
-                    No services found
-                  </td>
-                </tr>
-              ) : (
-                services.map((service) => (
-                  <tr key={service.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        {service.iconUrl ? (
-                          <img
-                            src={service.iconUrl}
-                            alt="Service icon"
-                            className="w-8 h-8 object-cover rounded mr-3"
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                            }}
-                          />
-                        ) : (
-                          <Package className="w-8 h-8 text-gray-400 mr-3" />
-                        )}
-                        <div className="text-sm font-medium text-gray-900">
-                          {service.name}
+                    <div className="flex items-center gap-2">
+                      Created At
+                      {sortBy === "createdAt" && (
+                        <div className="p-1 bg-blue-100 rounded">
+                          {sortOrder === "asc" ? (
+                            <ChevronUp className="w-3 h-3 text-blue-600" />
+                          ) : (
+                            <ChevronDown className="w-3 h-3 text-blue-600" />
+                          )}
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 max-w-xs truncate">
-                        {service.description}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {formatCurrency(service?.basePrice, "VND")}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {formatDate2(service.createdAt)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleViewService(service.id)}
-                          className="text-blue-600 hover:text-blue-900"
-                          title="View Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEditService(service.id)}
-                          className="text-yellow-600 hover:text-yellow-900"
-                          title="Edit Service"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleDeleteService(service.id, service.name)
-                          }
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete Service"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td colSpan="4" className="px-6 py-4 text-center">
+                      Loading...
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : services.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="px-6 py-4 text-center">
+                      No services found
+                    </td>
+                  </tr>
+                ) : (
+                  services.map((service) => (
+                    <tr key={service.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="flex items-center">
+                          {service.iconUrl ? (
+                            <img
+                              src={service.iconUrl}
+                              alt="Service icon"
+                              className="w-12 h-12 object-cover rounded-lg mr-3"
+                              onError={(e) => {
+                                e.target.style.display = "none";
+                              }}
+                            />
+                          ) : (
+                            <Package className="w-12 h-12 text-gray-400 mr-3" />
+                          )}
+                          <div className="text-md font-medium text-gray-900">
+                            {service.name}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="text-sm text-gray-900 max-w-xs truncate">
+                          {service.description}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-left">
+                        <div className="text-md font-semibold text-gray-900">
+                          {formatCurrency(service?.basePrice, "VND")}
+                        </div>
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap text-left">
+                        <div className="text-sm text-gray-600 font-medium">
+                          {formatDate2(service.createdAt)}
+                        </div>
+                      </td>
 
-        {/* Pagination */}
-        {/* {pagination.totalPages > 1 && (
-          <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => handlePageChange(pagination.page - 1)}
-                disabled={pagination.page === 0}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page === pagination.totalPages - 1}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
+                      <td className="px-6 py-6 whitespace-nowrap relative text-left">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleViewService(service.id)}
+                            className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="View Details"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleEditService(service.id)}
+                            className="p-2 bg-green-100 hover:bg-green-200 text-green-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="Edit Service"
+                          >
+                            <Edit className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDeleteService(service.id, service.name)
+                            }
+                            className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="Delete Service"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Enhanced Pagination */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="text-sm text-gray-700">
                   Showing{" "}
-                  <span className="font-medium">
-                    {(pagination.page - 1) * pagination.size + 1}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber((pagination.page - 1) * pagination.size + 1)}
                   </span>{" "}
                   to{" "}
-                  <span className="font-medium">
-                    {Math.min(
-                      pagination.page * pagination.size,
-                      pagination.totalElements
+                  <span className="font-bold text-blue-600">
+                    {formatNumber(
+                      Math.min(
+                        pagination.page * pagination.size,
+                        pagination.totalElements
+                      )
                     )}
                   </span>{" "}
                   of{" "}
-                  <span className="font-medium">
-                    {pagination.totalElements}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber(pagination.totalElements)}
                   </span>{" "}
                   results
-                </p>
+                </div>
               </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+
+              {pagination.totalPages > 1 && (
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={() => handlePageChange(pagination.page)}
-                    disabled={pagination.page === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    disabled={pagination.page <= 1}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
+                    <ChevronLeft className="w-4 h-4" />
                     Previous
                   </button>
-                  {[...Array(Math.min(pagination.totalPages, 5))].map(
-                    (_, index) => {
-                      const page = index + 1;
 
-                      return (
-                        <button
-                          key={page}
-                          onClick={() => handlePageChange(page)}
-                          className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                            page === pagination.page
-                              ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                              : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      );
-                    }
-                  )}
+                  <div className="flex items-center gap-1">
+                    {[...Array(Math.min(5, pagination.totalPages))].map(
+                      (_, i) => {
+                        const page = i + 1;
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
+                              pagination.page === page
+                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      }
+                    )}
+                  </div>
+
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page === pagination.totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                    disabled={pagination.page >= pagination.totalPages}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
                     Next
+                    <ChevronRight className="w-4 h-4" />
                   </button>
-                </nav>
-              </div>
-            </div>
-          </div>
-        )} */}
-
-        {/* Pagination */}
-        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page <= 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page >= pagination.totalPages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Showing{" "}
-                <span className="font-medium">
-                  {formatNumber((pagination.page - 1) * pagination.size + 1)}
-                </span>{" "}
-                to{" "}
-                <span className="font-medium">
-                  {formatNumber(
-                    Math.min(
-                      pagination.page * pagination.size,
-                      pagination.totalElements
-                    )
-                  )}
-                </span>{" "}
-                of{" "}
-                <span className="font-medium">
-                  {formatNumber(pagination.totalElements)}
-                </span>{" "}
-                results
-              </p>
-            </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <button
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={pagination.page <= 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
-                  const page = i + 1;
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        pagination.page === page
-                          ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                          : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  );
-                })}
-                <button
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page >= pagination.totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </nav>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1140,6 +1274,20 @@ const ServiceManagement = () => {
         onClose={closeModal}
         onSave={handleModalSave}
         mode={modalMode}
+      />
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={confirmationModal.onConfirm}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        confirmText={confirmationModal.confirmText}
+        cancelText={confirmationModal.cancelText}
+        type={confirmationModal.type}
+        icon={confirmationModal.icon}
+        isLoading={confirmationModal.isLoading}
       />
     </div>
   );

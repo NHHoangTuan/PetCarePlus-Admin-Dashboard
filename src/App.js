@@ -18,6 +18,7 @@ import WithdrawalManagement from "./components/WithdrawalManagement.js";
 import Layout from "./components/Layout";
 import TermsManagement from "./components/TermsManagement.js";
 import PetManagement from "./components/PetManagement.js";
+import NotificationManagement from "./components/NotificationManagement.js";
 import { ToastProvider } from "./context/ToastContext.js";
 
 function App() {
@@ -80,6 +81,10 @@ function App() {
               <Route path="withdrawals" element={<WithdrawalManagement />} />
               <Route path="terms" element={<TermsManagement />} />
               <Route path="pets" element={<PetManagement />} />
+              <Route
+                path="notifications"
+                element={<NotificationManagement />}
+              />
             </Route>
           </Routes>
         </div>
