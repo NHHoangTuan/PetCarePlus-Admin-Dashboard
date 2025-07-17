@@ -1119,14 +1119,14 @@ const NotificationManagement = () => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Search */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
                 Search Notifications
               </label>
               <div className="relative group">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-800 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
                 <input
                   type="text"
                   placeholder="Search title, message..."
@@ -1168,22 +1168,6 @@ const NotificationManagement = () => {
                 <option value="true">Read</option>
                 <option value="false">Unread</option>
               </select>
-            </div>
-
-            {/* Clear Filters */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Actions
-              </label>
-              {hasActiveFilters && (
-                <button
-                  onClick={resetFilters}
-                  className="flex items-center justify-center gap-2 px-4 py-3 bg-red-100 text-red-700 rounded-2xl hover:bg-red-200 transition-all duration-300 w-full"
-                >
-                  <XCircle className="w-4 h-4" />
-                  Clear Filters
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -1419,34 +1403,32 @@ const NotificationManagement = () => {
           </div>
 
           {/* Enhanced Pagination */}
-          {pagination.totalPages > 1 && (
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="text-sm text-gray-700">
-                    Showing{" "}
-                    <span className="font-bold text-blue-600">
-                      {formatNumber(
-                        (pagination.page - 1) * pagination.size + 1
-                      )}
-                    </span>{" "}
-                    to{" "}
-                    <span className="font-bold text-blue-600">
-                      {formatNumber(
-                        Math.min(
-                          pagination.page * pagination.size,
-                          pagination.totalElements
-                        )
-                      )}
-                    </span>{" "}
-                    of{" "}
-                    <span className="font-bold text-blue-600">
-                      {formatNumber(pagination.totalElements)}
-                    </span>{" "}
-                    results
-                  </div>
-                </div>
 
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="text-sm text-gray-700">
+                  Showing{" "}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber((pagination.page - 1) * pagination.size + 1)}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber(
+                      Math.min(
+                        pagination.page * pagination.size,
+                        pagination.totalElements
+                      )
+                    )}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber(pagination.totalElements)}
+                  </span>{" "}
+                  results
+                </div>
+              </div>
+              {pagination.totalPages > 1 && (
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
@@ -1487,9 +1469,9 @@ const NotificationManagement = () => {
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 

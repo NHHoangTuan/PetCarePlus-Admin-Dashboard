@@ -753,10 +753,10 @@ const BookingManagement = () => {
                 Search Bookings
               </label>
               <div className="relative group">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-800 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
                 <input
                   type="text"
-                  placeholder="Search by user name, provider name"
+                  placeholder="Search by user name..."
                   value={filters.query}
                   onChange={handleSearch}
                   className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
@@ -809,7 +809,7 @@ const BookingManagement = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Mail</label>
               <div className="relative group">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-800 w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Mail"

@@ -2352,7 +2352,7 @@ const PetManagement = () => {
                 Search Pets
               </label>
               <div className="relative group">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-800 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
                 <input
                   type="text"
                   placeholder="Search by name, breed..."

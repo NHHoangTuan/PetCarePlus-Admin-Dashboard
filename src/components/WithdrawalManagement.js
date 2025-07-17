@@ -718,7 +718,7 @@ const WithdrawalManagement = () => {
                 Bank Name
               </label>
               <div className="relative group">
-                <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
+                <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-800 w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Bank Name"
@@ -742,7 +742,7 @@ const WithdrawalManagement = () => {
                 Amount From
               </label>
               <div className="relative group">
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
+                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-800 w-4 h-4" />
                 <input
                   type="number"
                   placeholder="Amount From"
@@ -766,7 +766,7 @@ const WithdrawalManagement = () => {
                 Amount To
               </label>
               <div className="relative group">
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
+                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-800 w-4 h-4" />
                 <input
                   type="number"
                   placeholder="Amount To"
