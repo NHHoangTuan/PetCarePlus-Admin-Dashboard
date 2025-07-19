@@ -273,6 +273,36 @@ export const serviceAPI = {
   deleteService: (id) => api.delete(`/admin/services/${id}`),
 };
 
+// Provider Service API
+export const providerServiceAPI = {
+  // Get all provider services with pagination and filtering
+  getProviderServices: (params = {}) => {
+    const queryParams = new URLSearchParams({
+      page: params.page || 1,
+      size: params.size || 10,
+      sort: params.sort || "desc",
+      sortBy: params.sortBy || "createdAt",
+      ...(params.search && { search: params.search }),
+      ...(params.is_active !== undefined && { is_active: params.is_active }),
+      ...params.filters,
+    });
+    return api.get(`/provider-services?${queryParams}`);
+  },
+
+  // Get provider service by ID
+  getProviderServiceById: (id) => api.get(`/provider-services/${id}`),
+
+  // Create new provider service
+  createProviderService: (data) => api.post("/admin/provider-services", data),
+
+  // Update provider service
+  updateProviderService: (id, data) =>
+    api.patch(`/admin/provider-services/${id}`, data),
+
+  // Delete provider service
+  deleteProviderService: (id) => api.delete(`/admin/provider-services/${id}`),
+};
+
 export const bookingAPI = {
   // Get all bookings with pagination and filtering
   getBookings: (params = {}) => {

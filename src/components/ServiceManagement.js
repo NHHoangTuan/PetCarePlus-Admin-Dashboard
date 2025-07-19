@@ -81,10 +81,13 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
     setFieldErrors({});
 
     try {
+      console.log("Submitting form data:", formData);
       if (service) {
         await serviceAPI.updateService(service.id, formData);
+        showSuccess("Service updated successfully");
       } else {
         await serviceAPI.createService(formData);
+        showSuccess("Service created successfully");
       }
       onSave();
       onClose();
@@ -233,45 +236,47 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+      <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
         {/* Header with Gradient */}
-        <div className="relative overflow-hidden">
+        <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 opacity-10"></div>
-          <div className="relative p-6 border-b border-slate-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-2xl bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 shadow-lg">
-                  <Package className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-slate-900 mb-1">
-                    {title}
-                  </h2>
-                  <p className="text-slate-600 text-sm">
-                    {mode === "create"
-                      ? "Add a new service to the system"
-                      : mode === "edit"
-                      ? "Modify service information"
-                      : "View service details"}
-                  </p>
-                </div>
+          <div className="relative p-6 border-b border-slate-200 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 shadow-lg">
+                <Package className="w-6 h-6 text-white" />
               </div>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
-              >
-                <X className="w-6 h-6 text-slate-400" />
-              </button>
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-1">
+                  {title}
+                </h2>
+                <p className="text-slate-600 text-sm">
+                  {mode === "create"
+                    ? "Add a new service to the system"
+                    : mode === "edit"
+                    ? "Modify service information"
+                    : "View service details"}
+                </p>
+              </div>
             </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+            >
+              <X className="w-6 h-6 text-slate-400" />
+            </button>
           </div>
         </div>
 
         {isEditMode ? (
-          <div className="p-6 flex-1 overflow-y-auto">
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex-1 overflow-y-auto p-8">
+            <form
+              id="service-form"
+              onSubmit={handleSubmit}
+              className="space-y-6"
+            >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left Column */}
-                <div className="space-y-6">
+                <div className="lg:col-span-1 space-y-6">
                   {/* Service Name */}
                   <div className="group">
                     <label
@@ -370,7 +375,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                 </div>
 
                 {/* Right Column */}
-                <div className="space-y-6">
+                <div className="lg:col-span-1 space-y-6">
                   {/* Service Icon */}
                   <div className="group">
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -513,22 +518,22 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Error Message */}
-              {error && (
-                <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-2xl p-4 shadow-sm">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-red-500 rounded-xl mr-3">
-                      <AlertCircle className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="text-red-800 font-medium">Error</h4>
-                      <div className="text-red-700 text-sm">{error}</div>
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-2xl p-4 shadow-sm">
+                    <div className="flex items-center">
+                      <div className="p-2 bg-red-500 rounded-xl mr-3">
+                        <AlertCircle className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="text-red-800 font-medium">Error</h4>
+                        <div className="text-red-700 text-sm">{error}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </form>
           </div>
         ) : (
@@ -704,6 +709,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                 </button>
                 <button
                   type="submit"
+                  form="service-form"
                   disabled={loading}
                   className={`group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium ${
                     loading ? "animate-pulse" : ""
@@ -769,7 +775,7 @@ const ServiceManagement = () => {
   const { showSuccess, showError, showInfo, showWarning } = useToast();
   const [confirmationModal, setConfirmationModal] = useState({});
 
-  const debouncedQuery = useDebounce(filters.query, 500);
+  const debouncedQuery = useDebounce(filters.query, 800);
 
   const searchServices = useCallback(async () => {
     setLoading(true);
@@ -808,14 +814,7 @@ const ServiceManagement = () => {
   useEffect(() => {
     //loadServices();
     searchServices();
-  }, [
-    pagination.page,
-    pagination.size,
-    debouncedQuery,
-    sortBy,
-    sortOrder,
-    searchServices,
-  ]);
+  }, [searchServices]);
 
   // const loadServices = async () => {
   //   setLoading(true);
@@ -847,7 +846,7 @@ const ServiceManagement = () => {
 
   const handleSearch = (e) => {
     setFilters((prev) => ({ ...prev, query: e.target.value }));
-    setPagination((prev) => ({ ...prev, page: 0 }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   const isSearching =
@@ -925,6 +924,7 @@ const ServiceManagement = () => {
         setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
         try {
           await serviceAPI.deleteService(serviceId);
+          showSuccess(`Service "${serviceName}" deleted successfully`, 3000);
           //loadServices();
           searchServices();
         } catch (error) {
@@ -1047,6 +1047,11 @@ const ServiceManagement = () => {
                   onChange={handleSearch}
                   className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
                 />
+                {isSearching && (
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

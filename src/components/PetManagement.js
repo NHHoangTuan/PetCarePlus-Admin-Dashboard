@@ -2051,7 +2051,7 @@ const PetManagement = () => {
   const [sortOrder, setSortOrder] = useState("desc");
 
   const { showSuccess, showError } = useToast();
-  const debouncedQuery = useDebounce(filters.query, 500);
+  const debouncedQuery = useDebounce(filters.query, 700);
 
   const [confirmationModal, setConfirmationModal] = useState({
     isOpen: false,
@@ -2702,7 +2702,6 @@ const PetManagement = () => {
           setIsEditorModalOpen(true);
         }}
         onDelete={(pet) => {
-          setIsDetailModalOpen(false);
           handleDeletePet(pet.id, pet.name);
         }}
       />
