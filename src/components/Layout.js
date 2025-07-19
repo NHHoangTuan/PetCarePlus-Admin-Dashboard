@@ -51,11 +51,6 @@ const Layout = ({ onLogout }) => {
       icon: ReceiptText,
     },
     {
-      path: "/notification-testing",
-      label: "Notification Tool",
-      icon: Lock,
-    },
-    {
       path: "/withdrawals",
       label: "Withdrawal Management",
       icon: DollarSign,
@@ -127,6 +122,14 @@ const Layout = ({ onLogout }) => {
 
           {/* Bottom Section */}
           <div className="p-4 border-t border-gray-200">
+            <Link
+              to="/notification-testing"
+              className="group flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200 mb-2"
+            >
+              <Sparkles className="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-600" />
+              <span>Notification Tool</span>
+            </Link>
+
             {/* Settings Link */}
             <Link
               to="/settings"
