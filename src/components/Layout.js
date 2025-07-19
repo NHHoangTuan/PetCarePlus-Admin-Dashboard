@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Heart,
   Sparkles,
+  ShoppingBag,
 } from "lucide-react";
 
 const Layout = ({ onLogout }) => {
@@ -44,6 +45,11 @@ const Layout = ({ onLogout }) => {
       path: "/services",
       label: "Service Management",
       icon: Package,
+    },
+    {
+      path: "/provider-services",
+      label: "Provider Services",
+      icon: ShoppingBag,
     },
     {
       path: "/bookings",

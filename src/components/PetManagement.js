@@ -2702,7 +2702,6 @@ const PetManagement = () => {
           setIsEditorModalOpen(true);
         }}
         onDelete={(pet) => {
-          setIsDetailModalOpen(false);
           handleDeletePet(pet.id, pet.name);
         }}
       />

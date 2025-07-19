@@ -19,6 +19,7 @@ import Layout from "./components/Layout";
 import TermsManagement from "./components/TermsManagement.js";
 import PetManagement from "./components/PetManagement.js";
 import NotificationManagement from "./components/NotificationManagement.js";
+import ProviderServiceManagement from "./components/ProviderServiceManagement.js";
 import Settings from "./components/Settings.js";
 import { ToastProvider } from "./context/ToastContext.js";
 
@@ -74,6 +75,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="services" element={<ServiceManagement />} />
+              <Route path="provider-services" element={<ProviderServiceManagement />} />
               <Route path="bookings" element={<BookingManagement />} />
               <Route
                 path="notification-testing"
