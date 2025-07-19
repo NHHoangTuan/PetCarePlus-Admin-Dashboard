@@ -221,6 +221,9 @@ export const userAPI = {
   // Get user by ID
   getUserById: (id) => api.get(`/users/${id}`),
 
+  // Get user profile by ID
+  getUserProfileById: (id) => api.get(`/profiles/user/${id}`),
+
   // Update user
   updateUser: (id, data) => api.patch(`/users/${id}`, data),
 

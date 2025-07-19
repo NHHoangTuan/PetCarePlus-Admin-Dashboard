@@ -16,6 +16,11 @@ import {
   RefreshCw,
   AlertCircle,
   Filter,
+  Calendar,
+  MapPin,
+  Users,
+  Heart,
+  Briefcase,
 } from "lucide-react";
 import { userAPI } from "../services/api";
 import { formatDate2 } from "../utils/dateUtils";
@@ -29,6 +34,8 @@ import { set } from "@cloudinary/url-gen/actions/variable";
 const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
   const [selectedRole, setSelectedRole] = useState(user?.role || "");
   const [isUpdatingRole, setIsUpdatingRole] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
   const { showSuccess, showError, showInfo, showWarning } = useToast();
   const [confirmationModal, setConfirmationModal] = useState({
     isOpen: false,
@@ -37,11 +44,29 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
     message: "",
     onConfirm: null,
   });
+
   useEffect(() => {
     if (user) {
       setSelectedRole(user.role);
+      loadUserProfile();
     }
   }, [user]);
+
+  const loadUserProfile = async () => {
+    if (!user?.id) return;
+
+    setLoadingProfile(true);
+    try {
+      const response = await userAPI.getUserProfileById(user.id);
+      setUserProfile(response.data);
+    } catch (error) {
+      console.error("Error loading user profile:", error);
+      // Profile might not exist for this user, which is normal
+      setUserProfile(null);
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
 
   const handleRoleUpdate = async () => {
     if (!user || selectedRole === user.role) return;
@@ -143,15 +168,47 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
             {/* Left Column - User Avatar & Status */}
             <div className="lg:col-span-1">
               <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 text-center">
-                <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <span className="text-3xl font-bold text-white">
-                    {user.name.charAt(0).toUpperCase()}
-                  </span>
+                {/* Profile Avatar */}
+                <div className="w-24 h-24 mx-auto mb-4 shadow-lg rounded-full overflow-hidden">
+                  {loadingProfile ? (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center animate-pulse">
+                      <RefreshCw className="w-8 h-8 text-gray-400 animate-spin" />
+                    </div>
+                  ) : userProfile?.avatarUrl ? (
+                    <img
+                      src={userProfile.avatarUrl}
+                      alt={`${user.name} ${user.lastName}`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                      <span className="text-3xl font-bold text-white">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
                 </div>
+
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
                   {user.name} {user.lastName}
                 </h3>
                 <p className="text-gray-600 mb-4">{user.email}</p>
+
+                {/* Service Provider Badge */}
+                {loadingProfile ? (
+                  <div className="flex justify-center mb-3">
+                    <div className="h-6 w-32 bg-gray-200 rounded-full animate-pulse"></div>
+                  </div>
+                ) : (
+                  userProfile?.serviceProvider && (
+                    <div className="flex justify-center mb-3">
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg">
+                        <Briefcase className="w-3 h-3" />
+                        Service Provider
+                      </span>
+                    </div>
+                  )
+                )}
 
                 {/* Status Badge */}
                 <div className="flex justify-center mb-4">
@@ -322,7 +379,125 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                 </div>
               </div>
 
-              {/* Additional Information Card */}
+              {/* Profile Information Card */}
+              {loadingProfile ? (
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
+                      <Heart className="w-5 h-5 text-white" />
+                    </div>
+                    <h4 className="text-lg font-bold text-gray-900">
+                      Profile Information
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                      <div key={i} className="space-y-2">
+                        <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="p-3 bg-gray-50 rounded-xl border">
+                          <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="p-3 bg-gray-50 rounded-xl border">
+                      <div className="space-y-2">
+                        <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
+                        <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                userProfile && (
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
+                        <Heart className="w-5 h-5 text-white" />
+                      </div>
+                      <h4 className="text-lg font-bold text-gray-900">
+                        Profile Information
+                      </h4>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {userProfile.dob && (
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            Date of Birth
+                          </label>
+                          <div className="p-3 bg-gray-50 rounded-xl border">
+                            <p className="text-sm text-gray-900">
+                              {new Date(userProfile.dob).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                }
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      {userProfile.gender && (
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                            <Users className="w-4 h-4" />
+                            Gender
+                          </label>
+                          <div className="p-3 bg-gray-50 rounded-xl border">
+                            <p className="text-sm text-gray-900 capitalize">
+                              {userProfile.gender.toLowerCase()}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      {userProfile.location && (
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            Location
+                          </label>
+                          <div className="p-3 bg-gray-50 rounded-xl border">
+                            <p className="text-sm text-gray-900">
+                              {userProfile.location}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      {userProfile.phoneNumber && (
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-600">
+                            Profile Phone
+                          </label>
+                          <div className="p-3 bg-gray-50 rounded-xl border">
+                            <p className="text-sm text-gray-900">
+                              {userProfile.phoneNumber}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {userProfile.about && (
+                      <div className="mt-4 space-y-2">
+                        <label className="text-sm font-medium text-gray-600">
+                          About
+                        </label>
+                        <div className="p-3 bg-gray-50 rounded-xl border">
+                          <p className="text-sm text-gray-900 leading-relaxed">
+                            {userProfile.about}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              )}
+
+              {/* Additional Information Card (User table data) */}
               {user.address && (
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
                   <div className="flex items-center gap-3 mb-4">
