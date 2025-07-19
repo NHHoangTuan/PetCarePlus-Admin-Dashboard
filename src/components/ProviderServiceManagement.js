@@ -20,6 +20,8 @@ import {
   RefreshCw,
   ChevronUp,
   ChevronDown,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 import { useToast } from "../context/ToastContext";
 import { providerServiceAPI, serviceAPI } from "../services/api";
@@ -1106,61 +1108,76 @@ const ProviderServiceManagement = () => {
             </table>
           </div>
 
-          {/* Pagination */}
-          {pagination.totalPages > 1 && (
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-sm text-gray-600">
-                  Showing {(pagination.page - 1) * pagination.size + 1} to{" "}
-                  {Math.min(
-                    pagination.page * pagination.size,
-                    pagination.totalElements
-                  )}{" "}
-                  of {pagination.totalElements} results
+          {/* Enhanced Pagination */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="text-sm text-gray-700">
+                  Showing{" "}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber((pagination.page - 1) * pagination.size + 1)}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber(
+                      Math.min(
+                        pagination.page * pagination.size,
+                        pagination.totalElements
+                      )
+                    )}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-bold text-blue-600">
+                    {formatNumber(pagination.totalElements)}
+                  </span>{" "}
+                  results
                 </div>
+              </div>
 
+              {pagination.totalPages > 1 && (
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    disabled={pagination.page <= 1}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
+                    <ChevronLeft className="w-4 h-4" />
                     Previous
                   </button>
 
-                  {[...Array(Math.min(5, pagination.totalPages))].map(
-                    (_, index) => {
-                      const pageNumber = pagination.page - 2 + index;
-                      if (pageNumber < 1 || pageNumber > pagination.totalPages)
-                        return null;
-
-                      return (
-                        <button
-                          key={pageNumber}
-                          onClick={() => handlePageChange(pageNumber)}
-                          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                            pageNumber === pagination.page
-                              ? "bg-blue-500 text-white shadow-lg"
-                              : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
-                          }`}
-                        >
-                          {pageNumber}
-                        </button>
-                      );
-                    }
-                  )}
+                  <div className="flex items-center gap-1">
+                    {[...Array(Math.min(5, pagination.totalPages))].map(
+                      (_, i) => {
+                        const page = i + 1;
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
+                              pagination.page === page
+                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      }
+                    )}
+                  </div>
 
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page === pagination.totalPages}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    disabled={pagination.page >= pagination.totalPages}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
                     Next
+                    <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
