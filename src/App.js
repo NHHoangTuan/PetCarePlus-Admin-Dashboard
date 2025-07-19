@@ -19,6 +19,7 @@ import Layout from "./components/Layout";
 import TermsManagement from "./components/TermsManagement.js";
 import PetManagement from "./components/PetManagement.js";
 import NotificationManagement from "./components/NotificationManagement.js";
+import Settings from "./components/Settings.js";
 import { ToastProvider } from "./context/ToastContext.js";
 
 function App() {
@@ -85,6 +86,7 @@ function App() {
                 path="notifications"
                 element={<NotificationManagement />}
               />
+              <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>
         </div>
