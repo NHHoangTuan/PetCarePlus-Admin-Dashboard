@@ -157,45 +157,41 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
   const speciesColors = getSpeciesColor(pet.species);
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white/95 backdrop-blur-xl rounded-3xl w-full max-w-6xl max-h-[90vh] flex flex-col shadow-2xl border border-white/20 overflow-hidden">
-        {/* Enhanced Header - Fixed */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white flex-shrink-0">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiPgo8Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyIi8+CjwvZz4KPC9zdmc+')] opacity-30"></div>
-
-          <div className="relative px-8 py-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-                  {getSpeciesIcon(pet.species)}
-                </div>
-                <div>
-                  <h2 className="text-3xl font-bold text-white mb-1">
-                    {pet.name}
-                  </h2>
-                  <div className="flex items-center gap-4 text-white/80">
-                    <span className="flex items-center gap-2">
-                      <PawPrint className="w-4 h-4" />
-                      {getSpeciesLabel(pet.species)}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      {getAgeDisplay(pet.age, pet.dayOfBirth)}
-                    </span>
-                  </div>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl w-full max-w-6xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
+        {/* Header with Gradient */}
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 opacity-10"></div>
+          <div className="relative p-6 border-b border-slate-200 flex justify-between items-center">
+            <div className="flex items-center gap-6">
+              <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                {getSpeciesIcon(pet.species)}
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold text-slate-900 mb-1">
+                  {pet.name}
+                </h2>
+                <div className="flex items-center gap-4 text-slate/80">
+                  <span className="flex items-center gap-2">
+                    <PawPrint className="w-4 h-4" />
+                    {getSpeciesLabel(pet.species)}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    {getAgeDisplay(pet.age, pet.dayOfBirth)}
+                  </span>
                 </div>
               </div>
+            </div>
 
-              <div className="flex items-center gap-4">
-                {getStatusBadge(pet)}
-                <button
-                  onClick={onClose}
-                  className="p-2 hover:bg-white/20 rounded-2xl transition-all duration-200 hover:scale-110"
-                >
-                  <X className="w-6 h-6 text-white" />
-                </button>
-              </div>
+            <div className="flex gap-4">
+              {getStatusBadge(pet)}
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-stale/20 rounded-2xl transition-all duration-200 hover:scale-110"
+              >
+                <X className="w-6 h-6 text-stale-400" />
+              </button>
             </div>
           </div>
         </div>

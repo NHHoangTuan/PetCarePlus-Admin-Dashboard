@@ -105,9 +105,9 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl w-full max-w-6xl max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
         {/* Header with Gradient */}
-        <div className="relative overflow-hidden">
+        <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 opacity-10"></div>
           <div className="relative p-6 border-b border-slate-200">
             <div className="flex items-center justify-between">
@@ -134,14 +134,14 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onStatusUpdate }) => {
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="flex-1 overflow-y-auto p-6">
           {/* Booking ID */}
           <div className="mb-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl p-4 border border-slate-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-500 rounded-xl">
                 <ReceiptText className="w-5 h-5 text-white" />
               </div>
-              <div>
+              <div className="text-left">
                 <label className="text-sm font-medium text-slate-600">
                   Booking ID
                 </label>
