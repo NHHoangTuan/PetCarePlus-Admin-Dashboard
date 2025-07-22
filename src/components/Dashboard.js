@@ -17,10 +17,13 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   RefreshCw,
+  Star,
+  Award,
+  Package,
 } from "lucide-react";
-import { userAPI } from "../services/api";
+import { userAPI, statisticsAPI } from "../services/api";
 import { Link } from "react-router-dom";
-import { formatNumber } from "../utils/formatUtils";
+import { formatNumber, formatPrice } from "../utils/formatUtils";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -29,11 +32,46 @@ const Dashboard = () => {
     blockedUsers: 0,
     newUsersThisMonth: 0,
   });
+  const [topProviderServices, setTopProviderServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingTopServices, setLoadingTopServices] = useState(true);
 
   useEffect(() => {
-    loadStats();
+    loadDashboardData();
   }, []);
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    setLoadingTopServices(true);
+
+    try {
+      // Load user stats and top provider services in parallel
+      const [statsResponse, topServicesResponse] = await Promise.allSettled([
+        loadStats(),
+        loadTopProviderServices(),
+      ]);
+
+      if (statsResponse.status === "fulfilled") {
+        // Stats loaded successfully
+      } else {
+        console.error("Error loading stats:", statsResponse.reason);
+      }
+
+      if (topServicesResponse.status === "fulfilled") {
+        // Top services loaded successfully
+      } else {
+        console.error(
+          "Error loading top services:",
+          topServicesResponse.reason
+        );
+      }
+    } catch (error) {
+      console.error("Error loading dashboard data:", error);
+    } finally {
+      setLoading(false);
+      setLoadingTopServices(false);
+    }
+  };
 
   const loadStats = async () => {
     try {
@@ -41,20 +79,21 @@ const Dashboard = () => {
       const response = await userAPI.getUsers({ size: 1000 }); // Get more to calculate stats
       const users = response.data.data;
 
-      const totalUsers = users?.length;
-      const activeUsers = users.filter((user) => !user.blockedAt)?.length;
-      const blockedUsers = users.filter((user) => user.blockedAt)?.length;
+      const totalUsers = users?.length || 0;
+      const activeUsers = users.filter((user) => !user.blockedAt)?.length || 0;
+      const blockedUsers = users.filter((user) => user.blockedAt)?.length || 0;
 
       // Calculate new users this month
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
-      const newUsersThisMonth = users.filter((user) => {
-        const createdDate = new Date(user.createdAt);
-        return (
-          createdDate.getMonth() === currentMonth &&
-          createdDate.getFullYear() === currentYear
-        );
-      })?.length;
+      const newUsersThisMonth =
+        users.filter((user) => {
+          const createdDate = new Date(user.createdAt);
+          return (
+            createdDate.getMonth() === currentMonth &&
+            createdDate.getFullYear() === currentYear
+          );
+        })?.length || 0;
 
       setStats({
         totalUsers,
@@ -64,8 +103,23 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error("Error loading stats:", error);
-    } finally {
-      setLoading(false);
+      // Set default values on error
+      setStats({
+        totalUsers: 0,
+        activeUsers: 0,
+        blockedUsers: 0,
+        newUsersThisMonth: 0,
+      });
+    }
+  };
+
+  const loadTopProviderServices = async () => {
+    try {
+      const response = await statisticsAPI.getTopProviderServices();
+      setTopProviderServices(response.data || []);
+    } catch (error) {
+      console.error("Error loading top provider services:", error);
+      setTopProviderServices([]);
     }
   };
 
@@ -76,8 +130,6 @@ const Dashboard = () => {
       icon: Users,
       gradient: "from-blue-500 to-cyan-500",
       bgColor: "from-blue-50 to-cyan-50",
-      change: "+12%",
-      trend: "up",
       description: "All registered users",
     },
     {
@@ -86,8 +138,6 @@ const Dashboard = () => {
       icon: UserCheck,
       gradient: "from-green-500 to-emerald-500",
       bgColor: "from-green-50 to-emerald-50",
-      change: "+8%",
-      trend: "up",
       description: "Currently active users",
     },
     {
@@ -96,8 +146,6 @@ const Dashboard = () => {
       icon: UserX,
       gradient: "from-red-500 to-pink-500",
       bgColor: "from-red-50 to-pink-50",
-      change: "-3%",
-      trend: "down",
       description: "Blocked accounts",
     },
     {
@@ -106,8 +154,6 @@ const Dashboard = () => {
       icon: TrendingUp,
       gradient: "from-purple-500 to-indigo-500",
       bgColor: "from-purple-50 to-indigo-50",
-      change: "+25%",
-      trend: "up",
       description: "New registrations",
     },
   ];
@@ -184,7 +230,7 @@ const Dashboard = () => {
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3">
               <button
-                onClick={loadStats}
+                onClick={loadDashboardData}
                 className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -201,8 +247,6 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {statCards.map((stat, index) => {
             const Icon = stat.icon;
-            const TrendIcon =
-              stat.trend === "up" ? ArrowUpRight : ArrowDownRight;
 
             return (
               <div
@@ -223,16 +267,6 @@ const Dashboard = () => {
                         className={`p-3 bg-gradient-to-r ${stat.gradient} rounded-2xl shadow-lg`}
                       >
                         <Icon className="w-6 h-6 text-white" />
-                      </div>
-                      <div
-                        className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
-                          stat.trend === "up"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        <TrendIcon className="w-3 h-3" />
-                        {stat.change}
                       </div>
                     </div>
 
@@ -259,111 +293,212 @@ const Dashboard = () => {
       {/* Main Content Grid */}
       <div className="px-8 pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Quick Actions */}
+          {/* Top Provider Services */}
           <div className="lg:col-span-2">
             <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
               {/* Header */}
               <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
-                    <Zap className="w-5 h-5 text-white" />
+                  <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
+                    <Award className="w-5 h-5 text-white" />
                   </div>
                   <h2 className="text-xl font-bold text-gray-900">
-                    Quick Actions
+                    Top Provider Services
                   </h2>
                 </div>
               </div>
 
               {/* Content */}
               <div className="p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Link
-                    to="/users"
-                    className="group relative p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl border border-blue-100 hover:border-blue-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                        <Users className="w-6 h-6 text-white" />
+                {loadingTopServices ? (
+                  <div className="space-y-4">
+                    {[...Array(5)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl animate-pulse"
+                      >
+                        <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                        <div className="h-6 w-16 bg-gray-200 rounded"></div>
                       </div>
-                      <div>
-                        <h3 className="font-bold text-gray-900 mb-1">
-                          Manage Users
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          View and manage user accounts
-                        </p>
-                        <p className="text-xs text-blue-600 font-medium mt-1">
-                          {formatNumber(stats.totalUsers)} total users
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
+                    ))}
+                  </div>
+                ) : topProviderServices.length > 0 ? (
+                  <div className="space-y-4">
+                    {topProviderServices.map((service, index) => (
+                      <div
+                        key={service.id}
+                        className="group relative p-4 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100 hover:border-orange-200 transition-all duration-300 hover:shadow-lg"
+                      >
+                        <div className="flex items-center gap-4">
+                          {/* Rank */}
+                          <div
+                            className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${
+                              index === 0
+                                ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white"
+                                : index === 1
+                                ? "bg-gradient-to-r from-gray-300 to-gray-400 text-white"
+                                : index === 2
+                                ? "bg-gradient-to-r from-orange-400 to-orange-500 text-white"
+                                : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            {index + 1}
+                          </div>
 
-                  <Link
-                    to="/services"
-                    className="group relative p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100 hover:border-green-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                        <Heart className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-gray-900 mb-1">
-                          Manage Services
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Configure pet care services
-                        </p>
-                        <p className="text-xs text-green-600 font-medium mt-1">
-                          Pet care & veterinary
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
+                          {/* Service Icon */}
+                          <div className="w-12 h-12 bg-gradient-to-r from-orange-100 to-red-100 rounded-xl flex items-center justify-center">
+                            {service.serviceIconUrl ? (
+                              <img
+                                src={service.serviceIconUrl}
+                                alt={service.serviceName}
+                                className="w-8 h-8 object-cover rounded-lg"
+                              />
+                            ) : (
+                              <Package className="w-6 h-6 text-orange-600" />
+                            )}
+                          </div>
 
-                  <Link
-                    to="/bookings"
-                    className="group relative p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border border-purple-100 hover:border-purple-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                        <Calendar className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-gray-900 mb-1">
-                          View Bookings
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Track appointments & bookings
-                        </p>
-                        <p className="text-xs text-purple-600 font-medium mt-1">
-                          Scheduling & management
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
+                          {/* Service Info */}
+                          <div className="flex-1">
+                            <h3 className="font-bold text-gray-900 mb-1">
+                              {service.serviceName}
+                            </h3>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <span>by {service.providerName}</span>
+                              {service.providerAvatarUrl && (
+                                <img
+                                  src={service.providerAvatarUrl}
+                                  alt={service.providerName}
+                                  className="w-4 h-4 rounded-full object-cover"
+                                />
+                              )}
+                            </div>
+                            {service.customDescription && (
+                              <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                                {service.customDescription}
+                              </p>
+                            )}
+                          </div>
 
-                  <Link
-                    to="/notifications"
-                    className="group relative p-6 bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                        <Bell className="w-6 h-6 text-white" />
+                          {/* Stats */}
+                          <div className="text-right">
+                            <div className="flex items-center gap-1 text-sm font-bold text-orange-600 mb-1">
+                              <Star className="w-4 h-4 fill-current" />
+                              {formatNumber(service.totalBookings)}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              bookings
+                            </div>
+                            {service.customPrice && (
+                              <div className="text-xs font-medium text-gray-700 mt-1">
+                                {formatPrice(service.customPrice)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-bold text-gray-900 mb-1">
-                          Notifications
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Send system notifications
-                        </p>
-                        <p className="text-xs text-orange-600 font-medium mt-1">
-                          Communication center
-                        </p>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No Provider Services Found
+                    </h3>
+                    <p className="text-gray-500">
+                      Top provider services will appear here once bookings are
+                      made.
+                    </p>
+                  </div>
+                )}
+
+                {/* Quick Actions */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-blue-600" />
+                    Quick Actions
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Link
+                      to="/users"
+                      className="group relative p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl border border-blue-100 hover:border-blue-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                          <Users className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900 text-sm">
+                            Manage Users
+                          </h4>
+                          <p className="text-xs text-gray-600">
+                            {formatNumber(stats.totalUsers)} total users
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
+
+                    <Link
+                      to="/services"
+                      className="group relative p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100 hover:border-green-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                          <Heart className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900 text-sm">
+                            Manage Services
+                          </h4>
+                          <p className="text-xs text-gray-600">
+                            Pet care & veterinary
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      to="/bookings"
+                      className="group relative p-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border border-purple-100 hover:border-purple-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                          <Calendar className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900 text-sm">
+                            View Bookings
+                          </h4>
+                          <p className="text-xs text-gray-600">
+                            Scheduling & management
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      to="/notifications"
+                      className="group relative p-4 bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                          <Bell className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900 text-sm">
+                            Notifications
+                          </h4>
+                          <p className="text-xs text-gray-600">
+                            Communication center
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -422,38 +557,28 @@ const Dashboard = () => {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-orange-50 rounded-2xl border border-orange-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium text-gray-900">
-                      Notifications
-                    </span>
-                  </div>
-                  <span className="text-sm font-bold text-orange-600">
-                    Running
-                  </span>
-                </div>
-
-                {/* Quick Stats */}
+                {/* User Statistics */}
                 <div className="mt-6 pt-4 border-t border-gray-200">
                   <h4 className="text-sm font-bold text-gray-900 mb-3">
-                    Quick Overview
+                    User Overview
                   </h4>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Uptime</span>
-                      <span className="font-medium text-gray-900">99.9%</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Response Time</span>
+                      <span className="text-gray-600">Total Users</span>
                       <span className="font-medium text-gray-900">
-                        &lt; 200ms
+                        {formatNumber(stats.totalUsers)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Active Sessions</span>
+                      <span className="text-gray-600">Active Users</span>
                       <span className="font-medium text-gray-900">
                         {formatNumber(stats.activeUsers)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">New This Month</span>
+                      <span className="font-medium text-gray-900">
+                        {formatNumber(stats.newUsersThisMonth)}
                       </span>
                     </div>
                   </div>

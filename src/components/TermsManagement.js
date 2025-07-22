@@ -1337,13 +1337,6 @@ const TermsManagement = () => {
                           >
                             <Edit className="w-5 h-5" />
                           </button>
-                          <button
-                            onClick={() => handleDelete(termsItem)}
-                            className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-all duration-200 hover:scale-110"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
                         </div>
                       </td>
                     </tr>

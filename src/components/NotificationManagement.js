@@ -799,6 +799,7 @@ const ActionsDropdown = ({
 // Main Notification Management Component
 const NotificationManagement = () => {
   const [notifications, setNotifications] = useState([]);
+  const [allNotifications, setAllNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -844,12 +845,21 @@ const NotificationManagement = () => {
         sortBy,
         sort: sortOrder,
         ...(debouncedQuery && { query: debouncedQuery }),
-        ...(filters.type && { type: filters.type }),
         ...(filters.isRead !== "" && { isRead: filters.isRead === "true" }),
+        // don't include CHAT type in the main list
+        ...(filters.type !== "CHAT" && { type: filters.type }),
       };
 
       const response = await notificationAPI.getAllNotifications(params);
+      const allResponse = await notificationAPI.getAllNotifications({
+        page: 1,
+        size: 1000,
+        sortBy,
+        sort: sortOrder,
+        ...(filters.type !== "CHAT" && { type: filters.type }),
+      });
       setNotifications(response.data.data || []);
+      setAllNotifications(allResponse.data.data || []);
       setPagination((prev) => ({
         ...prev,
         totalPages: response.data.paging.totalPage,
@@ -998,12 +1008,12 @@ const NotificationManagement = () => {
 
   // Statistics
   const stats = {
-    total: notifications.length,
-    unread: notifications.filter((n) => !n.isRead).length,
-    read: notifications.filter((n) => n.isRead).length,
+    total: allNotifications.length,
+    unread: allNotifications.filter((n) => !n.isRead).length,
+    read: allNotifications.filter((n) => n.isRead).length,
     byType: notificationTypes.map((type) => ({
       ...type,
-      count: notifications.filter((n) => n.type === type.value).length,
+      count: allNotifications.filter((n) => n.type === type.value).length,
     })),
   };
 
