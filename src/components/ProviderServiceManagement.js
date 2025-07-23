@@ -719,6 +719,29 @@ const ProviderServiceManagement = () => {
       .length,
   };
 
+  const getPaginationRange = () => {
+    const total = pagination.totalPages;
+    const current = pagination.page;
+    const delta = 2; // Hiển thị 5 trang: current +- 2
+
+    let start = Math.max(1, current - delta);
+    let end = Math.min(total, current + delta);
+
+    if (end - start < 4) {
+      if (start === 1) {
+        end = Math.min(start + 4, total);
+      } else if (end === total) {
+        start = Math.max(end - 4, 1);
+      }
+    }
+
+    const range = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    return { start, end, range };
+  };
+
+  const { start, end, range } = getPaginationRange();
+  const total = pagination.totalPages;
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header Section */}
@@ -1146,23 +1169,42 @@ const ProviderServiceManagement = () => {
                   </button>
 
                   <div className="flex items-center gap-1">
-                    {[...Array(Math.min(5, pagination.totalPages))].map(
-                      (_, i) => {
-                        const page = i + 1;
-                        return (
-                          <button
-                            key={page}
-                            onClick={() => handlePageChange(page)}
-                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
-                              pagination.page === page
-                                ? "bg-blue-600 text-white shadow-lg"
-                                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        );
-                      }
+                    {start > 1 && (
+                      <>
+                        <button
+                          onClick={() => handlePageChange(1)}
+                          className="w-10 h-10 rounded-xl text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        >
+                          1
+                        </button>
+                        <span className="px-2 text-gray-500">...</span>
+                      </>
+                    )}
+
+                    {range.map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
+                          pagination.page === page
+                            ? "bg-blue-600 text-white shadow-lg"
+                            : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                    {end < total && (
+                      <>
+                        <span className="px-2 text-gray-500">...</span>
+                        <button
+                          onClick={() => handlePageChange(total)}
+                          className="w-10 h-10 rounded-xl text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        >
+                          {total}
+                        </button>
+                      </>
                     )}
                   </div>
 
