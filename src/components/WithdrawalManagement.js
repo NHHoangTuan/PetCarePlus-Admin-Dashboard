@@ -154,11 +154,22 @@ const WithdrawalDetailModal = ({
     }
   };
 
+  const generateVietQRLink = () => {
+    const bankCode = withdrawal.bankCode;
+    const accountNumber = withdrawal.accountNumber;
+    const template = "TtxRU02";
+    const amount = Math.round(withdrawal.netAmount); // làm tròn nếu cần
+    const addInfo = encodeURIComponent(`Thanh toan rut tien tu PetCare App`);
+    const accountName = encodeURIComponent(withdrawal.accountHolderName);
+
+    return `https://img.vietqr.io/image/${bankCode}-${accountNumber}-${template}.png?amount=${amount}&addInfo=${addInfo}&accountName=${accountName}`;
+  };
+
   if (!isOpen || !withdrawal) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-4xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-900">
             Withdrawal Details
@@ -171,10 +182,10 @@ const WithdrawalDetailModal = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto">
           {/* Withdrawal Information */}
           <div className="space-y-4">
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="bg-gray-100 p-4 rounded-xl">
               <h3 className="font-semibold text-gray-900 mb-3">
                 Withdrawal Information
               </h3>
@@ -218,7 +229,7 @@ const WithdrawalDetailModal = ({
             </div>
 
             {/* Bank Information */}
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="bg-gray-100 p-4 rounded-xl">
               <h3 className="font-semibold text-gray-900 mb-3">
                 Bank Information
               </h3>
@@ -245,8 +256,8 @@ const WithdrawalDetailModal = ({
           </div>
 
           {/* Timestamps and Notes */}
-          <div className="space-y-4">
-            <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="space-y-4 mr-4">
+            <div className="bg-gray-100 p-4 rounded-xl">
               <h3 className="font-semibold text-gray-900 mb-3">Timeline</h3>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
@@ -265,7 +276,7 @@ const WithdrawalDetailModal = ({
             </div>
 
             {/* Notes */}
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="bg-gray-100 p-4 rounded-xl">
               <h3 className="font-semibold text-gray-900 mb-3">Notes</h3>
               <div className="space-y-2">
                 {withdrawal.adminNote && (
@@ -299,6 +310,20 @@ const WithdrawalDetailModal = ({
               </div>
             </div>
           </div>
+          {["PENDING", "APPROVED"].includes(withdrawal.status) && (
+            <div className="col-span-2 bg-gray-100 p-4 rounded-xl mr-4">
+              <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                VietQR Code
+              </h4>
+              <div className="border rounded-lg p-3 bg-white flex flex-col items-center">
+                <img
+                  src={generateVietQRLink()}
+                  alt="VietQR Code"
+                  className="w-96 h-96 object-contain"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
@@ -308,14 +333,14 @@ const WithdrawalDetailModal = ({
               <>
                 <button
                   onClick={() => setShowApproveForm(true)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 flex items-center gap-2"
                 >
                   <Check className="w-4 h-4" />
                   Approve
                 </button>
                 <button
                   onClick={() => setShowRejectForm(true)}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
+                  className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 flex items-center gap-2"
                 >
                   <X className="w-4 h-4" />
                   Reject
@@ -325,7 +350,7 @@ const WithdrawalDetailModal = ({
             {withdrawal.status === "APPROVED" && (
               <button
                 onClick={() => setShowCompleteForm(true)}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
+                className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 flex items-center gap-2"
               >
                 <CheckCircle className="w-4 h-4" />
                 Complete
@@ -334,7 +359,7 @@ const WithdrawalDetailModal = ({
           </div>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200"
           >
             Close
           </button>
