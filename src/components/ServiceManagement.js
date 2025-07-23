@@ -237,12 +237,12 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
-        {/* Header with Gradient */}
+        {/* Header */}
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 opacity-10"></div>
+          <div className="absolute inset-0 bg-blue-50/50"></div>
           <div className="relative p-6 border-b border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 shadow-lg">
+              <div className="p-3 rounded-2xl bg-blue-600 shadow-md">
                 <Package className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -383,7 +383,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                     </label>
 
                     {/* Compression Settings */}
-                    <div className="mb-4 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl border border-slate-200">
+                    <div className="mb-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
                       <div className="flex items-center justify-between mb-3">
                         <label className="flex items-center text-sm font-medium text-slate-700">
                           <input
@@ -458,11 +458,11 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                         type="button"
                         onClick={handleUploadClick}
                         disabled={uploadingImage}
-                        className={`group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                        className={`group relative overflow-hidden px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                           uploadingImage ? "animate-pulse" : ""
                         }`}
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute inset-0 bg-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         {uploadingImage ? (
                           <Loader className="w-5 h-5 animate-spin relative z-10" />
                         ) : (
@@ -521,7 +521,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
 
                 {/* Error Message */}
                 {error && (
-                  <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-2xl p-4 shadow-sm">
+                  <div className="bg-red-50 border border-red-200 rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center">
                       <div className="p-2 bg-red-500 rounded-xl mr-3">
                         <AlertCircle className="w-5 h-5 text-white" />
@@ -543,7 +543,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
               {/* Left Column - Basic Info */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Service ID */}
-                <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl p-4 border border-slate-200">
+                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-500 rounded-xl">
                       <Package className="w-5 h-5 text-white" />
@@ -584,7 +584,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                   <label className="text-sm font-semibold text-slate-700 mb-2 block">
                     Description
                   </label>
-                  <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-3 border border-slate-200">
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
                     <p className="text-slate-700 leading-relaxed">
                       {service?.description}
                     </p>
@@ -668,7 +668,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                           alt="Service icon"
                           className="w-32 h-32 object-cover rounded-2xl border-4 border-white shadow-lg mx-auto"
                         />
-                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/20 to-transparent"></div>
+                        <div className="absolute inset-0 rounded-2xl bg-black/10"></div>
                       </div>
                       <p className="mt-3 text-sm text-slate-500">
                         Service Icon
@@ -676,7 +676,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <div className="w-32 h-32 mx-auto bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center">
+                      <div className="w-32 h-32 mx-auto bg-slate-100 rounded-2xl flex items-center justify-center">
                         <Package className="w-16 h-16 text-slate-400" />
                       </div>
                       <p className="mt-3 text-sm text-slate-500">
@@ -692,7 +692,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
 
         {/* Footer */}
         {isEditMode ? (
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+          <div className="bg-slate-50 px-8 py-6 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-slate-500 text-left">
                 {mode === "create"
@@ -711,11 +711,11 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
                   type="submit"
                   form="service-form"
                   disabled={loading}
-                  className={`group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium ${
+                  className={`group relative overflow-hidden px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium ${
                     loading ? "animate-pulse" : ""
                   }`}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   {loading ? (
                     <Loader className="w-5 h-5 animate-spin relative z-10" />
                   ) : (
@@ -733,7 +733,7 @@ const ServiceModal = ({ service, isOpen, onClose, onSave, mode = "view" }) => {
             </div>
           </div>
         ) : (
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-4 border-t border-gray-200">
+          <div className="bg-slate-50 px-8 py-4 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-slate-500 text-left">
                 Service details and information
@@ -950,12 +950,35 @@ const ServiceManagement = () => {
     setSelectedService(null);
   };
 
+  const getPaginationRange = () => {
+    const total = pagination.totalPages;
+    const current = pagination.page;
+    const delta = 2; // Hiển thị 5 trang: current +- 2
+
+    let start = Math.max(1, current - delta);
+    let end = Math.min(total, current + delta);
+
+    if (end - start < 4) {
+      if (start === 1) {
+        end = Math.min(start + 4, total);
+      } else if (end === total) {
+        start = Math.max(end - 4, 1);
+      }
+    }
+
+    const range = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    return { start, end, range };
+  };
+
+  const { start, end, range } = getPaginationRange();
+  const total = pagination.totalPages;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header Section with Gradient */}
+    <div className="min-h-screen bg-slate-50">
+      {/* Header Section */}
       <div className="relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-green-600 opacity-10"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
 
         <div className="relative px-8 py-12">
@@ -963,11 +986,11 @@ const ServiceManagement = () => {
             {/* Title Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
                   <Package className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                  <h1 className="text-4xl leading-normal font-bold text-slate-900">
                     Service Management
                   </h1>
                   <p className="text-gray-600 mt-1">
@@ -998,18 +1021,18 @@ const ServiceManagement = () => {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={searchServices}
-                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="group relative px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-blue-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <RefreshCw className="w-5 h-5 relative z-10" />
                 <span className="relative z-10 font-medium">Refresh</span>
               </button>
 
               <button
                 onClick={handleCreateService}
-                className="group relative px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="group relative px-6 py-3 bg-emerald-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-emerald-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <Plus className="w-5 h-5 relative z-10" />
                 <span className="relative z-10 font-medium">
                   Create Service
@@ -1024,7 +1047,7 @@ const ServiceManagement = () => {
       <div className="px-8 -mt-6 relative z-10">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+            <div className="p-2 bg-blue-600 rounded-xl">
               <Filter className="w-5 h-5 text-white" />
             </div>
             <h2 className="text-xl font-bold text-gray-900">
@@ -1062,10 +1085,10 @@ const ServiceManagement = () => {
       <div className="px-8 mt-8 pb-8">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
           {/* Table Header */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+          <div className="bg-slate-50 px-8 py-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                <div className="p-2 bg-blue-600 rounded-xl">
                   <Package className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">
@@ -1200,7 +1223,7 @@ const ServiceManagement = () => {
           </div>
 
           {/* Enhanced Pagination */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+          <div className="bg-slate-50 px-8 py-6 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="text-sm text-gray-700">
@@ -1237,23 +1260,42 @@ const ServiceManagement = () => {
                   </button>
 
                   <div className="flex items-center gap-1">
-                    {[...Array(Math.min(5, pagination.totalPages))].map(
-                      (_, i) => {
-                        const page = i + 1;
-                        return (
-                          <button
-                            key={page}
-                            onClick={() => handlePageChange(page)}
-                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
-                              pagination.page === page
-                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
-                                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        );
-                      }
+                    {start > 1 && (
+                      <>
+                        <button
+                          onClick={() => handlePageChange(1)}
+                          className="w-10 h-10 rounded-xl text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        >
+                          1
+                        </button>
+                        <span className="px-2 text-gray-500">...</span>
+                      </>
+                    )}
+
+                    {range.map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
+                          pagination.page === page
+                            ? "bg-blue-600 text-white shadow-lg"
+                            : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                    {end < total && (
+                      <>
+                        <span className="px-2 text-gray-500">...</span>
+                        <button
+                          onClick={() => handlePageChange(total)}
+                          className="w-10 h-10 rounded-xl text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        >
+                          {total}
+                        </button>
+                      </>
                     )}
                   </div>
 

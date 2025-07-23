@@ -65,11 +65,11 @@ const NotificationDetailModal = ({
 
   const getTypeColor = (type) => {
     const colors = {
-      BOOKING: "from-blue-500 to-cyan-500",
-      PAYMENT: "from-emerald-500 to-teal-500",
-      REVIEW: "from-amber-500 to-orange-500",
-      CHAT: "from-purple-500 to-pink-500",
-      SYSTEM: "from-slate-500 to-slate-600",
+      BOOKING: "bg-blue-600",
+      PAYMENT: "bg-emerald-600",
+      REVIEW: "bg-amber-600",
+      CHAT: "bg-purple-600",
+      SYSTEM: "bg-slate-600",
     };
     return colors[type] || colors.SYSTEM;
   };
@@ -85,13 +85,24 @@ const NotificationDetailModal = ({
     return styles[type] || styles.SYSTEM;
   };
 
+  const getTypeBgColor = (type) => {
+    const colors = {
+      BOOKING: "bg-blue-50",
+      PAYMENT: "bg-emerald-50",
+      REVIEW: "bg-amber-50",
+      CHAT: "bg-purple-50",
+      SYSTEM: "bg-slate-50",
+    };
+    return colors[type] || colors.SYSTEM;
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
         <div className="relative overflow-hidden">
           <div
-            className={`absolute inset-0 bg-gradient-to-r ${getTypeColor(
+            className={`absolute inset-0 ${getTypeBgColor(
               notification.type
             )} opacity-10`}
           ></div>
@@ -99,7 +110,7 @@ const NotificationDetailModal = ({
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
                 <div
-                  className={`p-3 rounded-2xl bg-gradient-to-r ${getTypeColor(
+                  className={`p-3 rounded-2xl ${getTypeColor(
                     notification.type
                   )} shadow-lg`}
                 >
@@ -171,7 +182,7 @@ const NotificationDetailModal = ({
               <MessageSquare className="w-5 h-5 text-blue-500" />
               Message
             </h3>
-            <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl p-4 border border-slate-200">
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200">
               <p className="text-slate-700 leading-relaxed">
                 {notification.message}
               </p>
@@ -188,7 +199,7 @@ const NotificationDetailModal = ({
 
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
                     <Target className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -202,7 +213,7 @@ const NotificationDetailModal = ({
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center">
                     <User className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -217,7 +228,7 @@ const NotificationDetailModal = ({
 
                 {notification.relatedId && (
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center">
                       <ExternalLink className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -241,7 +252,7 @@ const NotificationDetailModal = ({
 
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center">
                     <Calendar className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -256,7 +267,7 @@ const NotificationDetailModal = ({
 
                 {notification.updatedAt && (
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-slate-600 rounded-xl flex items-center justify-center">
                       <Clock className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -272,7 +283,7 @@ const NotificationDetailModal = ({
 
                 {notification.readAt && (
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center">
                       <CheckCircle className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -291,7 +302,7 @@ const NotificationDetailModal = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50">
+        <div className="flex items-center justify-between p-6 border-t border-slate-200 bg-slate-50">
           {notification.updatedAt && (
             <div className="text-sm text-slate-500">
               Last updated: {formatDate2(notification.updatedAt)}
@@ -306,14 +317,14 @@ const NotificationDetailModal = ({
             </button>
             <button
               onClick={() => onEdit(notification)}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl hover:from-blue-600 hover:to-blue-700 transition-all flex items-center gap-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors flex items-center gap-2"
             >
               <Edit className="w-4 h-4" />
               Edit
             </button>
             <button
               onClick={() => onDelete(notification)}
-              className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl hover:from-red-600 hover:to-red-700 transition-all flex items-center gap-2"
+              className="px-4 py-2 bg-red-600 text-white rounded-2xl hover:bg-red-700 transition-colors flex items-center gap-2"
             >
               <Trash2 className="w-4 h-4" />
               Delete
@@ -350,31 +361,31 @@ const NotificationEditorModal = ({
       value: "BOOKING",
       label: "Booking",
       icon: Calendar,
-      color: "from-blue-500 to-cyan-500",
+      color: "bg-blue-600",
     },
     {
       value: "PAYMENT",
       label: "Payment",
       icon: Target,
-      color: "from-emerald-500 to-teal-500",
+      color: "bg-emerald-600",
     },
     {
       value: "REVIEW",
       label: "Review",
       icon: Star,
-      color: "from-amber-500 to-orange-500",
+      color: "bg-amber-600",
     },
     {
       value: "CHAT",
       label: "Chat",
       icon: MessageSquare,
-      color: "from-purple-500 to-pink-500",
+      color: "bg-purple-600",
     },
     {
       value: "SYSTEM",
       label: "System",
       icon: Settings,
-      color: "from-slate-500 to-slate-600",
+      color: "bg-slate-600",
     },
   ];
 
@@ -465,11 +476,11 @@ const NotificationEditorModal = ({
       <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
         <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-10"></div>
+          <div className="absolute inset-0 bg-blue-50 opacity-30"></div>
           <div className="relative p-6 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
+                <div className="p-3 rounded-2xl bg-blue-600 shadow-lg">
                   {isEditing ? (
                     <Edit className="w-6 h-6 text-white" />
                   ) : (
@@ -506,7 +517,7 @@ const NotificationEditorModal = ({
             <button
               type="button"
               onClick={generateSampleData}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-xl hover:from-purple-200 hover:to-pink-200 transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-xl hover:bg-purple-200 transition-colors"
             >
               <Sparkles className="w-4 h-4" />
               Generate Sample Data
@@ -559,7 +570,7 @@ const NotificationEditorModal = ({
                         onClick={() => handleInputChange("type", type.value)}
                         className={`p-3 rounded-xl border-2 transition-all flex items-center gap-2 ${
                           formData.type === type.value
-                            ? `bg-gradient-to-r ${type.color} text-white border-transparent shadow-lg`
+                            ? `${type.color} text-white border-transparent shadow-lg`
                             : "border-slate-300 hover:border-slate-400 bg-white"
                         }`}
                       >
@@ -707,7 +718,7 @@ const NotificationEditorModal = ({
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 transition-all flex items-center gap-2"
+              className="px-6 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
             >
               {loading ? (
                 <RefreshCw className="w-5 h-5 animate-spin" />
@@ -799,6 +810,7 @@ const ActionsDropdown = ({
 // Main Notification Management Component
 const NotificationManagement = () => {
   const [notifications, setNotifications] = useState([]);
+  const [allNotifications, setAllNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -844,12 +856,21 @@ const NotificationManagement = () => {
         sortBy,
         sort: sortOrder,
         ...(debouncedQuery && { query: debouncedQuery }),
-        ...(filters.type && { type: filters.type }),
         ...(filters.isRead !== "" && { isRead: filters.isRead === "true" }),
+        // don't include CHAT type in the main list
+        ...(filters.type !== "CHAT" && { type: filters.type }),
       };
 
       const response = await notificationAPI.getAllNotifications(params);
+      const allResponse = await notificationAPI.getAllNotifications({
+        page: 1,
+        size: 1000,
+        sortBy,
+        sort: sortOrder,
+        ...(filters.type !== "CHAT" && { type: filters.type }),
+      });
       setNotifications(response.data.data || []);
+      setAllNotifications(allResponse.data.data || []);
       setPagination((prev) => ({
         ...prev,
         totalPages: response.data.paging.totalPage,
@@ -998,21 +1019,44 @@ const NotificationManagement = () => {
 
   // Statistics
   const stats = {
-    total: notifications.length,
-    unread: notifications.filter((n) => !n.isRead).length,
-    read: notifications.filter((n) => n.isRead).length,
+    total: allNotifications.length,
+    unread: allNotifications.filter((n) => !n.isRead).length,
+    read: allNotifications.filter((n) => n.isRead).length,
     byType: notificationTypes.map((type) => ({
       ...type,
-      count: notifications.filter((n) => n.type === type.value).length,
+      count: allNotifications.filter((n) => n.type === type.value).length,
     })),
   };
 
+  const getPaginationRange = () => {
+    const total = pagination.totalPages;
+    const current = pagination.page;
+    const delta = 2; // Hiển thị 5 trang: current +- 2
+
+    let start = Math.max(1, current - delta);
+    let end = Math.min(total, current + delta);
+
+    if (end - start < 4) {
+      if (start === 1) {
+        end = Math.min(start + 4, total);
+      } else if (end === total) {
+        start = Math.max(end - 4, 1);
+      }
+    }
+
+    const range = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    return { start, end, range };
+  };
+
+  const { start, end, range } = getPaginationRange();
+  const total = pagination.totalPages;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header Section with Gradient */}
+    <div className="min-h-screen bg-slate-50">
+      {/* Header Section */}
       <div className="relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-green-600 opacity-10"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
 
         <div className="relative px-8 py-12">
@@ -1020,11 +1064,11 @@ const NotificationManagement = () => {
             {/* Title Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
                   <Bell className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                  <h1 className="text-4xl leading-normal font-bold text-gray-900">
                     Notification Management
                   </h1>
                   <p className="text-gray-600 mt-1">
@@ -1085,22 +1129,18 @@ const NotificationManagement = () => {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={loadNotifications}
-                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <RefreshCw className="w-5 h-5 relative z-10" />
-                <span className="relative z-10 font-medium">Refresh</span>
+                <RefreshCw className="w-5 h-5" />
+                <span className="font-medium">Refresh</span>
               </button>
 
               <button
                 onClick={handleCreateNew}
-                className="group relative px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="px-6 py-3 bg-emerald-600 text-white rounded-2xl shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <Plus className="w-5 h-5 relative z-10" />
-                <span className="relative z-10 font-medium">
-                  Create Notification
-                </span>
+                <Plus className="w-5 h-5" />
+                <span className="font-medium">Create Notification</span>
               </button>
             </div>
           </div>
@@ -1111,7 +1151,7 @@ const NotificationManagement = () => {
       <div className="px-8 -mt-6 relative z-10">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+            <div className="p-2 bg-blue-600 rounded-xl">
               <Filter className="w-5 h-5 text-white" />
             </div>
             <h2 className="text-xl font-bold text-gray-900">
@@ -1177,10 +1217,10 @@ const NotificationManagement = () => {
       <div className="px-8 mt-8 pb-8">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
           {/* Table Header */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+          <div className="bg-gray-100 px-8 py-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                <div className="p-2 bg-blue-600 rounded-xl">
                   <Bell className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">
@@ -1285,12 +1325,12 @@ const NotificationManagement = () => {
                                 }}
                               />
                             ) : (
-                              <div className="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center shadow-lg">
+                              <div className="w-10 h-10 bg-gray-300 rounded-2xl flex items-center justify-center shadow-lg">
                                 <Bell className="w-5 h-5 text-gray-500" />
                               </div>
                             )}
                             <div
-                              className="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl items-center justify-center shadow-lg"
+                              className="w-10 h-10 bg-gray-300 rounded-2xl items-center justify-center shadow-lg"
                               style={{ display: "none" }}
                             >
                               <Bell className="w-5 h-5 text-gray-500" />
@@ -1404,7 +1444,7 @@ const NotificationManagement = () => {
 
           {/* Enhanced Pagination */}
 
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+          <div className="bg-gray-100 px-8 py-6 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="text-sm text-gray-700">
@@ -1440,23 +1480,42 @@ const NotificationManagement = () => {
                   </button>
 
                   <div className="flex items-center gap-1">
-                    {[...Array(Math.min(5, pagination.totalPages))].map(
-                      (_, i) => {
-                        const page = i + 1;
-                        return (
-                          <button
-                            key={page}
-                            onClick={() => handlePageChange(page)}
-                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
-                              pagination.page === page
-                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
-                                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        );
-                      }
+                    {start > 1 && (
+                      <>
+                        <button
+                          onClick={() => handlePageChange(1)}
+                          className="w-10 h-10 rounded-xl text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        >
+                          1
+                        </button>
+                        <span className="px-2 text-gray-500">...</span>
+                      </>
+                    )}
+
+                    {range.map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
+                          pagination.page === page
+                            ? "bg-blue-600 text-white shadow-lg"
+                            : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                    {end < total && (
+                      <>
+                        <span className="px-2 text-gray-500">...</span>
+                        <button
+                          onClick={() => handlePageChange(total)}
+                          className="w-10 h-10 rounded-xl text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        >
+                          {total}
+                        </button>
+                      </>
                     )}
                   </div>
 

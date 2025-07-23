@@ -462,6 +462,12 @@ export const petAPI = {
   },
 };
 
+// Statistics API
+export const statisticsAPI = {
+  // Get top provider services with most bookings
+  getTopProviderServices: () => api.get("/statistics/top-provider-services"),
+};
+
 // Auth API
 export const authAPI = {
   login: (credentials) => api.post("/auth/login", credentials),

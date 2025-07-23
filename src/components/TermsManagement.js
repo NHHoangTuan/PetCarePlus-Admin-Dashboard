@@ -261,8 +261,8 @@ function example() {
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white/95 backdrop-blur-xl rounded-3xl w-full max-w-7xl max-h-[95vh] overflow-hidden flex flex-col shadow-2xl border border-white/20">
-        {/* Header with Gradient */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 text-white">
+        {/* Header */}
+        <div className="relative overflow-hidden bg-blue-600 text-white">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiPgo8Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyIi8+CjwvZz4KPC9zdmc+')] opacity-30"></div>
 
           <div className="relative px-8 py-6 flex justify-between items-center">
@@ -297,7 +297,7 @@ function example() {
           className="flex-1 flex flex-col overflow-hidden"
         >
           {/* Form Fields */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b border-gray-200">
+          <div className="bg-slate-50 p-8 border-b border-gray-200">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Type */}
               <div className="space-y-2">
@@ -441,9 +441,9 @@ function example() {
           <div className="flex-1 flex overflow-hidden">
             {/* Editor Section */}
             <div className="flex-1 flex flex-col border-r border-gray-200">
-              <div className="flex justify-between items-center p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+              <div className="flex justify-between items-center p-6 bg-slate-50 border-b border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                  <div className="p-2 bg-blue-600 rounded-xl">
                     <Code className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -518,9 +518,9 @@ code block
             {/* Preview Section */}
             {previewMode && (
               <div className="flex-1 flex flex-col bg-white/95 backdrop-blur-sm">
-                <div className="p-6 bg-gradient-to-r from-green-50 to-teal-50 border-b border-gray-200">
+                <div className="p-6 bg-emerald-50 border-b border-gray-200">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl">
+                    <div className="p-2 bg-emerald-600 rounded-xl">
                       <Eye className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -545,10 +545,10 @@ code block
           </div>
 
           {/* Action Buttons */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200 flex-shrink-0">
+          <div className="bg-slate-50 px-8 py-6 border-t border-gray-200 flex-shrink-0">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl">
+                <div className="p-2 bg-indigo-600 rounded-xl">
                   <Save className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-sm text-gray-600">
@@ -568,15 +568,14 @@ code block
                 <button
                   type="submit"
                   disabled={saving}
-                  className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="group relative px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   {saving ? (
-                    <RefreshCw className="w-5 h-5 animate-spin relative z-10" />
+                    <RefreshCw className="w-5 h-5 animate-spin" />
                   ) : (
-                    <Save className="w-5 h-5 relative z-10" />
+                    <Save className="w-5 h-5" />
                   )}
-                  <span className="relative z-10 font-medium">
+                  <span className="font-medium">
                     {isEditing ? "Update" : "Create"}
                   </span>
                 </button>
@@ -707,8 +706,8 @@ const TermsPreviewModal = ({ terms, isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white/95 backdrop-blur-xl rounded-3xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-white/20">
-        {/* Header with Gradient */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 text-white">
+        {/* Header */}
+        <div className="relative overflow-hidden bg-emerald-600 text-white">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiPgo8Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyIi8+CjwvZz4KPC9zdmc+')] opacity-30"></div>
 
           <div className="relative px-8 py-6 flex justify-between items-center">
@@ -788,10 +787,10 @@ const TermsPreviewModal = ({ terms, isOpen, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200 flex-shrink-0">
+        <div className="bg-slate-50 px-8 py-6 border-t border-gray-200 flex-shrink-0">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl">
+              <div className="p-2 bg-emerald-600 rounded-xl">
                 <Calendar className="w-5 h-5 text-white" />
               </div>
               <div className="text-sm text-gray-600">
@@ -799,7 +798,7 @@ const TermsPreviewModal = ({ terms, isOpen, onClose }) => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+              <div className="p-2 bg-blue-600 rounded-xl">
                 <RefreshCw className="w-5 h-5 text-white" />
               </div>
               <div className="text-sm text-gray-600">
@@ -811,11 +810,10 @@ const TermsPreviewModal = ({ terms, isOpen, onClose }) => {
           <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="group relative px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2"
+              className="group relative px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-600 to-gray-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <X className="w-5 h-5 relative z-10" />
-              <span className="relative z-10 font-medium">Close</span>
+              <X className="w-5 h-5" />
+              <span className="font-medium">Close</span>
             </button>
           </div>
         </div>
@@ -1026,11 +1024,11 @@ const TermsManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header with Gradient */}
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
       <div className="relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-green-600 opacity-10"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
 
         <div className="relative px-8 py-12">
@@ -1039,11 +1037,11 @@ const TermsManagement = () => {
 
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
                   <FileText className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                  <h1 className="text-4xl leading-normal font-bold text-gray-900">
                     Terms & Conditions Management
                   </h1>
                   <p className="text-gray-600 mt-1">
@@ -1076,20 +1074,18 @@ const TermsManagement = () => {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={loadTerms}
-                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="group relative px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <RefreshCw className="w-5 h-5 relative z-10" />
-                <span className="relative z-10 font-medium">Refresh</span>
+                <RefreshCw className="w-5 h-5" />
+                <span className="font-medium">Refresh</span>
               </button>
 
               <button
                 onClick={handleCreateNew}
-                className="group relative px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="group relative px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <Plus className="w-5 h-5 relative z-10" />
-                <span className="relative z-10 font-medium">Create</span>
+                <Plus className="w-5 h-5" />
+                <span className="font-medium">Create</span>
               </button>
             </div>
           </div>
@@ -1100,7 +1096,7 @@ const TermsManagement = () => {
       <div className="px-8 -mt-6 relative z-10">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+            <div className="p-2 bg-blue-600 rounded-xl">
               <Filter className="w-5 h-5 text-white" />
             </div>
             <h2 className="text-xl font-bold text-gray-900">
@@ -1182,18 +1178,18 @@ const TermsManagement = () => {
       <div className="px-8 mt-8 pb-8">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
           {/* Table Header */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+          <div className="bg-slate-50 px-8 py-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                <div className="p-2 bg-blue-600 rounded-xl">
                   <FileText className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">
-                  Notification Directory
+                  Terms Directory
                 </h3>
               </div>
               <div className="text-sm text-gray-600">
-                {formatNumber(terms.length)} notifications total
+                {formatNumber(terms.length)} terms total
               </div>
             </div>
           </div>
@@ -1273,7 +1269,7 @@ const TermsManagement = () => {
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center shadow-lg">
+                          <div className="w-10 h-10 bg-gray-200 rounded-2xl flex items-center justify-center shadow-lg">
                             {getTypeIcon(termsItem.type)}
                           </div>
                           <div>
@@ -1294,7 +1290,7 @@ const TermsManagement = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <div className="w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center">
                             <Globe className="w-4 h-4 text-white" />
                           </div>
                           <span className="text-sm font-medium text-gray-900 uppercase">
@@ -1336,13 +1332,6 @@ const TermsManagement = () => {
                             title="Edit"
                           >
                             <Edit className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(termsItem)}
-                            className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-all duration-200 hover:scale-110"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
                       </td>
