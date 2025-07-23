@@ -159,9 +159,9 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl w-full max-w-6xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
-        {/* Header with Gradient */}
+        {/* Header */}
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 opacity-10"></div>
+          <div className="absolute inset-0 bg-purple-50 opacity-60"></div>
           <div className="relative p-6 border-b border-slate-200 flex justify-between items-center">
             <div className="flex items-center gap-6">
               <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
@@ -216,12 +216,12 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
                         }}
                       />
                     ) : (
-                      <div className="w-64 h-64 bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl border-4 border-white shadow-2xl flex items-center justify-center">
+                      <div className="w-64 h-64 bg-gray-300 rounded-3xl border-4 border-white shadow-2xl flex items-center justify-center">
                         <PawPrint className="w-20 h-20 text-gray-400" />
                       </div>
                     )}
                     <div
-                      className="w-64 h-64 bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl border-4 border-white shadow-2xl items-center justify-center"
+                      className="w-64 h-64 bg-gray-300 rounded-3xl border-4 border-white shadow-2xl items-center justify-center"
                       style={{ display: "none" }}
                     >
                       <PawPrint className="w-20 h-20 text-gray-400" />
@@ -300,7 +300,7 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
               {/* Basic Information */}
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                  <div className="p-3 bg-blue-600 rounded-xl">
                     <Info className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">
@@ -371,7 +371,7 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
               {/* Owner & System Information */}
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl">
+                  <div className="p-3 bg-emerald-600 rounded-xl">
                     <User className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">
@@ -447,14 +447,14 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
             {pet.description && (
               <div className="mb-8 bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl">
+                  <div className="p-3 bg-purple-600 rounded-xl">
                     <Heart className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">
                     About {pet.name}
                   </h3>
                 </div>
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-6">
+                <div className="bg-slate-100 rounded-2xl p-6">
                   <p className="text-gray-700 leading-relaxed text-lg">
                     {pet.description}
                   </p>
@@ -465,7 +465,7 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
             {/* Timeline */}
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl">
+                <div className="p-3 bg-indigo-600 rounded-xl">
                   <Clock className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">Timeline</h3>
@@ -517,10 +517,10 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
         </div>
 
         {/* Enhanced Footer - Fixed */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200 flex-shrink-0">
+        <div className="bg-gray-100 px-8 py-6 border-t border-gray-200 flex-shrink-0">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl">
+              <div className="p-2 bg-indigo-600 rounded-xl">
                 <Clock className="w-5 h-5 text-white" />
               </div>
               {pet.updatedAt && (
@@ -542,22 +542,18 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
                 <>
                   <button
                     onClick={() => onEdit(pet)}
-                    className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2"
+                    className="px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <Edit className="w-5 h-5 relative z-10" />
-                    <span className="relative z-10 font-medium">Edit Pet</span>
+                    <Edit className="w-5 h-5" />
+                    <span className="font-medium">Edit Pet</span>
                   </button>
 
                   <button
                     onClick={() => onDelete(pet)}
-                    className="group relative px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2"
+                    className="px-6 py-3 bg-red-600 text-white rounded-2xl shadow-lg hover:bg-red-700 hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <Trash2 className="w-5 h-5 relative z-10" />
-                    <span className="relative z-10 font-medium">
-                      Delete Pet
-                    </span>
+                    <Trash2 className="w-5 h-5" />
+                    <span className="font-medium">Delete Pet</span>
                   </button>
                 </>
               )}
@@ -827,7 +823,7 @@ const PetEditorModal = ({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white/95 backdrop-blur-xl rounded-3xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl border border-white/20 overflow-hidden">
         {/* Enhanced Header - Fixed */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white flex-shrink-0">
+        <div className="relative overflow-hidden bg-emerald-600 text-white flex-shrink-0">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiPgo8Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyIi8+CjwvZz4KPC9zdmc+')] opacity-30"></div>
 
@@ -864,7 +860,7 @@ const PetEditorModal = ({
         </div>
 
         {/* Step Progress - Fixed */}
-        <div className="px-8 py-6 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 flex-shrink-0">
+        <div className="px-8 py-6 bg-gray-100 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
@@ -876,7 +872,7 @@ const PetEditorModal = ({
                   <div
                     className={`relative w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
                       currentStep >= step.id
-                        ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
+                        ? "bg-emerald-600 text-white shadow-lg"
                         : "bg-gray-200 text-gray-500"
                     }`}
                   >
@@ -1294,7 +1290,7 @@ const PetEditorModal = ({
                               }}
                             />
                             <div
-                              className="w-32 h-32 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg"
+                              className="w-32 h-32 bg-gray-300 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg"
                               style={{ display: "none" }}
                             >
                               <PawPrint className="w-10 h-10 text-gray-500" />
@@ -1304,7 +1300,7 @@ const PetEditorModal = ({
                             </div>
                           </div>
                         ) : (
-                          <div className="w-32 h-32 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl border-4 border-white shadow-lg flex items-center justify-center">
+                          <div className="w-32 h-32 bg-gray-300 rounded-2xl border-4 border-white shadow-lg flex items-center justify-center">
                             <Upload className="w-10 h-10 text-gray-500" />
                           </div>
                         )}
@@ -1340,7 +1336,7 @@ const PetEditorModal = ({
                   </div>
 
                   {/* Summary Card */}
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+                  <div className="bg-emerald-50 rounded-2xl p-6 border border-emerald-200">
                     <h4 className="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
                       <CheckCircle className="w-5 h-5" />
                       Pet Summary
@@ -1400,7 +1396,7 @@ const PetEditorModal = ({
         </div>
 
         {/* Enhanced Footer - Fixed */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200 flex-shrink-0">
+        <div className="bg-gray-100 px-8 py-6 border-t border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {currentStep > 1 && (
@@ -1429,7 +1425,7 @@ const PetEditorModal = ({
                   type="button"
                   onClick={nextStep}
                   disabled={!canProceedToNext()}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
+                  className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
                 >
                   Next
                   <ChevronRight className="w-5 h-5" />
@@ -1439,7 +1435,7 @@ const PetEditorModal = ({
                   type="submit"
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
+                  className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
                 >
                   {loading ? (
                     <>
@@ -1565,7 +1561,7 @@ const UserPetsModal = ({ userId, userName, isOpen, onClose }) => {
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white/95 backdrop-blur-xl rounded-3xl w-full max-w-7xl max-h-[90vh] overflow-hidden shadow-2xl border border-white/20">
         {/* Enhanced Header */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white">
+        <div className="relative overflow-hidden bg-blue-600 text-white">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiPgo8Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyIi8+CjwvZz4KPC9zdmc+')] opacity-30"></div>
 
@@ -1626,7 +1622,7 @@ const UserPetsModal = ({ userId, userName, isOpen, onClose }) => {
           ) : pets.length === 0 ? (
             <div className="text-center py-16">
               <div className="relative mb-6">
-                <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mx-auto shadow-lg">
                   <PawPrint className="w-12 h-12 text-gray-400" />
                 </div>
                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -1673,12 +1669,12 @@ const UserPetsModal = ({ userId, userName, isOpen, onClose }) => {
                             }}
                           />
                         ) : (
-                          <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                          <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
                             <PawPrint className="w-10 h-10 text-gray-500" />
                           </div>
                         )}
                         <div
-                          className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full items-center justify-center border-4 border-white shadow-lg"
+                          className="w-24 h-24 bg-gray-300 rounded-full items-center justify-center border-4 border-white shadow-lg"
                           style={{ display: "none" }}
                         >
                           <PawPrint className="w-10 h-10 text-gray-500" />
@@ -1707,7 +1703,7 @@ const UserPetsModal = ({ userId, userName, isOpen, onClose }) => {
                         </h3>
 
                         <div className="flex items-center justify-center gap-2 mb-2">
-                          <div className="p-1 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg">
+                          <div className="p-1 bg-blue-100 rounded-lg">
                             {getSpeciesIcon(pet.species)}
                           </div>
                           <span className="text-sm font-medium text-gray-600">
@@ -1757,7 +1753,7 @@ const UserPetsModal = ({ userId, userName, isOpen, onClose }) => {
                       </div>
 
                       {pet.description && (
-                        <div className="mt-4 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl">
+                        <div className="mt-4 p-3 bg-gray-100 rounded-2xl">
                           <p className="text-xs text-gray-600 line-clamp-3 leading-relaxed">
                             {pet.description}
                           </p>
@@ -1788,7 +1784,7 @@ const UserPetsModal = ({ userId, userName, isOpen, onClose }) => {
                     </div>
 
                     {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl pointer-events-none"></div>
                   </div>
                 ))}
               </div>
@@ -1842,7 +1838,7 @@ const UserPetsModal = ({ userId, userName, isOpen, onClose }) => {
                                 onClick={() => handlePageChange(page)}
                                 className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
                                   pagination.page === page
-                                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg scale-110"
+                                    ? "bg-blue-600 text-white shadow-lg scale-110"
                                     : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:scale-105"
                                 }`}
                               >
@@ -1870,10 +1866,10 @@ const UserPetsModal = ({ userId, userName, isOpen, onClose }) => {
         </div>
 
         {/* Enhanced Footer */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+        <div className="bg-gray-100 px-8 py-6 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+              <div className="p-2 bg-blue-600 rounded-xl">
                 <Clock className="w-5 h-5 text-white" />
               </div>
               <div className="text-sm text-gray-600">
@@ -1883,11 +1879,10 @@ const UserPetsModal = ({ userId, userName, isOpen, onClose }) => {
 
             <button
               onClick={onClose}
-              className="group relative px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+              className="px-6 py-3 bg-gray-600 text-white rounded-2xl shadow-lg hover:bg-gray-700 hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-700 to-gray-800 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <X className="w-5 h-5 relative z-10" />
-              <span className="relative z-10 font-medium">Close</span>
+              <X className="w-5 h-5" />
+              <span className="font-medium">Close</span>
             </button>
           </div>
         </div>
@@ -2239,11 +2234,11 @@ const PetManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header Section with Gradient */}
+    <div className="min-h-screen bg-slate-50">
+      {/* Header Section */}
       <div className="relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-green-600 opacity-10"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
 
         <div className="relative px-8 py-12">
@@ -2251,11 +2246,11 @@ const PetManagement = () => {
             {/* Title Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
                   <PawPrint className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                  <h1 className="text-4xl leading-normal font-bold text-gray-900">
                     Pet Management
                   </h1>
                   <p className="text-gray-600 mt-1">
@@ -2300,29 +2295,26 @@ const PetManagement = () => {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setIsStatsModalOpen(true)}
-                className="group relative px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="px-6 py-3 bg-purple-600 text-white rounded-2xl shadow-lg hover:bg-purple-700 hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <Users className="w-5 h-5 relative z-10" />
-                <span className="relative z-10 font-medium">View by User</span>
+                <Users className="w-5 h-5" />
+                <span className="font-medium">View by User</span>
               </button>
 
               <button
                 onClick={loadPets}
-                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <RefreshCw className="w-5 h-5 relative z-10" />
-                <span className="relative z-10 font-medium">Refresh</span>
+                <RefreshCw className="w-5 h-5" />
+                <span className="font-medium">Refresh</span>
               </button>
 
               <button
                 onClick={handleCreateNew}
-                className="group relative px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="px-6 py-3 bg-emerald-600 text-white rounded-2xl shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <Plus className="w-5 h-5 relative z-10" />
-                <span className="relative z-10 font-medium">Add Pet</span>
+                <Plus className="w-5 h-5" />
+                <span className="font-medium">Add Pet</span>
               </button>
             </div>
           </div>
@@ -2333,7 +2325,7 @@ const PetManagement = () => {
       <div className="px-8 -mt-6 relative z-10">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+            <div className="p-2 bg-blue-600 rounded-xl">
               <Filter className="w-5 h-5 text-white" />
             </div>
             <h2 className="text-xl font-bold text-gray-900">
@@ -2419,10 +2411,10 @@ const PetManagement = () => {
       <div className="px-8 mt-8 pb-8">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
           {/* Table Header */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+          <div className="bg-gray-100 px-8 py-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                <div className="p-2 bg-blue-600 rounded-xl">
                   <PawPrint className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">
@@ -2526,12 +2518,12 @@ const PetManagement = () => {
                                 }}
                               />
                             ) : (
-                              <div className="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center shadow-lg">
+                              <div className="w-10 h-10 bg-gray-300 rounded-2xl flex items-center justify-center shadow-lg">
                                 <PawPrint className="w-5 h-5 text-gray-500" />
                               </div>
                             )}
                             <div
-                              className="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl items-center justify-center shadow-lg"
+                              className="w-10 h-10 bg-gray-300 rounded-2xl items-center justify-center shadow-lg"
                               style={{ display: "none" }}
                             >
                               <PawPrint className="w-5 h-5 text-gray-500" />
@@ -2614,7 +2606,7 @@ const PetManagement = () => {
           </div>
 
           {/* Enhanced Pagination */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+          <div className="bg-gray-100 px-8 py-6 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="text-sm text-gray-700">
@@ -2660,7 +2652,7 @@ const PetManagement = () => {
                             onClick={() => handlePageChange(page)}
                             className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
                               pagination.page === page
-                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                                ? "bg-blue-600 text-white shadow-lg"
                                 : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                             }`}
                           >

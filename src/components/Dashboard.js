@@ -128,39 +128,39 @@ const Dashboard = () => {
       title: "Total Users",
       value: stats.totalUsers,
       icon: Users,
-      gradient: "from-blue-500 to-cyan-500",
-      bgColor: "from-blue-50 to-cyan-50",
+      iconColor: "bg-blue-600",
+      bgColor: "bg-blue-50",
       description: "All registered users",
     },
     {
       title: "Active Users",
       value: stats.activeUsers,
       icon: UserCheck,
-      gradient: "from-green-500 to-emerald-500",
-      bgColor: "from-green-50 to-emerald-50",
+      iconColor: "bg-emerald-600",
+      bgColor: "bg-emerald-50",
       description: "Currently active users",
     },
     {
       title: "Blocked Users",
       value: stats.blockedUsers,
       icon: UserX,
-      gradient: "from-red-500 to-pink-500",
-      bgColor: "from-red-50 to-pink-50",
+      iconColor: "bg-red-600",
+      bgColor: "bg-red-50",
       description: "Blocked accounts",
     },
     {
       title: "New This Month",
       value: stats.newUsersThisMonth,
       icon: TrendingUp,
-      gradient: "from-purple-500 to-indigo-500",
-      bgColor: "from-purple-50 to-indigo-50",
+      iconColor: "bg-purple-600",
+      bgColor: "bg-purple-50",
       description: "New registrations",
     },
   ];
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="min-h-screen bg-slate-50">
         <div className="flex items-center justify-center h-64">
           <div className="flex flex-col items-center gap-4">
             <div className="animate-spin">
@@ -176,11 +176,11 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header Section with Gradient */}
+    <div className="min-h-screen bg-slate-50">
+      {/* Header Section */}
       <div className="relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-green-600 opacity-10"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
 
         <div className="relative px-8 py-12">
@@ -188,11 +188,11 @@ const Dashboard = () => {
             {/* Title Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
                   <BarChart3 className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                  <h1 className="text-4xl leading-normal font-bold text-gray-900">
                     Dashboard
                   </h1>
                   <p className="text-gray-600 mt-1">
@@ -231,11 +231,10 @@ const Dashboard = () => {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={loadDashboardData}
-                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="group relative px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <RefreshCw className="w-5 h-5 relative z-10" />
-                <span className="relative z-10 font-medium">Refresh</span>
+                <RefreshCw className="w-5 h-5" />
+                <span className="font-medium">Refresh</span>
               </button>
             </div>
           </div>
@@ -255,16 +254,16 @@ const Dashboard = () => {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="relative">
-                  {/* Background Gradient */}
+                  {/* Background */}
                   <div
-                    className={`absolute inset-0 bg-gradient-to-br ${stat.bgColor} rounded-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-300`}
+                    className={`absolute inset-0 ${stat.bgColor} rounded-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-300`}
                   ></div>
 
                   <div className="relative">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-4">
                       <div
-                        className={`p-3 bg-gradient-to-r ${stat.gradient} rounded-2xl shadow-lg`}
+                        className={`p-3 ${stat.iconColor} rounded-2xl shadow-lg`}
                       >
                         <Icon className="w-6 h-6 text-white" />
                       </div>
@@ -297,9 +296,9 @@ const Dashboard = () => {
           <div className="lg:col-span-2">
             <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
               {/* Header */}
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+              <div className="bg-slate-50 px-8 py-6 border-b border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
+                  <div className="p-2 bg-orange-600 rounded-xl">
                     <Award className="w-5 h-5 text-white" />
                   </div>
                   <h2 className="text-xl font-bold text-gray-900">
@@ -331,18 +330,18 @@ const Dashboard = () => {
                     {topProviderServices.map((service, index) => (
                       <div
                         key={service.id}
-                        className="group relative p-4 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100 hover:border-orange-200 transition-all duration-300 hover:shadow-lg"
+                        className="group relative p-4 bg-white rounded-2xl border border-gray-100 hover:border-orange-200 transition-all duration-300 hover:shadow-lg"
                       >
                         <div className="flex items-center gap-4">
                           {/* Rank */}
                           <div
                             className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${
                               index === 0
-                                ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white"
+                                ? "bg-yellow-500 text-white"
                                 : index === 1
-                                ? "bg-gradient-to-r from-gray-300 to-gray-400 text-white"
+                                ? "bg-gray-400 text-white"
                                 : index === 2
-                                ? "bg-gradient-to-r from-orange-400 to-orange-500 text-white"
+                                ? "bg-orange-500 text-white"
                                 : "bg-gray-100 text-gray-600"
                             }`}
                           >
@@ -350,7 +349,7 @@ const Dashboard = () => {
                           </div>
 
                           {/* Service Icon */}
-                          <div className="w-12 h-12 bg-gradient-to-r from-orange-100 to-red-100 rounded-xl flex items-center justify-center">
+                          <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                             {service.serviceIconUrl ? (
                               <img
                                 src={service.serviceIconUrl}
@@ -425,10 +424,10 @@ const Dashboard = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Link
                       to="/users"
-                      className="group relative p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl border border-blue-100 hover:border-blue-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                      className="group relative p-4 bg-blue-50 rounded-2xl border border-blue-100 hover:border-blue-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                        <div className="p-2 bg-blue-600 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                           <Users className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -444,10 +443,10 @@ const Dashboard = () => {
 
                     <Link
                       to="/services"
-                      className="group relative p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100 hover:border-green-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                      className="group relative p-4 bg-emerald-50 rounded-2xl border border-emerald-100 hover:border-emerald-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                        <div className="p-2 bg-emerald-600 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                           <Heart className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -463,10 +462,10 @@ const Dashboard = () => {
 
                     <Link
                       to="/bookings"
-                      className="group relative p-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border border-purple-100 hover:border-purple-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                      className="group relative p-4 bg-purple-50 rounded-2xl border border-purple-100 hover:border-purple-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                        <div className="p-2 bg-purple-600 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                           <Calendar className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -482,10 +481,10 @@ const Dashboard = () => {
 
                     <Link
                       to="/notifications"
-                      className="group relative p-4 bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                      className="group relative p-4 bg-orange-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                        <div className="p-2 bg-orange-600 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                           <Bell className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -508,9 +507,9 @@ const Dashboard = () => {
           <div className="lg:col-span-1">
             <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
               {/* Header */}
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+              <div className="bg-slate-50 px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl">
+                  <div className="p-2 bg-emerald-600 rounded-xl">
                     <Shield className="w-4 h-4 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900">

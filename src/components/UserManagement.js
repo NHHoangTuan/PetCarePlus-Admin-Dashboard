@@ -107,23 +107,23 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case "ADMIN":
-        return "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg";
+        return "bg-red-600 text-white shadow-lg";
       case "SERVICE_PROVIDER":
-        return "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg";
+        return "bg-blue-600 text-white shadow-lg";
       case "USER":
-        return "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg";
+        return "bg-green-600 text-white shadow-lg";
       default:
-        return "bg-gradient-to-r from-gray-500 to-slate-500 text-white shadow-lg";
+        return "bg-slate-600 text-white shadow-lg";
     }
   };
 
   const getStatusBadgeColor = (user) => {
     if (user.blockedAt) {
-      return "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg";
+      return "bg-red-600 text-white shadow-lg";
     } else if (user.emailVerifiedAt) {
-      return "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg";
+      return "bg-green-600 text-white shadow-lg";
     } else {
-      return "bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg";
+      return "bg-yellow-600 text-white shadow-lg";
     }
   };
 
@@ -135,13 +135,13 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white/90 flex flex-col backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 w-full max-w-4xl max-h-[90vh] overflow-hidden">
-        {/* Header with Gradient */}
+      <div className="bg-white/90 flex flex-col backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+        {/* Header with clean design */}
         <div className="relative px-8 py-6">
-          <div className="absolute inset-0 bg-black/10 bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 opacity-10"></div>
+          <div className="absolute inset-0 bg-slate-50/80"></div>
           <div className="relative flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 shadow-lg">
+              <div className="p-3 rounded-2xl bg-blue-600 shadow-lg">
                 <User className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -167,7 +167,7 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column - User Avatar & Status */}
             <div className="lg:col-span-1">
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 text-center">
+              <div className="bg-slate-50 rounded-2xl p-6 text-center border border-slate-200">
                 {/* Profile Avatar */}
                 <div className="w-24 h-24 mx-auto mb-4 shadow-lg rounded-full overflow-hidden">
                   {loadingProfile ? (
@@ -181,7 +181,7 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                    <div className="w-full h-full bg-blue-600 flex items-center justify-center">
                       <span className="text-3xl font-bold text-white">
                         {user.name.charAt(0).toUpperCase()}
                       </span>
@@ -189,10 +189,10 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                   )}
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                <h3 className="text-xl font-bold text-slate-900 mb-2">
                   {user.name} {user.lastName}
                 </h3>
-                <p className="text-gray-600 mb-4">{user.email}</p>
+                <p className="text-slate-600 mb-4">{user.email}</p>
 
                 {/* Service Provider Badge */}
                 {loadingProfile ? (
@@ -202,7 +202,7 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                 ) : (
                   userProfile?.serviceProvider && (
                     <div className="flex justify-center mb-3">
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg">
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold bg-orange-600 text-white shadow-lg">
                         <Briefcase className="w-3 h-3" />
                         Service Provider
                       </span>
@@ -237,42 +237,42 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
             {/* Right Column - Details */}
             <div className="lg:col-span-2 space-y-6">
               {/* Basic Information Card */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                  <div className="p-2 bg-blue-600 rounded-xl">
                     <User className="w-5 h-5 text-white" />
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900">
+                  <h4 className="text-lg font-bold text-slate-900">
                     Basic Information
                   </h4>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600">
+                    <label className="text-sm font-medium text-slate-600">
                       User ID
                     </label>
-                    <div className="p-3 bg-gray-50 rounded-xl border">
-                      <p className="text-sm font-mono text-gray-900">
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <p className="text-sm font-mono text-slate-900">
                         {user.id}
                       </p>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600">
+                    <label className="text-sm font-medium text-slate-600">
                       Full Name
                     </label>
-                    <div className="p-3 bg-gray-50 rounded-xl border">
-                      <p className="text-sm text-gray-900">
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <p className="text-sm text-slate-900">
                         {user.name} {user.lastName}
                       </p>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600">
+                    <label className="text-sm font-medium text-slate-600">
                       Email Address
                     </label>
-                    <div className="p-3 bg-gray-50 rounded-xl border">
-                      <p className="text-sm text-gray-900">{user.email}</p>
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <p className="text-sm text-slate-900">{user.email}</p>
                       {user.emailVerifiedAt && (
                         <p className="text-xs text-green-600 mt-1">
                           ✓ Verified
@@ -281,11 +281,11 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600">
+                    <label className="text-sm font-medium text-slate-600">
                       Phone Number
                     </label>
-                    <div className="p-3 bg-gray-50 rounded-xl border">
-                      <p className="text-sm text-gray-900">
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <p className="text-sm text-slate-900">
                         {user.phone || "Not provided"}
                       </p>
                     </div>
@@ -294,18 +294,18 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
               </div>
 
               {/* Role Management Card */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl">
+                  <div className="p-2 bg-green-600 rounded-xl">
                     <UserCheck className="w-5 h-5 text-white" />
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900">
+                  <h4 className="text-lg font-bold text-slate-900">
                     Role Management
                   </h4>
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-600 mb-2 block text-left">
+                    <label className="text-sm font-medium text-slate-600 mb-2 block text-left">
                       Current Role
                     </label>
                     <div className="flex items-center gap-2">
@@ -319,14 +319,14 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600 mb-2 block text-left">
+                    <label className="text-sm font-medium text-slate-600 mb-2 block text-left">
                       Change Role
                     </label>
                     <div className="flex flex-col sm:flex-row gap-3">
                       <select
                         value={selectedRole}
                         onChange={(e) => setSelectedRole(e.target.value)}
-                        className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                        className="px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm transition-all duration-300"
                       >
                         <option value="USER">User</option>
                         <option value="SERVICE_PROVIDER">
@@ -337,7 +337,7 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                       <button
                         onClick={handleRoleUpdate}
                         disabled={isUpdatingRole || selectedRole === user.role}
-                        className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium shadow-lg transition-all duration-300 hover:shadow-xl"
+                        className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium shadow-lg transition-all duration-300 hover:shadow-xl"
                       >
                         <UserCheck className="w-5 h-5" />
                         {isUpdatingRole ? "Updating..." : "Update Role"}
@@ -348,30 +348,30 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
               </div>
 
               {/* Timestamps Card */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl">
+                  <div className="p-2 bg-purple-600 rounded-xl">
                     <AlertCircle className="w-5 h-5 text-white" />
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900">Timeline</h4>
+                  <h4 className="text-lg font-bold text-slate-900">Timeline</h4>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600">
+                    <label className="text-sm font-medium text-slate-600">
                       Created At
                     </label>
-                    <div className="p-3 bg-gray-50 rounded-xl border">
-                      <p className="text-sm text-gray-900">
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <p className="text-sm text-slate-900">
                         {formatDate2(user.createdAt)}
                       </p>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600">
+                    <label className="text-sm font-medium text-slate-600">
                       Last Updated
                     </label>
-                    <div className="p-3 bg-gray-50 rounded-xl border">
-                      <p className="text-sm text-gray-900">
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <p className="text-sm text-slate-900">
                         {formatDate2(user.updatedAt)}
                       </p>
                     </div>
@@ -381,12 +381,12 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
 
               {/* Profile Information Card */}
               {loadingProfile ? (
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
+                    <div className="p-2 bg-orange-600 rounded-xl">
                       <Heart className="w-5 h-5 text-white" />
                     </div>
-                    <h4 className="text-lg font-bold text-gray-900">
+                    <h4 className="text-lg font-bold text-slate-900">
                       Profile Information
                     </h4>
                   </div>
@@ -394,7 +394,7 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                     {[...Array(4)].map((_, i) => (
                       <div key={i} className="space-y-2">
                         <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="p-3 bg-gray-50 rounded-xl border">
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                           <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
                         </div>
                       </div>
@@ -402,7 +402,7 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                   </div>
                   <div className="mt-4 space-y-2">
                     <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="p-3 bg-gray-50 rounded-xl border">
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                       <div className="space-y-2">
                         <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
                         <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
@@ -412,24 +412,24 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                 </div>
               ) : (
                 userProfile && (
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
+                      <div className="p-2 bg-orange-600 rounded-xl">
                         <Heart className="w-5 h-5 text-white" />
                       </div>
-                      <h4 className="text-lg font-bold text-gray-900">
+                      <h4 className="text-lg font-bold text-slate-900">
                         Profile Information
                       </h4>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {userProfile.dob && (
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-600 flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
                             Date of Birth
                           </label>
-                          <div className="p-3 bg-gray-50 rounded-xl border">
-                            <p className="text-sm text-gray-900">
+                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                            <p className="text-sm text-slate-900">
                               {new Date(userProfile.dob).toLocaleDateString(
                                 "en-US",
                                 {
@@ -444,12 +444,12 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                       )}
                       {userProfile.gender && (
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-600 flex items-center gap-2">
                             <Users className="w-4 h-4" />
                             Gender
                           </label>
-                          <div className="p-3 bg-gray-50 rounded-xl border">
-                            <p className="text-sm text-gray-900 capitalize">
+                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                            <p className="text-sm text-slate-900 capitalize">
                               {userProfile.gender.toLowerCase()}
                             </p>
                           </div>
@@ -457,12 +457,12 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                       )}
                       {userProfile.location && (
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-600 flex items-center gap-2">
                             <MapPin className="w-4 h-4" />
                             Location
                           </label>
-                          <div className="p-3 bg-gray-50 rounded-xl border">
-                            <p className="text-sm text-gray-900">
+                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                            <p className="text-sm text-slate-900">
                               {userProfile.location}
                             </p>
                           </div>
@@ -470,11 +470,11 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                       )}
                       {userProfile.phoneNumber && (
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-600">
+                          <label className="text-sm font-medium text-slate-600">
                             Profile Phone
                           </label>
-                          <div className="p-3 bg-gray-50 rounded-xl border">
-                            <p className="text-sm text-gray-900">
+                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                            <p className="text-sm text-slate-900">
                               {userProfile.phoneNumber}
                             </p>
                           </div>
@@ -483,11 +483,11 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                     </div>
                     {userProfile.about && (
                       <div className="mt-4 space-y-2">
-                        <label className="text-sm font-medium text-gray-600">
+                        <label className="text-sm font-medium text-slate-600">
                           About
                         </label>
-                        <div className="p-3 bg-gray-50 rounded-xl border">
-                          <p className="text-sm text-gray-900 leading-relaxed">
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                          <p className="text-sm text-slate-900 leading-relaxed">
                             {userProfile.about}
                           </p>
                         </div>
@@ -499,21 +499,21 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
 
               {/* Additional Information Card (User table data) */}
               {user.address && (
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
+                    <div className="p-2 bg-orange-600 rounded-xl">
                       <AlertCircle className="w-5 h-5 text-white" />
                     </div>
-                    <h4 className="text-lg font-bold text-gray-900">
+                    <h4 className="text-lg font-bold text-slate-900">
                       Additional Information
                     </h4>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600">
+                    <label className="text-sm font-medium text-slate-600">
                       Address
                     </label>
-                    <div className="p-3 bg-gray-50 rounded-xl border">
-                      <p className="text-sm text-gray-900">{user.address}</p>
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <p className="text-sm text-slate-900">{user.address}</p>
                     </div>
                   </div>
                 </div>
@@ -523,11 +523,11 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
         </div>
 
         {/* Footer */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+        <div className="bg-slate-50 px-8 py-6 border-t border-slate-200">
           <div className="flex justify-end gap-3">
             <button
               onClick={onClose}
-              className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-all duration-200 shadow-sm"
+              className="px-6 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 font-medium transition-all duration-200 shadow-sm"
             >
               Close
             </button>
@@ -816,11 +816,11 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header Section with Gradient */}
+    <div className="min-h-screen bg-slate-50">
+      {/* Header Section with clean design */}
       <div className="relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 opacity-10"></div>
+        <div className="absolute inset-0 bg-green-600 opacity-10"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAyIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIvPgo8L2c+Cjwvc3ZnPg==')]"></div>
 
         <div className="relative px-8 py-12">
@@ -828,14 +828,14 @@ const UserManagement = () => {
             {/* Title Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg">
+                <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
                   <User className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl leading-normal font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                  <h1 className="text-4xl leading-normal font-bold text-slate-900">
                     User Management
                   </h1>
-                  <p className="text-gray-600 mt-1">
+                  <p className="text-slate-600 mt-1">
                     Manage and monitor all system users
                   </p>
                 </div>
@@ -843,58 +843,58 @@ const UserManagement = () => {
 
               {/* Stats Cards */}
               <div className="flex flex-wrap gap-4">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-slate-200">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-blue-100 rounded-xl">
                       <User className="w-4 h-4 text-blue-600" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-slate-900">
                         {formatNumber(pagination.totalElements)}
                       </p>
-                      <p className="text-sm text-gray-600">Total Users</p>
+                      <p className="text-sm text-slate-600">Total Users</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-slate-200">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-red-100 rounded-xl">
                       <Ban className="w-4 h-4 text-red-600" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-slate-900">
                         {formatNumber(stats.blocked)}
                       </p>
-                      <p className="text-sm text-gray-600">Blocked</p>
+                      <p className="text-sm text-slate-600">Blocked</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-slate-200">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-green-100 rounded-xl">
                       <CheckCircle className="w-4 h-4 text-green-600" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-slate-900">
                         {formatNumber(stats.active)}
                       </p>
-                      <p className="text-sm text-gray-600">Active</p>
+                      <p className="text-sm text-slate-600">Active</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-white/20">
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-slate-200">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-yellow-100 rounded-xl">
                       <AlertCircle className="w-4 h-4 text-yellow-600" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-slate-900">
                         {formatNumber(stats.waiting)}
                       </p>
-                      <p className="text-sm text-gray-600">Waiting</p>
+                      <p className="text-sm text-slate-600">Waiting</p>
                     </div>
                   </div>
                 </div>
@@ -905,11 +905,10 @@ const UserManagement = () => {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={loadUsers}
-                className="group relative px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 hover:bg-blue-700"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <RefreshCw className="w-5 h-5 relative z-10" />
-                <span className="relative z-10 font-medium">Refresh</span>
+                <RefreshCw className="w-5 h-5" />
+                <span className="font-medium">Refresh</span>
               </button>
             </div>
           </div>
@@ -918,12 +917,12 @@ const UserManagement = () => {
 
       {/* Filters Section */}
       <div className="px-8 -mt-6 relative z-10">
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-8">
+        <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl border border-slate-200 p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+            <div className="p-2 bg-blue-600 rounded-xl">
               <Filter className="w-5 h-5 text-white" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="text-xl font-bold text-slate-900">
               Filters & Search
             </h2>
           </div>
@@ -931,28 +930,28 @@ const UserManagement = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Search */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Search Notifications
+              <label className="text-sm font-medium text-slate-700">
+                Search Users
               </label>
               <div className="relative group">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-800 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-800 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
                 <input
                   type="text"
-                  placeholder="Search title, message..."
+                  placeholder="Search name, email..."
                   value={filters.query}
                   onChange={handleSearch}
-                  className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                  className="pl-12 pr-4 py-3 w-full border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
                 />
               </div>
             </div>
 
             {/* Role Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Role</label>
+              <label className="text-sm font-medium text-slate-700">Role</label>
               <select
                 value={filters.roles}
                 onChange={(e) => handleFilterChange("roles", e.target.value)}
-                className="px-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                className="px-4 py-3 w-full border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
               >
                 <option value="">All Roles</option>
                 <option value="ADMIN">Admin</option>
@@ -963,13 +962,13 @@ const UserManagement = () => {
 
             {/* Status Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-slate-700">
                 Status
               </label>
               <select
                 value={filters.status}
                 onChange={(e) => handleFilterChange("status", e.target.value)}
-                className="px-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
+                className="px-4 py-3 w-full border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
               >
                 <option value="">All Status</option>
                 <option value="active">Active</option>
@@ -983,19 +982,19 @@ const UserManagement = () => {
 
       {/* Main Content */}
       <div className="px-8 mt-8 pb-8">
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden">
+        <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
           {/* Table Header */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+          <div className="bg-slate-50 px-8 py-6 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
+                <div className="p-2 bg-blue-600 rounded-xl">
                   <User className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">
+                <h3 className="text-xl font-bold text-slate-900">
                   User Directory
                 </h3>
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-slate-600">
                 {formatNumber(pagination.totalElements)} users total
               </div>
             </div>
@@ -1003,11 +1002,11 @@ const UserManagement = () => {
 
           {/* Table Content */}
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50/50">
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50/50">
                 <tr>
                   <th
-                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100/50 transition-colors"
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider cursor-pointer hover:bg-slate-100/50 transition-colors"
                     onClick={() => handleSort("fullName")}
                   >
                     <div className="flex items-center gap-2">
@@ -1024,7 +1023,7 @@ const UserManagement = () => {
                     </div>
                   </th>
                   <th
-                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100/50 transition-colors"
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider cursor-pointer hover:bg-slate-100/50 transition-colors"
                     onClick={() => handleSort("email")}
                   >
                     <div className="flex items-center gap-2">
@@ -1040,14 +1039,14 @@ const UserManagement = () => {
                       )}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
                     Status
                   </th>
                   <th
-                    className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100/50 transition-colors"
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider cursor-pointer hover:bg-slate-100/50 transition-colors"
                     onClick={() => handleSort("createdAt")}
                   >
                     <div className="flex items-center gap-2">
@@ -1063,12 +1062,12 @@ const UserManagement = () => {
                       )}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-slate-200">
                 {loading ? (
                   <tr>
                     <td colSpan="6" className="px-6 py-4 text-center">
@@ -1083,23 +1082,23 @@ const UserManagement = () => {
                   </tr>
                 ) : (
                   users.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
+                    <tr key={user.id} className="hover:bg-slate-50">
                       <td className="px-6 py-4 whitespace-nowrap text-left">
                         <div className="flex items-center">
-                          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-medium text-gray-700">
+                          <div className="w-8 h-8 bg-slate-300 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-medium text-slate-700">
                               {user.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
                           <div className="ml-3">
-                            <div className="text-md font-medium text-gray-900">
+                            <div className="text-md font-medium text-slate-900">
                               {user.name} {user.lastName}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-left">
-                        <div className="text-md text-gray-900 truncate">
+                        <div className="text-md text-slate-900 truncate">
                           {user.email}
                         </div>
                         {user.emailVerifiedAt && (
@@ -1134,7 +1133,7 @@ const UserManagement = () => {
                       </td>
 
                       <td className="px-6 py-6 whitespace-nowrap text-left">
-                        <div className="text-sm text-gray-600 font-medium">
+                        <div className="text-sm text-slate-600 font-medium">
                           {formatDate2(user.createdAt)}
                         </div>
                       </td>
@@ -1180,11 +1179,10 @@ const UserManagement = () => {
           </div>
 
           {/* Enhanced Pagination */}
-
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-t border-gray-200">
+          <div className="bg-slate-50 px-8 py-6 border-t border-slate-200">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="text-sm text-gray-700">
+                <div className="text-sm text-slate-700">
                   Showing{" "}
                   <span className="font-bold text-blue-600">
                     {formatNumber((pagination.page - 1) * pagination.size + 1)}
@@ -1210,7 +1208,7 @@ const UserManagement = () => {
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
                     disabled={pagination.page <= 1}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     Previous
@@ -1226,8 +1224,8 @@ const UserManagement = () => {
                             onClick={() => handlePageChange(page)}
                             className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-200 ${
                               pagination.page === page
-                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
-                                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                                ? "bg-blue-600 text-white shadow-lg"
+                                : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-50"
                             }`}
                           >
                             {page}
@@ -1240,7 +1238,7 @@ const UserManagement = () => {
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
                     disabled={pagination.page >= pagination.totalPages}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
                     Next
                     <ChevronRight className="w-4 h-4" />
