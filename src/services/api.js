@@ -12,23 +12,23 @@ export const SERVERS = {
     url: "http://localhost:8080",
     description: "Local development server",
   },
-  azureprod: {
-    id: "azureprod",
-    name: "Azure (Prod)",
-    url: "https://petcareplus.software",
-    description: "Azure production server",
-  },
+  // azureprod: {
+  //   id: "azureprod",
+  //   name: "Azure (Prod)",
+  //   url: "https://petcareplus.software",
+  //   description: "Azure production server",
+  // },
   azure: {
     id: "azure",
-    name: "Azure (Dev)",
+    name: "Azure",
     url: "https://petcareapi.nhhtuan.id.vn",
-    description: "Azure dev server",
+    description: "Azure server",
   },
   heroku: {
     id: "heroku",
-    name: "Heroku (Dev Backup)",
+    name: "Heroku",
     url: "https://pet-care-plus-f159a7ab1dca.herokuapp.com",
-    description: "Heroku backup dev server",
+    description: "Heroku backup server",
   },
 };
 

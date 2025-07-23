@@ -24,18 +24,10 @@ const ServerSelection = ({ onServerSelect, currentServer }) => {
       color: "blue",
     },
     {
-      id: "azureprod",
-      name: "Azure (Prod)",
-      url: "https://petcareplus.software",
-      description: "Azure production server",
-      icon: Server,
-      color: "blue",
-    },
-    {
       id: "azure",
-      name: "Azure (Dev)",
+      name: "Azure",
       url: "https://petcareapi.nhhtuan.id.vn",
-      description: "Azure dev server",
+      description: "Azure server",
       icon: Server,
       color: "purple",
     },
@@ -61,7 +53,7 @@ const ServerSelection = ({ onServerSelect, currentServer }) => {
   const checkServerHealth = async (server) => {
     try {
       let response = null;
-      if (server.id === "azureprod") {
+      if (server.id === "azure") {
         response = await axios.get(`${server.url}/swagger-ui/index.html`, {
           timeout: 10000, // 10 second timeout
           headers: {

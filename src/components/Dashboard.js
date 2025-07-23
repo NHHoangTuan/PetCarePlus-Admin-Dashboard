@@ -20,6 +20,7 @@ import {
   Star,
   Award,
   Package,
+  ReceiptText,
 } from "lucide-react";
 import { userAPI, statisticsAPI } from "../services/api";
 import { Link } from "react-router-dom";
@@ -386,7 +387,7 @@ const Dashboard = () => {
                           {/* Stats */}
                           <div className="text-right">
                             <div className="flex items-center gap-1 text-sm font-bold text-orange-600 mb-1">
-                              <Star className="w-4 h-4 fill-current" />
+                              <ReceiptText className="w-4 h-4" />
                               {formatNumber(service.totalBookings)}
                             </div>
                             <div className="text-xs text-gray-500">
@@ -479,7 +480,7 @@ const Dashboard = () => {
                       </div>
                     </Link>
 
-                    <Link
+                    {/* <Link
                       to="/notifications"
                       className="group relative p-4 bg-orange-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 hover:shadow-lg hover:scale-105"
                     >
@@ -496,7 +497,7 @@ const Dashboard = () => {
                           </p>
                         </div>
                       </div>
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
               </div>
