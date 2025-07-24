@@ -546,7 +546,7 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
                   >
                     <Edit className="w-5 h-5" />
                     <span className="font-medium">Edit Pet</span>
-                  </button>
+                  </button> */}
 
                   <button
                     onClick={() => onDelete(pet)}
@@ -554,7 +554,7 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
                   >
                     <Trash2 className="w-5 h-5" />
                     <span className="font-medium">Delete Pet</span>
-                  </button> */}
+                  </button>
                 </>
               )}
             </div>
@@ -2612,13 +2612,13 @@ const PetManagement = () => {
                           >
                             <Edit className="w-5 h-5" />
                           </button> */}
-                          {/* <button
+                          <button
                             onClick={() => handleDeletePet(pet.id, pet.name)}
                             className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-all duration-200 hover:scale-110"
                             title="Delete Pet"
                           >
                             <Trash2 className="w-5 h-5" />
-                          </button> */}
+                          </button>
                         </div>
                       </td>
                     </tr>
