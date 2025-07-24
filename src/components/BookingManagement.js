@@ -855,7 +855,7 @@ const BookingManagement = () => {
                   </div>
                 </div>
 
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-slate-200">
+                {/* <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-slate-200">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-amber-100 rounded-xl">
                       <Clock className="w-4 h-4 text-amber-600" />
@@ -867,9 +867,9 @@ const BookingManagement = () => {
                       <p className="text-sm text-slate-600">Pending</p>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-slate-200">
+                {/* <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-slate-200">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-green-100 rounded-xl">
                       <CheckCircle className="w-4 h-4 text-green-600" />
@@ -881,7 +881,7 @@ const BookingManagement = () => {
                       <p className="text-sm text-slate-600">Completed</p>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 
