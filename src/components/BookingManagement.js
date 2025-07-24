@@ -1181,7 +1181,7 @@ const BookingManagement = () => {
                           >
                             <Eye className="w-5 h-5" />
                           </button>
-                          <button
+                          {/* <button
                             onClick={() =>
                               handleDeleteBooking(
                                 booking.id,
@@ -1192,7 +1192,7 @@ const BookingManagement = () => {
                             title="Delete Booking"
                           >
                             <Trash2 className="w-5 h-5" />
-                          </button>
+                          </button> */}
                         </div>
                       </td>
                     </tr>

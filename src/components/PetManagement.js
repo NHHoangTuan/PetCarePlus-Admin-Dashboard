@@ -540,7 +540,7 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
 
               {!pet.deletedAt && (
                 <>
-                  <button
+                  {/* <button
                     onClick={() => onEdit(pet)}
                     className="px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2"
                   >
@@ -554,7 +554,7 @@ const PetDetailModal = ({ pet, isOpen, onClose, onEdit, onDelete }) => {
                   >
                     <Trash2 className="w-5 h-5" />
                     <span className="font-medium">Delete Pet</span>
-                  </button>
+                  </button> */}
                 </>
               )}
             </div>
@@ -2332,13 +2332,13 @@ const PetManagement = () => {
                 <span className="font-medium">Refresh</span>
               </button>
 
-              <button
+              {/* <button
                 onClick={handleCreateNew}
                 className="px-6 py-3 bg-emerald-600 text-white rounded-2xl shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
                 <Plus className="w-5 h-5" />
                 <span className="font-medium">Add Pet</span>
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -2605,20 +2605,20 @@ const PetManagement = () => {
                           >
                             <Eye className="w-5 h-5" />
                           </button>
-                          <button
+                          {/* <button
                             onClick={() => handleEditPet(pet.id)}
                             className="p-2 bg-green-100 hover:bg-green-200 text-green-600 rounded-xl transition-all duration-200 hover:scale-110"
                             title="Edit Pet"
                           >
                             <Edit className="w-5 h-5" />
-                          </button>
-                          <button
+                          </button> */}
+                          {/* <button
                             onClick={() => handleDeletePet(pet.id, pet.name)}
                             className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-all duration-200 hover:scale-110"
                             title="Delete Pet"
                           >
                             <Trash2 className="w-5 h-5" />
-                          </button>
+                          </button> */}
                         </div>
                       </td>
                     </tr>

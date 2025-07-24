@@ -293,16 +293,16 @@ const ProviderServiceDetailModal = ({
                 Close
               </button>
 
-              <button
+              {/* <button
                 onClick={() => onEdit(providerService)}
                 className="group relative px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2"
               >
                 <div className="absolute inset-0 bg-blue-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <Edit className="w-5 h-5 relative z-10" />
                 <span className="relative z-10 font-medium">Edit Service</span>
-              </button>
+              </button> */}
 
-              <button
+              {/* <button
                 onClick={() => onDelete(providerService)}
                 className="group relative px-6 py-3 bg-red-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center gap-2"
               >
@@ -311,7 +311,7 @@ const ProviderServiceDetailModal = ({
                 <span className="relative z-10 font-medium">
                   Delete Service
                 </span>
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -801,7 +801,7 @@ const ProviderServiceManagement = () => {
                 <span className="relative z-10 font-medium">Refresh</span>
               </button>
 
-              <button
+              {/* <button
                 onClick={handleCreateProviderService}
                 className="group relative px-6 py-3 bg-emerald-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
               >
@@ -810,7 +810,7 @@ const ProviderServiceManagement = () => {
                 <span className="relative z-10 font-medium">
                   Create Provider Service
                 </span>
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -830,7 +830,7 @@ const ProviderServiceManagement = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Search */}
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
                 Search Services
               </label>
@@ -849,7 +849,7 @@ const ProviderServiceManagement = () => {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
 
             <div>
               <div className="space-y-2">
@@ -1104,7 +1104,7 @@ const ProviderServiceManagement = () => {
                           >
                             <Eye className="w-5 h-5" />
                           </button>
-                          <button
+                          {/* <button
                             onClick={() =>
                               handleEditProviderService(providerService)
                             }
@@ -1121,7 +1121,7 @@ const ProviderServiceManagement = () => {
                             title="Delete Service"
                           >
                             <Trash2 className="w-5 h-5" />
-                          </button>
+                          </button> */}
                         </div>
                       </td>
                     </tr>

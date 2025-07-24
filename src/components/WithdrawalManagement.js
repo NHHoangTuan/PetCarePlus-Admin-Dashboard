@@ -536,6 +536,7 @@ const WithdrawalManagement = () => {
     debouncedAmountTo,
     sortBy,
     sortOrder,
+    filters.status,
   ]);
 
   const loadWithdrawals = async () => {

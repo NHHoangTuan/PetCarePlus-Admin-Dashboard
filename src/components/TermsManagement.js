@@ -1106,7 +1106,7 @@ const TermsManagement = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Search */}
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
                 Search Notifications
               </label>
@@ -1120,7 +1120,7 @@ const TermsManagement = () => {
                   className="pl-12 pr-4 py-3 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:bg-white/70"
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* Type Filter */}
             <div className="space-y-2">

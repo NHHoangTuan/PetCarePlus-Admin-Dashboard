@@ -20,6 +20,7 @@ import TermsManagement from "./components/TermsManagement.js";
 import PetManagement from "./components/PetManagement.js";
 import NotificationManagement from "./components/NotificationManagement.js";
 import ProviderServiceManagement from "./components/ProviderServiceManagement.js";
+import UpgradeRequestManagement from "./components/UpgradeRequestManagement.js";
 import Settings from "./components/Settings.js";
 import { ToastProvider } from "./context/ToastContext.js";
 
@@ -74,8 +75,15 @@ function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="users" element={<UserManagement />} />
+              <Route
+                path="upgrade-requests"
+                element={<UpgradeRequestManagement />}
+              />
               <Route path="services" element={<ServiceManagement />} />
-              <Route path="provider-services" element={<ProviderServiceManagement />} />
+              <Route
+                path="provider-services"
+                element={<ProviderServiceManagement />}
+              />
               <Route path="bookings" element={<BookingManagement />} />
               <Route
                 path="notification-testing"
