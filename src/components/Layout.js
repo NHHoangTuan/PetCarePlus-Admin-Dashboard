@@ -17,6 +17,7 @@ import {
   Heart,
   Sparkles,
   ShoppingBag,
+  Badge,
 } from "lucide-react";
 
 const Layout = ({ onLogout }) => {
@@ -40,6 +41,11 @@ const Layout = ({ onLogout }) => {
       path: "/users",
       label: "User Management",
       icon: Users,
+    },
+    {
+      path: "/upgrade-requests",
+      label: "Upgrade Requests",
+      icon: Badge,
     },
     {
       path: "/services",

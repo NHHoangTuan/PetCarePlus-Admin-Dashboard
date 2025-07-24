@@ -1204,7 +1204,7 @@ const ServiceManagement = () => {
                           >
                             <Edit className="w-5 h-5" />
                           </button>
-                          <button
+                          {/* <button
                             onClick={() =>
                               handleDeleteService(service.id, service.name)
                             }
@@ -1212,7 +1212,7 @@ const ServiceManagement = () => {
                             title="Delete Service"
                           >
                             <Trash2 className="w-5 h-5" />
-                          </button>
+                          </button> */}
                         </div>
                       </td>
                     </tr>

@@ -294,7 +294,7 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
               </div>
 
               {/* Role Management Card */}
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
+              {/* <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 bg-green-600 rounded-xl">
                     <UserCheck className="w-5 h-5 text-white" />
@@ -345,7 +345,7 @@ const UserDetailModal = ({ user, isOpen, onClose, onRoleUpdate }) => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Timestamps Card */}
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-slate-200">

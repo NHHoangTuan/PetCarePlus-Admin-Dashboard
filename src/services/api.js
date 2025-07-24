@@ -236,6 +236,29 @@ export const userAPI = {
 
   // Delete user
   deleteUser: (id) => api.delete(`/users/${id}`),
+
+  // Upgrade Request APIs
+  // Get all pending upgrade requests
+  getPendingUpgradeRequests: () =>
+    api.get("/admin/users/upgrade-requests/pending"),
+
+  // Get upgrade request by ID
+  getUpgradeRequestById: (requestId) =>
+    api.get(`/admin/users/upgrade-requests/${requestId}`),
+
+  // Approve upgrade request
+  approveUpgradeRequest: (requestId) =>
+    api.post(`/admin/users/approve-upgrade-request/${requestId}`),
+
+  // Reject upgrade request
+  rejectUpgradeRequest: (requestId, rejectionReason) =>
+    api.post(
+      `/admin/users/reject-upgrade-request/${requestId}`,
+      rejectionReason,
+      {
+        headers: { "Content-Type": "text/plain" },
+      }
+    ),
 };
 
 // Service API
